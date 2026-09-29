@@ -1,30 +1,43 @@
 # Hila Frontend
 
-Hila es una plataforma cívica que conecta capacidades de personas voluntarias con necesidades concretas de organizaciones y colectivos comunitarios. Este repositorio contiene la interfaz web de Hila: React, TypeScript y Vite.
+Hila es una iniciativa de tecnología cívica que busca conectar las capacidades de las personas —su tiempo, conocimientos, oficios y recursos— con necesidades concretas de organizaciones y colectivos comunitarios. Está en preparación un piloto en Medellín y el Valle de Aburrá. La plataforma busca facilitar la coordinación y el seguimiento, con las organizaciones a cargo de decidir y acompañar sus actividades.
 
-El [wordmark y emblema oficiales](public/brand/) son los activos visuales de la portada. El backend, el contrato HTTP, las reglas de negocio y la base de datos pertenecen a [hila-backend](https://github.com/soul-labs-art/hila-backend).
+Este repositorio contiene la interfaz web de Hila, construida con React, TypeScript y Vite. La API, las reglas de negocio y la base de datos viven en [hila-backend](https://github.com/soul-labs-art/hila-backend).
 
-## Estado
+## Responsabilidad y estado
 
-La portada pública y su adaptación móvil están listas. El registro de cuentas, las convocatorias, el inicio de sesión y el consumo de la API aún no están implementados.
+Este proyecto es dueño de la presentación, navegación, accesibilidad, contenido de interfaz y sistema visual. Incluye el wordmark y el emblema oficiales en [`public/brand/`](public/brand/), y las fuentes locales en [`public/fonts/`](public/fonts/).
+
+La portada pública y su adaptación móvil están listas. El registro de cuentas, el inicio de sesión, el catálogo de oportunidades y el consumo de la API todavía no están implementados; la portada funciona sin el backend.
 
 ## Desarrollo local
 
-Requisitos: Node.js 24.
+Requisitos: Node.js 24 y npm.
 
 ```sh
 npm ci
 npm run dev
 ```
 
-Vite sirve la interfaz en <http://127.0.0.1:5173>. El proxy de desarrollo reenvía `/api`, `/swagger-ui` y `/v3/api-docs` a `127.0.0.1:8080`, donde escucha la API de desarrollo. Para verla sin backend, la portada funciona de forma independiente.
+Vite sirve la interfaz en <http://127.0.0.1:5173>. El proxy de desarrollo reenvía `/api`, `/swagger-ui` y `/v3/api-docs` a `127.0.0.1:8080`, donde debe estar disponible el backend. Este proxy solo es para desarrollo.
+
+Para validar cambios:
 
 ```sh
-npm run build
 npm run lint
+npm run build
 ```
 
-También se puede construir una imagen estática con `docker build -t hila-frontend .` y servirla con `docker run --rm -p 127.0.0.1:5173:80 hila-frontend`. La imagen Nginx sirve el sitio; la configuración de una API remota se añadirá cuando se implemente el consumo de endpoints.
+## Ejecutar la imagen Docker
+
+Requisitos: Docker Engine. La imagen compila el frontend y Nginx sirve los archivos estáticos; no incluye la API ni PostgreSQL.
+
+```sh
+docker build -t hila-frontend .
+docker run --rm --name hila-frontend -p 127.0.0.1:5173:80 hila-frontend
+```
+
+Abre <http://127.0.0.1:5173>. La conexión con servicios de backend para producción se configurará cuando el frontend implemente el consumo de endpoints.
 
 ## Documentación
 
