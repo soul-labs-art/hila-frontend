@@ -45,3 +45,9 @@ Abre <http://127.0.0.1:5173>. La conexión con servicios de backend para producc
 - [Sistema visual](design-system/MASTER.md)
 - [Identidad visual](docs/IDENTIDAD_VISUAL.md)
 - [Requisitos y flujos del producto](https://github.com/soul-labs-art/hila-backend/tree/main/docs)
+
+## Licencia
+
+El código fuente de Hila creado por Soul Labs Art en este repositorio se ofrece bajo la [PolyForm Noncommercial License 1.0.0](LICENSE). Permite usar, modificar y redistribuir el software con fines no comerciales; no concede permiso para el uso comercial. Para ese uso se requiere autorización independiente de Soul Labs Art.
+
+La licencia cubre el software de Hila indicado arriba. Las dependencias, fuentes tipográficas, imágenes, marcas y demás recursos de terceros pueden tener términos propios; consulta sus avisos y licencias. El nombre, los logotipos y la identidad visual de Hila no se licencian por este archivo.
