@@ -34,6 +34,18 @@ Fraunces se usa en titulares; DM Sans en navegación, cuerpo e interfaz. Las dos
 - El movimiento es sutil y responde a una acción. Respetar `prefers-reduced-motion`.
 - No usar emojis como iconos, controles sin destino ni llamados a registrarse antes de implementar el flujo.
 
+## Acceso y perfiles
+
+Las pantallas de producto conservan la marca y las fuentes. Los formularios usan controles de 48 px, etiquetas visibles y mensajes asociados a campos; las acciones principales usan arcilla. El login presenta el emblema junto al formulario en escritorio y concentra el formulario en móvil.
+
+Los perfiles toman de la referencia aprobada la portada 3:1 y el avatar superpuesto. La presentación queda sobre una superficie clara; no se usan estrellas, seguidores ni cifras decorativas. La vista del propietario separa información, imágenes y publicación; la organización también muestra revisión e historial. La aprobación y la visibilidad son estados diferentes.
+
+Las imágenes tienen recorte centrado y previsualización. Las acciones de publicación son explícitas y se acompañan de una explicación de los campos visibles. Ninguna acción de interfaz sustituye la autorización del servidor.
+
+Al cambiar de ruta dentro del espacio de acceso y perfiles, el contenido vuelve al inicio y el foco pasa al elemento principal, que también es el destino de «Saltar al contenido». Este destino programático no dibuja un contorno alrededor de toda la página; los enlaces, botones y campos conservan foco visible. El enlace de salto permanece oculto hasta recibir foco.
+
+Los campos enlazan su etiqueta, ayuda y error por identificadores. El resumen de error recibe foco y se anuncia como alerta; las confirmaciones se anuncian como estado. Mostrar u ocultar contraseña es un botón separado del envío y expone su estado con `aria-pressed`.
+
 ## Referencias
 
 - Identidad de marca y uso del wordmark: [docs/IDENTIDAD_VISUAL.md](../docs/IDENTIDAD_VISUAL.md).

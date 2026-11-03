@@ -4,7 +4,7 @@
 
 Este repositorio es dueño de la interfaz web, sus componentes, accesibilidad, navegación y sistema visual. La API y las reglas de negocio viven en [hila-backend](https://github.com/soul-labs-art/hila-backend). No copies Java, migraciones ni lógica de autorización a este repositorio.
 
-Hila conecta capacidades ciudadanas con necesidades de organizaciones y colectivos comunitarios en Medellín y el Valle de Aburrá. La portada describe el propósito y el estado del piloto sin prometer registros ni convocatorias aún inexistentes. Consulta [identidad visual](docs/IDENTIDAD_VISUAL.md) y [sistema visual](design-system/MASTER.md).
+Hila conecta capacidades ciudadanas con necesidades de organizaciones y colectivos comunitarios en Medellín y el Valle de Aburrá. La portada describe el propósito y el estado del piloto; el acceso y los perfiles ya consumen la API, mientras las convocatorias siguen pendientes. Consulta [identidad visual](docs/IDENTIDAD_VISUAL.md) y [sistema visual](design-system/MASTER.md).
 
 ## Documentación del repositorio
 
@@ -17,8 +17,9 @@ Hila conecta capacidades ciudadanas con necesidades de organizaciones y colectiv
 - Respetar la paleta arcilla, lino, tinta y ciruela. Evitar etiquetas decorativas o textos sin jerarquía clara.
 - Diseñar desde móvil, evitar desplazamiento horizontal y conservar áreas táctiles cómodas.
 - Usar landmarks y controles semánticos, etiquetas asociadas a sus campos, navegación por teclado, foco visible y enlace para saltar al contenido. Respetar `prefers-reduced-motion`.
-- No simular flujos de registro, oportunidades o datos reales. La portada indica que todavía no están habilitados.
+- No simular datos reales ni habilitar convocatorias pendientes. Los recorridos de cuenta, perfiles y revisión usan API real; mocks solo en pruebas.
 - Cuando se incorpore la API, usar contratos OpenAPI publicados por hila-backend y nunca implementar autorización en el navegador.
+- La copia en `openapi/hila-v1.json` y `src/api/schema.d.ts` se generan con `npm run api:sync`. No editarlas manualmente; consultar `docs/API_INTEGRATION.md` y ejecutar `npm run api:check`. El contrato incluye operaciones aún pendientes de implementación.
 - No guardar secretos ni datos personales reales. No añadir dependencias sin necesidad descrita.
 
 ## Flujo de trabajo

@@ -1,136 +1,30 @@
+import { useEffect, useState } from 'react'
+import { Link, NavLink, Outlet, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import Landing from './Landing'
+import { Access } from './Access'
+import { Account, OrganizationList, PublicProfile, VolunteerPage } from './Profiles'
+import { AdminOrganizations, AdminReview, OrganizationDetail, OrganizationForm } from './Organizations'
+import { Protected } from './session'
+import { useSession } from './session-context'
+import { Feedback } from './components'
 import './App.css'
+import './workspace.css'
 
-function App() {
-  return (
-    <div className="site-shell" id="inicio">
-      <a className="skip-link" href="#contenido">
-        Saltar al contenido
-      </a>
-
-      <header className="site-header">
-        <a className="brand" href="#inicio" aria-label="Hila, inicio">
-          <img src="/brand/hila-wordmark-delgado.png" alt="" />
-        </a>
-
-        <nav className="main-nav" aria-label="Navegación principal">
-          <a href="#como-funciona">Cómo funciona</a>
-          <a href="#personas">Personas</a>
-          <a href="#organizaciones">Organizaciones</a>
-        </nav>
-
-        <a className="header-link" href="#estado">
-          Estado del piloto
-        </a>
-      </header>
-
-      <main id="contenido" tabIndex={-1}>
-        <section className="hero" aria-labelledby="hero-title">
-          <div className="hero-copy">
-            <p className="hero-location">
-              <span className="location-mark" aria-hidden="true" />
-              Piloto en preparación · Medellín y Valle de Aburrá
-            </p>
-            <h1 id="hero-title">Lo que sabes hacer puede encontrar dónde hace falta.</h1>
-            <p className="hero-description">
-              Hila acerca las capacidades de las personas a necesidades concretas de organizaciones y colectivos comunitarios.
-            </p>
-            <div className="hero-actions">
-              <a className="button button-primary" href="#como-funciona">
-                Conoce el proceso
-              </a>
-              <a className="hero-text-link" href="#personas">
-                Quiénes participan
-              </a>
-            </div>
-          </div>
-
-          <figure className="hero-brand">
-            <img
-              className="hero-brand-mark"
-              src="/brand/hila-emblema.png"
-              alt="Emblema de Hila: manos que sostienen una chispa, rodeadas de hojas."
-            />
-          </figure>
-        </section>
-
-        <section className="process-section content-width" id="como-funciona" aria-labelledby="process-title">
-          <div className="section-intro">
-            <p className="section-kicker">Una colaboración con acuerdos claros</p>
-            <h2 id="process-title">Del primer encuentro a una acción que deja huella.</h2>
-            <p>
-              Hila ordena la información para que cada parte sepa qué aportar, qué esperar y cómo cerrar la actividad.
-            </p>
-          </div>
-
-          <ol className="process-steps">
-            <li>
-              <span className="step-index" aria-hidden="true">01</span>
-              <h3>Se describe la necesidad</h3>
-              <p>La organización explica la actividad, el horario, el lugar y las capacidades que necesita.</p>
-            </li>
-            <li>
-              <span className="step-index" aria-hidden="true">02</span>
-              <h3>Se encuentran capacidades</h3>
-              <p>Las personas comparten lo que saben hacer y revisan coincidencias con cada oportunidad.</p>
-            </li>
-            <li>
-              <span className="step-index" aria-hidden="true">03</span>
-              <h3>Se acuerda y se aprende</h3>
-              <p>La organización y la persona confirman el compromiso y registran juntas lo que ocurrió.</p>
-            </li>
-          </ol>
-        </section>
-
-        <section className="people-section content-width" aria-label="Formas de participar">
-          <article className="audience-row" id="personas">
-            <div className="audience-heading">
-              <p className="section-kicker">Para personas</p>
-              <h2>Tus saberes también cuentan.</h2>
-            </div>
-            <div className="audience-copy">
-              <p>
-                Puedes aportar tiempo, conocimientos, oficios o recursos. Tu perfil es independiente del registro de cualquier organización.
-              </p>
-              <p className="audience-note">Puedes prepararlo aunque todavía no haya oportunidades publicadas.</p>
-            </div>
-          </article>
-
-          <article className="audience-row" id="organizaciones">
-            <div className="audience-heading">
-              <p className="section-kicker">Para organizaciones</p>
-              <h2>Convoca desde tu territorio.</h2>
-            </div>
-            <div className="audience-copy">
-              <p>
-                Organizaciones formales y colectivos pueden describir lo que necesitan y acompañar cada compromiso hasta su cierre.
-              </p>
-              <p className="audience-note">Un colectivo puede solicitar revisión sin NIT ni personería jurídica.</p>
-            </div>
-          </article>
-        </section>
-
-        <section className="pilot-section" id="estado" aria-labelledby="pilot-title">
-          <div className="pilot-inner content-width">
-            <div>
-              <p className="section-kicker">Hila está preparando su piloto</p>
-              <h2 id="pilot-title">Las primeras oportunidades se abrirán con organizaciones del territorio.</h2>
-            </div>
-            <p className="pilot-note">
-              El registro y las convocatorias todavía no están habilitados. Estamos construyendo la plataforma para probarla en Medellín y el Valle de Aburrá.
-            </p>
-          </div>
-        </section>
-      </main>
-
-      <footer className="site-footer content-width">
-        <a className="footer-brand" href="#inicio" aria-label="Hila, volver al inicio">
-          <img src="/brand/hila-wordmark-delgado.png" alt="" />
-        </a>
-        <p>Una red para que el apoyo llegue con claridad y cuidado.</p>
-        <a href="#inicio">Volver al inicio</a>
-      </footer>
-    </div>
-  )
+function Shell() {
+  const session = useSession(), navigate = useNavigate(), location = useLocation(), [error, setError] = useState<unknown>(), [busy, setBusy] = useState(false)
+  useEffect(() => { window.scrollTo(0, 0); document.getElementById('workspace-content')?.focus({ preventScroll: true }) }, [location.pathname])
+  return <div className="workspace-shell"><a className="skip-link" href="#workspace-content">Saltar al contenido</a><header className="workspace-header"><Link className="brand" to="/" aria-label="Hila, inicio"><img src="/brand/hila-wordmark-delgado.png" alt="" /></Link><nav aria-label="Navegación principal">{session.user ? <><NavLink to="/mi-cuenta">Mi cuenta</NavLink><NavLink to="/mi-perfil">Mi perfil</NavLink><NavLink to="/mis-organizaciones">Mis organizaciones</NavLink>{session.user.roles.includes('ADMIN') && <NavLink to="/admin/organizaciones">Revisión</NavLink>}<button className="text-button" disabled={busy} onClick={async () => { setBusy(true); setError(undefined); try { await session.logout(); navigate('/ingresar') } catch (value) { setError(value) } finally { setBusy(false) } }}>{busy ? 'Cerrando…' : 'Salir'}</button></> : <><NavLink to="/ingresar">Ingresar</NavLink><NavLink className="action primary" to="/registro">Crear cuenta</NavLink></>}</nav></header><main id="workspace-content" className="workspace-content" tabIndex={-1}><Feedback error={error} /><Outlet /></main><footer className="workspace-footer"><Link to="/">Hila</Link><p>Capacidades que se encuentran con causas de tu territorio.</p></footer></div>
 }
-
-export default App
+export default function App() {
+  return <Routes><Route path="/" element={<Landing />} /><Route element={<Shell />}>
+    <Route path="ingresar" element={<Access key="login" mode="login" />} /><Route path="registro" element={<Access key="register" mode="register" />} />
+    <Route path="registro/enviado" element={<Access key="sent" mode="sent" />} /><Route path="verificar-correo" element={<Access key="verify" mode="verify" />} />
+    <Route path="recuperar-acceso" element={<Access key="forgot" mode="forgot" />} /><Route path="restablecer-acceso" element={<Access key="reset" mode="reset" />} />
+    <Route path="mi-cuenta" element={<Protected><Account /></Protected>} /><Route path="mi-perfil" element={<Protected><VolunteerPage /></Protected>} />
+    <Route path="mis-organizaciones" element={<Protected><OrganizationList /></Protected>} /><Route path="organizaciones/nueva" element={<Protected><OrganizationForm /></Protected>} />
+    <Route path="organizaciones/:id/editar" element={<Protected><OrganizationDetail /></Protected>} />
+    <Route path="voluntarios/:id" element={<PublicProfile />} /><Route path="organizaciones/:id" element={<PublicProfile organization />} />
+    <Route path="admin/organizaciones" element={<Protected admin><AdminOrganizations /></Protected>} /><Route path="admin/organizaciones/:id" element={<Protected admin><AdminReview /></Protected>} />
+    <Route path="*" element={<section className="empty-state"><h1>No encontramos esta página.</h1><Link className="action" to="/">Volver al inicio</Link></section>} />
+  </Route></Routes>
+}
