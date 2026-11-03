@@ -1,0 +1,2 @@
+openapi/*.json text eol=lf
+src/api/schema.d.ts text eol=lf

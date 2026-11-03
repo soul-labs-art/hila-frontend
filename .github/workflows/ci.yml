@@ -23,5 +23,7 @@ jobs:
         run: npm ci
       - name: Lint
         run: npm run lint
+      - name: Check API contract types
+        run: npm run api:check
       - name: Build
         run: npm run build

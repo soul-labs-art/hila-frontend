@@ -8,7 +8,9 @@ Este repositorio contiene la interfaz web de Hila, construida con React, TypeScr
 
 Este proyecto es dueño de la presentación, navegación, accesibilidad, contenido de interfaz y sistema visual. Incluye el wordmark y el emblema oficiales en [`public/brand/`](public/brand/), y las fuentes locales en [`public/fonts/`](public/fonts/).
 
-La portada pública y su adaptación móvil están listas. El registro de cuentas, el inicio de sesión, el catálogo de oportunidades y el consumo de la API todavía no están implementados; la portada funciona sin el backend.
+La portada pública se complementa con registro, verificación y reenvío de correo, inicio/cierre de sesión, recuperación, perfiles básicos voluntarios y de organizaciones, foto/portada editables, publicación voluntaria y revisión administrativa. Estas pantallas consumen la API real; requieren el backend. El catálogo de oportunidades y las postulaciones siguen pendientes.
+
+La [copia del contrato del MVP](openapi/hila-v1.json) y los [tipos generados](src/api/schema.d.ts) permiten preparar el frontend con los formatos acordados. Cada operación declara su estado de implementación; el contrato también incluye funciones futuras. Consulta la [guía de integración](docs/API_INTEGRATION.md) y actualiza desde el backend con `npm run api:sync`; CI verifica la correspondencia mediante `npm run api:check`.
 
 ## Desarrollo local
 
@@ -34,10 +36,10 @@ Requisitos: Docker Engine. La imagen compila el frontend y Nginx sirve los archi
 
 ```sh
 docker build -t hila-frontend .
-docker run --rm --name hila-frontend -p 127.0.0.1:5173:80 hila-frontend
+docker run --rm --name hila-frontend --network hila-backend_default -e API_UPSTREAM=http://api:8080 -p 127.0.0.1:5173:80 hila-frontend
 ```
 
-Abre <http://127.0.0.1:5173>. La conexión con servicios de backend para producción se configurará cuando el frontend implemente el consumo de endpoints.
+Abre <http://127.0.0.1:5173>. Nginx reenvía `/api` a `API_UPSTREAM` (por defecto `http://api:8080`), sin cambiar el origen de las cookies. Usa la red del Compose del backend; adapta su nombre si cambiaste el nombre de proyecto. La API y sus credenciales R2 permanecen en el servidor. El proxy admite solicitudes de imágenes de hasta 11 MiB.
 
 ## Documentación
 

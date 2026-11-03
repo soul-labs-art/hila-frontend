@@ -8,7 +8,11 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "api:sync": "node scripts/api-contract.mjs sync",
+    "api:generate": "node scripts/api-contract.mjs generate",
+    "api:check": "node scripts/api-contract.mjs check",
+    "preview": "vite preview",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.104.0",
@@ -17,6 +21,7 @@
     "react-router-dom": "^7.18.4"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.1",
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",

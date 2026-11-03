@@ -4,6 +4,7 @@ Estos documentos describen la presentación y experiencia de uso. Actualízalos 
 
 - [Identidad visual de Hila](IDENTIDAD_VISUAL.md): marca, wordmark, emblema, paleta, tipografía e ilustración.
 - [Sistema visual](../design-system/MASTER.md): composición, interacción, accesibilidad y convenciones de interfaz.
+- [Integración y tipos de la API](API_INTEGRATION.md): copia del contrato completo del MVP, generación reproducible y reglas para conectar los formularios.
 
 Los requisitos del producto, los flujos y estados, y el modelo de datos son responsabilidad de [hila-backend](https://github.com/soul-labs-art/hila-backend/tree/main/docs).
 

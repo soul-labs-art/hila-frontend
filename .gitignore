@@ -13,3 +13,6 @@ pnpm-debug.log*
 .vscode/
 .DS_Store
 Thumbs.db
+test-results/
+playwright-report/
+.impeccable/review/
