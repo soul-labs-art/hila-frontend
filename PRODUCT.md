@@ -16,7 +16,7 @@ Articular capacidades ciudadanas con necesidades concretas de organizaciones en 
 
 ## Capabilities and Constraints
 
-Una cuenta personal puede tener perfil voluntario y representar organizaciones. La entrega actual cubre registro, correo verificado, sesión, recuperación, perfiles básicos, imágenes, publicación voluntaria y revisión de organizaciones. Las oportunidades y postulaciones se implementan después.
+Una cuenta personal puede tener perfil voluntario y representar organizaciones. La entrega actual cubre registro, correo verificado, sesión, recuperación, perfiles básicos de personas y organizaciones, imágenes, publicación de perfiles (las organizaciones, tras su aprobación) y revisión administrativa de organizaciones. Las oportunidades, postulaciones y capacidades ampliadas se implementan después.
 
 Los perfiles comienzan privados. La presentación pública personal excluye correo y educación. La organización requiere aprobación antes de publicar y nunca expone NIT, contexto privado de revisión o información del representante. No hay ranking, seguidores ni evaluaciones públicas.
 

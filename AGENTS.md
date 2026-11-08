@@ -4,7 +4,7 @@
 
 Este repositorio es dueño de la interfaz web, sus componentes, accesibilidad, navegación y sistema visual. La API y las reglas de negocio viven en [hila-backend](https://github.com/soul-labs-art/hila-backend). No copies Java, migraciones ni lógica de autorización a este repositorio.
 
-Hila conecta capacidades ciudadanas con necesidades de organizaciones y colectivos comunitarios en Medellín y el Valle de Aburrá. La portada describe el propósito y el estado del piloto; el acceso y los perfiles ya consumen la API, mientras las convocatorias siguen pendientes. Consulta [identidad visual](docs/IDENTIDAD_VISUAL.md) y [sistema visual](design-system/MASTER.md).
+Hila conecta capacidades ciudadanas con necesidades de organizaciones y colectivos comunitarios en Medellín y el Valle de Aburrá. La portada describe el propósito y el estado del piloto; la cuenta, los perfiles, las organizaciones, las imágenes, la publicación y la revisión administrativa ya consumen la API, mientras las oportunidades, las postulaciones y las capacidades ampliadas siguen pendientes. Consulta [identidad visual](docs/IDENTIDAD_VISUAL.md) y [sistema visual](design-system/MASTER.md).
 
 ## Documentación del repositorio
 
@@ -17,13 +17,13 @@ Hila conecta capacidades ciudadanas con necesidades de organizaciones y colectiv
 - Respetar la paleta arcilla, lino, tinta y ciruela. Evitar etiquetas decorativas o textos sin jerarquía clara.
 - Diseñar desde móvil, evitar desplazamiento horizontal y conservar áreas táctiles cómodas.
 - Usar landmarks y controles semánticos, etiquetas asociadas a sus campos, navegación por teclado, foco visible y enlace para saltar al contenido. Respetar `prefers-reduced-motion`.
-- No simular datos reales ni habilitar convocatorias pendientes. Los recorridos de cuenta, perfiles y revisión usan API real; mocks solo en pruebas.
-- Cuando se incorpore la API, usar contratos OpenAPI publicados por hila-backend y nunca implementar autorización en el navegador.
+- No simular datos reales ni habilitar convocatorias pendientes. Los recorridos de cuenta, perfiles, organizaciones y revisión usan API real; mocks solo en pruebas.
+- Usar los contratos OpenAPI publicados por hila-backend y nunca implementar autorización en el navegador.
 - La copia en `openapi/hila-v1.json` y `src/api/schema.d.ts` se generan con `npm run api:sync`. No editarlas manualmente; consultar `docs/API_INTEGRATION.md` y ejecutar `npm run api:check`. El contrato incluye operaciones aún pendientes de implementación.
 - No guardar secretos ni datos personales reales. No añadir dependencias sin necesidad descrita.
 
 ## Flujo de trabajo
 
 - Crear ramas breves `feat/...`, `fix/...` o `docs/...`; integrar por pull request a `main`.
-- Ejecutar `npm run build` y `npm run lint`; explicar el alcance y las verificaciones en cada pull request.
+- Ejecutar `npm run lint`, `npm run api:check` y `npm run build` (lo que ejecuta CI); explicar el alcance y las verificaciones en cada pull request. Las pruebas E2E (`npm run test:e2e`) necesitan el backend y no corren en CI.
 - Actualizar el README, `docs/IDENTIDAD_VISUAL.md` o `design-system/MASTER.md` cuando cambie una decisión estable.

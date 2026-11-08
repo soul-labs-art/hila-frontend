@@ -1,8 +1,8 @@
 # Integración con la API
 
-El backend es dueño del contrato. La copia en [openapi/hila-v1.json](../openapi/hila-v1.json) permite generar [tipos TypeScript](../src/api/schema.d.ts) sin una API ejecutándose. La versión actual define **todo el MVP**, con operaciones, campos, errores y permisos, y distingue las operaciones implementadas de las futuras. `x-implementation-status` indica el estado de cada operación.
+El backend es dueño del contrato. La copia en [openapi/hila-v1.json](../openapi/hila-v1.json) permite generar [tipos TypeScript](../src/api/schema.d.ts) sin una API ejecutándose. La versión actual define **todo el MVP**, con operaciones, campos, errores y permisos, y distingue las operaciones implementadas de las futuras. `x-implementation-status` indica el estado de cada operación; la copia actual (`1.0.0-draft.2`) marca 35 operaciones `implemented` y 60 `planned`.
 
-La fuente canónica y las reglas de sesión, transiciones y privacidad están en `hila-backend/openapi/hila-v1.json` y `hila-backend/docs/API_CONTRACT.md`. En GitHub: [contrato](https://github.com/soul-labs-art/hila-backend/blob/main/openapi/hila-v1.json) y [guía](https://github.com/soul-labs-art/hila-backend/blob/main/docs/API_CONTRACT.md). Estos enlaces estarán disponibles al integrar el cambio del backend.
+La fuente canónica y las reglas de sesión, transiciones y privacidad están en `hila-backend/openapi/hila-v1.json` y `hila-backend/docs/API_CONTRACT.md`. En GitHub: [contrato](https://github.com/soul-labs-art/hila-backend/blob/main/openapi/hila-v1.json) y [guía](https://github.com/soul-labs-art/hila-backend/blob/main/docs/API_CONTRACT.md).
 
 ## Actualizar los tipos
 
@@ -46,7 +46,7 @@ Los tipos describen compilación, no validan JSON recibido ni prueban que un end
 - Obtener `GET /auth/csrf` antes de cualquier escritura, incluidas las públicas, y enviar `X-CSRF-TOKEN` con la cookie. Renovar el token después de login/logout o expiración y conservarlo solo en memoria.
 - Restaurar cuenta con `GET /me`; un `401` significa sesión ausente/vencida. Un `403` puede ser CSRF o permiso, y se distingue por `code`. No reintentar automáticamente una escritura tras un fallo de red.
 - Leer políticas vigentes antes del registro o activar avisos; enviar su versión y consentimiento explícito. No precargar casillas de aceptación. Los contenidos legales aún están pendientes en backend.
-- Registro y solicitudes de correo responden de forma genérica, evitando enumerar cuentas. Verificación y recuperación consumen el token por POST; las páginas `/verificar-correo` y `/restablecer-acceso` lo recibirán en `#token=...`, limpiarán el fragmento y no lo enviarán a analítica.
+- Registro y solicitudes de correo responden de forma genérica, evitando enumerar cuentas. Verificación y recuperación consumen el token por POST; las páginas `/verificar-correo` y `/restablecer-acceso` lo reciben en `#token=...`, limpian el fragmento y no lo envían a analítica.
 - `GET /me/volunteer-profile` puede responder `404 PROFILE_NOT_FOUND` como estado inicial. Tener perfil no implica tener habilidades/horarios/zonas completos. Los avisos se gestionan por `/me/opportunity-alerts` para registrar su consentimiento.
 - Errores: `{code, message, fieldErrors, traceId}`. Asociar `fieldErrors` al campo mediante `aria-invalid` y `aria-describedby`. El resumen de error usa `role="alert"` y recibe foco; la confirmación usa `role="status"`. Nunca inferir comportamiento a partir del texto de `message`.
 - Leer el formulario con `FormData(event.currentTarget)`. `formValue` recorta espacios de los textos y `nullableValue` convierte opcionales vacíos a `null`; las contraseñas se leen directamente y conservan sus espacios. Cuando una operación necesita restablecer el formulario después de un `await`, capturar primero su elemento, como en la decisión administrativa.
@@ -57,14 +57,13 @@ Los tipos describen compilación, no validan JSON recibido ni prueban que un end
 
 ## Secuencia de trabajo
 
-El recorrido implementado es cuenta adulta → correo verificado → sesión → perfil privado → imágenes → publicación. También se implementan recuperación, registro/revisión organizacional y publicación tras aprobación. Oportunidades, capacidades ampliadas y postulaciones permanecen futuras. Antes de habilitar cada nuevo módulo, comparar el contrato con los controladores reales (`/v3/api-docs`).
-
+El recorrido implementado es cuenta adulta → correo verificado → sesión → perfil privado → imágenes → publicación. También se implementan recuperación, registro/revisión organizacional y publicación tras aprobación. Oportunidades, capacidades ampliadas y postulaciones permanecen futuras, y el frontend aún no consume `/me/consents` ni `/me/opportunity-alerts`, aunque el backend los implementa. Antes de habilitar cada nuevo módulo, comparar el contrato con los controladores reales (`/v3/api-docs`).
 
 ## Recorridos y pruebas
 
-Rutas: `/registro`, `/registro/enviado`, `/verificar-correo`, `/ingresar`, `/recuperar-acceso`, `/restablecer-acceso`, `/mi-cuenta`, `/mi-perfil`, `/mis-organizaciones`, `/organizaciones/nueva`, `/organizaciones/:id/editar`, `/voluntarios/:id`, `/organizaciones/:id`, `/admin/organizaciones` y `/admin/organizaciones/:id`.
+Rutas: `/` (portada pública), `/registro`, `/registro/enviado`, `/verificar-correo`, `/ingresar`, `/recuperar-acceso`, `/restablecer-acceso`, `/mi-cuenta`, `/mi-perfil`, `/mis-organizaciones`, `/organizaciones/nueva`, `/organizaciones/:id/editar`, `/voluntarios/:id`, `/organizaciones/:id`, `/admin/organizaciones` y `/admin/organizaciones/:id`.
 
-Los perfiles empiezan privados. La persona decide publicarlos; las organizaciones además requieren aprobación. Las vistas públicas no reciben campos privados. Un fallo en la carga de una imagen conserva la anterior. La vista previa usa el mismo recorte centrado que el servidor; no se permite SVG, GIF, HEIC ni formatos distintos de JPEG/PNG.
+Los perfiles empiezan privados. La persona decide publicarlos; las organizaciones además requieren aprobación. Las vistas públicas no reciben campos privados. Un fallo en la carga de una imagen conserva la anterior. La vista previa usa el mismo recorte centrado que el servidor; no se permite SVG, GIF, HEIC ni formatos distintos de JPEG/PNG, y el cliente valida hasta 10 MiB y 16 megapíxeles.
 
 Pruebas reales con PostgreSQL, API en 8080 y Mailpit en 8025 (iniciados desde el backend):
 
@@ -73,6 +72,8 @@ npm ci
 npx playwright install chromium
 npm run test:e2e
 ```
+
+CI ejecuta solo `npm run lint`, `npm run api:check` y `npm run build`; estas pruebas necesitan el backend y no corren en CI. Playwright inicia `npm run dev` si no hay un servidor en `127.0.0.1:5173`. Variables opcionales: `E2E_BASE_URL` (por defecto `http://127.0.0.1:5173`) y `E2E_MAILPIT_URL` (por defecto `http://127.0.0.1:8025`).
 
 El test de revisión requiere una cuenta administrativa de desarrollo ya verificada y habilitada mediante el comando interno documentado en backend:
 

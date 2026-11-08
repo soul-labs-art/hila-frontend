@@ -8,7 +8,7 @@ Este repositorio contiene la interfaz web de Hila, construida con React, TypeScr
 
 Este proyecto es dueño de la presentación, navegación, accesibilidad, contenido de interfaz y sistema visual. Incluye el wordmark y el emblema oficiales en [`public/brand/`](public/brand/), y las fuentes locales en [`public/fonts/`](public/fonts/).
 
-La portada pública se complementa con registro, verificación y reenvío de correo, inicio/cierre de sesión, recuperación, perfiles básicos voluntarios y de organizaciones, foto/portada editables, publicación voluntaria y revisión administrativa. Estas pantallas consumen la API real; requieren el backend. El catálogo de oportunidades y las postulaciones siguen pendientes.
+La portada pública se complementa con registro, verificación y reenvío de correo, inicio/cierre de sesión, recuperación, perfiles básicos voluntarios y de organizaciones, foto/portada editables, publicación de perfiles (las organizaciones, tras su aprobación) y revisión administrativa. Estas pantallas consumen la API real; requieren el backend. El catálogo de oportunidades, las postulaciones y las capacidades ampliadas siguen pendientes.
 
 La [copia del contrato del MVP](openapi/hila-v1.json) y los [tipos generados](src/api/schema.d.ts) permiten preparar el frontend con los formatos acordados. Cada operación declara su estado de implementación; el contrato también incluye funciones futuras. Consulta la [guía de integración](docs/API_INTEGRATION.md) y actualiza desde el backend con `npm run api:sync`; CI verifica la correspondencia mediante `npm run api:check`.
 
@@ -27,8 +27,11 @@ Para validar cambios:
 
 ```sh
 npm run lint
+npm run api:check
 npm run build
 ```
+
+CI ejecuta esos tres comandos. Las pruebas E2E (`npm run test:e2e`) necesitan el backend y no corren en CI; consulta [Recorridos y pruebas](docs/API_INTEGRATION.md#recorridos-y-pruebas).
 
 ## Ejecutar la imagen Docker
 
