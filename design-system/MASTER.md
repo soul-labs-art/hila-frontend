@@ -21,6 +21,8 @@ La portada usa una composición editorial en dos columnas, fondo lino y texto en
 | `--sage` | `#83907A` | Acentos secundarios. |
 | `--linen` | `#F6EBDD` | Superficie clara principal. |
 | `--ink` | `#2E2623` | Texto largo y contraste. |
+| `--muted` | `#665951` | Texto secundario y ayudas. |
+| `--rule` | `#D7C5B0` | Líneas y separadores. |
 
 Fraunces se usa en titulares; DM Sans en navegación, cuerpo e interfaz. Las dos fuentes se sirven localmente desde `public/fonts/`.
 
@@ -37,6 +39,8 @@ Fraunces se usa en titulares; DM Sans en navegación, cuerpo e interfaz. Las dos
 ## Acceso y perfiles
 
 Las pantallas de producto conservan la marca y las fuentes. Los formularios usan controles de 48 px, etiquetas visibles y mensajes asociados a campos; las acciones principales usan arcilla. El login presenta el emblema junto al formulario en escritorio y concentra el formulario en móvil.
+
+La portada y la cabecera reconocen la sesión: con sesión activa ofrecen «Ir a mi cuenta» en lugar de «Ingresar» y «Crear mi cuenta». `/ingresar` y `/registro` redirigen a quien ya ingresó (respetando `returnTo`); los enlaces de verificación y recuperación siguen abiertos. La sección ciruela de la portada cierra con una acción en lino sobre ciruela. Cada pantalla tiene un `<title>` propio y un solo `<h1>`; el emblema junto al formulario es decorativo (`alt=""`). El correo escrito pasa entre pantallas de acceso por el estado del router, nunca por la URL.
 
 Los perfiles toman de la referencia aprobada la portada 3:1 y el avatar superpuesto. La presentación queda sobre una superficie clara; no se usan estrellas, seguidores ni cifras decorativas. La vista del propietario separa información, imágenes y publicación; la organización también muestra revisión e historial. La aprobación y la visibilidad son estados diferentes.
 
