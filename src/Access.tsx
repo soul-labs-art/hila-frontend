@@ -1,5 +1,5 @@
 import { formValue } from './form-values'
-import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
+import { lazy, Suspense, useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { api, ApiFailure, type Schemas } from './api/client'
@@ -7,7 +7,8 @@ import { Field, Feedback, Password, Submit } from './components'
 import { usePageTitle } from './page-title'
 import { safeReturnTo, useSession } from './session-context'
 
-const linkSent = 'Si la dirección puede recibir este mensaje, te enviaremos un enlace. Revisa también la carpeta de correo no deseado.'
+const MockAccounts = import.meta.env.DEV && import.meta.env.VITE_API_MOCK === 'true' ? lazy(() => import('./MockAccounts')) : null
+const linkSent ='Si la dirección puede recibir este mensaje, te enviaremos un enlace. Revisa también la carpeta de correo no deseado.'
 
 function useEmailToken() {
   const [token] = useState(() => new URLSearchParams(window.location.hash.slice(1)).get('token') ?? '')
@@ -31,6 +32,7 @@ function AccessLayout({ title, tab, intro, children }: { title: string; tab: str
 export function Login() {
   const form = useSubmit(), [email, setEmail] = useState(''), navigate = useNavigate(), [search] = useSearchParams(), session = useSession()
   const unverified = form.error instanceof ApiFailure && form.error.detail.code === 'EMAIL_NOT_VERIFIED'
+  function fill(value: string, password: string) { setEmail(value); const input = document.getElementById('password') as HTMLInputElement | null; if (input) { input.value = password; input.focus() } }
   return <AccessLayout tab="Ingresar" title="Vuelve a tu espacio en Hila." intro="Ingresa para cuidar tu perfil y acompañar tus organizaciones.">
     <Feedback error={form.error} />
     {unverified && <p>Aún no verificaste tu correo. <Link to="/registro/enviado" state={{ email }}>Enviar otro enlace de verificación</Link></p>}
@@ -40,6 +42,7 @@ export function Login() {
       <Submit busy={form.busy} busyLabel="Ingresando…">Ingresar</Submit>
     </form>
     <div className="access-links"><Link to="/recuperar-acceso">Olvidé mi contraseña</Link><Link to="/registro">Crear una cuenta</Link><Link to="/registro/enviado" state={{ email }}>Necesito verificar mi correo</Link></div>
+    {MockAccounts && <Suspense fallback={null}><MockAccounts onPick={fill} /></Suspense>}
   </AccessLayout>
 }
 
