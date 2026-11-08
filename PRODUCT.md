@@ -26,7 +26,7 @@ Conservar la identidad aprobada de Hila: wordmark y emblema locales, fuentes Fra
 
 ## Evidence on Hand
 
-Documentación de dominio en hila-backend; identidad en docs/IDENTIDAD_VISUAL.md; sistema visual en design-system/MASTER.md; marca y fuentes en public/. El piloto está en preparación: no inventar oportunidades ni resultados reales.
+Documentación de dominio en hila-backend; identidad en docs/IDENTIDAD_VISUAL.md; sistema visual en design-system/MASTER.md; marca y fuentes en public/. El piloto está en preparación: no inventar oportunidades ni resultados reales en lo que se publica. Para desarrollar pantallas cuyo backend aún no existe se usa el modo de datos de ejemplo (`VITE_API_MOCK=true`): solo en desarrollo, con aviso visible, datos ficticios y sin personas reales. Las fotografías de ambiente (por ejemplo de Unsplash) se guardan como archivos locales en `public/` y no se usan como retratos de cuentas inventadas.
 
 ## Accessibility & Inclusion
 

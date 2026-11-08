@@ -23,6 +23,19 @@ npm run dev
 
 Vite sirve la interfaz en <http://127.0.0.1:5173>. El proxy de desarrollo reenvía `/api`, `/swagger-ui` y `/v3/api-docs` a `127.0.0.1:8080`, donde debe estar disponible el backend. Este proxy solo es para desarrollo.
 
+### Datos de ejemplo (sin backend)
+
+Para desarrollar pantallas sin backend, o cuyas operaciones del contrato siguen `planned`, activa el modo de datos de ejemplo. Solo funciona en desarrollo, está apagado por defecto, muestra un aviso «Datos de ejemplo» en cada pantalla y usa únicamente datos ficticios (correos `@example.test`). El build de producción falla si la variable está activa.
+
+```sh
+# PowerShell
+$env:VITE_API_MOCK='true'; npm run dev
+# bash
+VITE_API_MOCK=true npm run dev
+```
+
+Las cuentas ficticias y su contraseña de ejemplo están descritas en `src/api/mock/`. Cuando el backend implemente una operación, se retira su mock; el contrato `hila-v1.json` sigue siendo la referencia de formas y errores.
+
 Para validar cambios:
 
 ```sh
