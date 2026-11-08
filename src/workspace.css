@@ -23,7 +23,7 @@ button:disabled { cursor: wait; opacity: .6; }
 .access-layout { display: grid; grid-template-columns: .9fr 1.1fr; gap: 100px; align-items: start; }
 .access-story { padding: 8px 0 0; }
 .access-story img { display: block; width: 240px; max-width: 70%; margin: 0 0 30px; }
-.access-story h2 { color: var(--plum); font-size: 2.35rem; max-width: 15ch; }
+.access-story .access-story-title { color: var(--plum); font: 550 2.35rem/1.2 'Fraunces', Georgia, serif; letter-spacing: -.025em; max-width: 15ch; margin: 0 0 16px; }
 .access-story p { color: var(--muted); max-width: 35ch; }
 .access-form { max-width: 500px; }
 .access-form h1 { font-size: 2.45rem; }
