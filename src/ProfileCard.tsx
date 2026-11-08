@@ -4,8 +4,9 @@ import { Feedback } from './components'
 
 export type ImageRef = { id: string; url: string; width: number; height: number; contentType: string }
 export type ProfileImages = { avatar: ImageRef | null; cover: ImageRef | null }
-export function ProfileCard({ name, description, subtitle, avatar, cover, children }: ProfileImages & { name: string; description?: string | null; subtitle?: string; children?: React.ReactNode }) {
-  return <article className="profile-card"><div className="profile-cover">{cover ? <img src={cover.url} alt="Portada del perfil" /> : <span className="cover-mark" aria-hidden="true">hila</span>}</div><div className="profile-body"><div className="profile-avatar">{avatar ? <img src={avatar.url} alt={`Imagen de ${name}`} /> : <span aria-hidden="true">{name.split(' ').filter(Boolean).slice(0, 2).map(part => part[0]).join('')}</span>}</div><div className="profile-identity"><h1>{name}</h1>{subtitle && <p className="profile-subtitle">{subtitle}</p>}</div>{description && <p className="profile-description">{description}</p>}{children}</div></article>
+export function ProfileCard({ name, description, subtitle, avatar, cover, headingLevel = 1, children }: ProfileImages & { name: string; description?: string | null; subtitle?: string; headingLevel?: 1 | 2; children?: React.ReactNode }) {
+  const Heading = headingLevel === 1 ? 'h1' : 'h2'
+  return<article className="profile-card"><div className="profile-cover">{cover ? <img src={cover.url} alt="Portada del perfil" /> : <span className="cover-mark" aria-hidden="true">hila</span>}</div><div className="profile-body"><div className="profile-avatar">{avatar ? <img src={avatar.url} alt={`Imagen de ${name}`} /> : <span aria-hidden="true">{name.split(' ').filter(Boolean).slice(0, 2).map(part => part[0]).join('')}</span>}</div><div className="profile-identity"><Heading>{name}</Heading>{subtitle && <p className="profile-subtitle">{subtitle}</p>}</div>{description && <p className="profile-description">{description}</p>}{children}</div></article>
 }
 
 export function ImageEditor({ base, images, onSaved }: { base: string; images: ProfileImages; onSaved: () => void }) {

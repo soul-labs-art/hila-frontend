@@ -1,5 +1,6 @@
 .workspace-shell { min-height: 100vh; display: flex; flex-direction: column; }
-.workspace-header { width: min(100% - 64px, 1240px); margin: 0 auto; min-height: 102px; display: flex; gap: 36px; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--rule); }
+.workspace-header { width: min(100% - 64px, 1080px); margin: 0 auto; min-height: 102px; display: flex; gap: 36px; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--rule); }
+.workspace-header .brand { margin-left: -20px; }
 .workspace-header nav { display: flex; flex-wrap: wrap; align-items: center; gap: 24px; }
 .workspace-header nav a { color: var(--ink); text-decoration: none; font-size: 14px; font-weight: 600; min-height: 44px; display: inline-flex; align-items: center; }
 .workspace-header nav a.active:not(.action) { color: var(--clay); text-decoration: underline; text-underline-offset: 7px; }
@@ -66,12 +67,12 @@ form > .action { justify-self: start; margin-top: 6px; }
 .profile-card { border-radius: 16px; overflow: hidden; background: #fffaf3; box-shadow: 0 12px 34px rgb(62 38 24 / .08); }
 .profile-cover { aspect-ratio: 3 / 1; background: var(--plum); display: grid; place-items: center; overflow: hidden; }
 .profile-cover > img { height: 100%; width: 100%; object-fit: cover; }
-.cover-mark { font: 550 5rem/1 'Fraunces', serif; color: #bfa99c; opacity: .6; }
+.cover-mark { font: 550 5rem/1 'Fraunces', serif; color: #b8a3a5; }
 .profile-body { padding: 0 32px 34px; }
 .profile-avatar { width: 112px; height: 112px; border: 6px solid #fffaf3; background: #ead6c0; color: var(--clay); position: relative; margin-top: -56px; border-radius: 50%; display: grid; place-items: center; overflow: hidden; font: 550 2.2rem 'Fraunces', serif; }
 .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .profile-identity { margin-top: 18px; }
-.profile-identity h1 { font-size: 2.3rem; margin-bottom: 8px; overflow-wrap: anywhere; }
+.profile-identity :is(h1, h2) { font-size: 2.3rem; margin-bottom: 8px; color: var(--clay); overflow-wrap: anywhere; }
 .profile-subtitle { margin: 0; color: var(--muted); }
 .profile-description, .preserve-lines { white-space: pre-wrap; overflow-wrap: anywhere; }
 .profile-description { margin: 26px 0; }
@@ -106,7 +107,7 @@ form > .action { justify-self: start; margin-top: 6px; }
 .review-history ol, ol.review-history { padding-left: 24px; }
 .review-history time { display: block; font-size: .85rem; color: var(--muted); margin-top: 6px; }
 .pagination { display: flex; gap: 20px; align-items: center; margin-top: 28px; }
-.workspace-footer { width: min(100% - 64px, 1240px); margin: 0 auto; border-top: 1px solid var(--rule); padding: 24px 0; display: flex; gap: 24px; align-items: center; color: var(--muted); font-size: .85rem; }
+.workspace-footer { width: min(100% - 64px, 1080px); margin: 0 auto; border-top: 1px solid var(--rule); padding: 24px 0; display: flex; gap: 24px; align-items: center; color: var(--muted); font-size: .85rem; }
 .workspace-footer a { color: var(--clay); font-weight: 600; }
 .workspace-footer p { margin: 0; }
 @media (max-width: 850px) {
@@ -129,7 +130,7 @@ form > .action { justify-self: start; margin-top: 6px; }
   .account-choices { margin: 36px 0; }
   .profile-body { padding: 0 22px 26px; }
   .profile-avatar { width: 96px; height: 96px; margin-top: -48px; }
-  .profile-identity h1 { font-size: 2rem; }
+  .profile-identity :is(h1, h2) { font-size: 2rem; }
   .profile-facts { gap: 22px; }
   .image-editor, .publication, .review-history { margin-top: 36px; }
   .workspace-footer { width: calc(100% - 36px); align-items: flex-start; flex-direction: column; gap: 8px; }

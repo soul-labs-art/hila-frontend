@@ -1,3 +1,4 @@
+import { usePageTitle } from './page-title'
 import { formValue, nullableValue } from './form-values'
 import { reviewName } from './labels'
 import { useState, type FormEvent } from 'react'
@@ -15,6 +16,7 @@ async function allTerritories() {
   for (let page = 0; ; page++) { const data = await api<Page<Schemas['Territory']>>(`/catalogs/territories?size=100&page=${page}`); items.push(...data.items); if (page + 1 >= data.totalPages) return items }
 }
 export function OrganizationForm({ organization, onSaved }: { organization?: Organization; onSaved?: () => void }) {
+  usePageTitle(organization ? 'Editar organización' : 'Registrar organización')
   const [type, setType] = useState(organization?.organizationType ?? 'FORMAL'), [busy, setBusy] = useState(false), [error, setError] = useState<unknown>()
   const territories = useQuery({ queryKey: ['territories'], queryFn: allTerritories, retry: false })
   const navigate = useNavigate(), client = useQueryClient()
@@ -40,6 +42,7 @@ export function OrganizationForm({ organization, onSaved }: { organization?: Org
   </form></section>
 }
 export function OrganizationDetail() {
+  usePageTitle('Mi organización')
   const { id } = useParams(), session = useSession(), [editing, setEditing] = useState(false)
   const query = useQuery({ queryKey: ['organization', id], queryFn: () => api<Organization>(`/organizations/${id}`), retry: false })
   const members = useQuery({ queryKey: ['memberships', id], queryFn: () => api<Page<Schemas['Membership']>>(`/organizations/${id}/memberships?size=100`), retry: false })
@@ -61,11 +64,13 @@ export function OrganizationDetail() {
 }
 
 export function AdminOrganizations() {
+  usePageTitle('Revisión de organizaciones')
   const [status, setStatus] = useState('PENDING'), [page, setPage] = useState(0)
   const query = useQuery({ queryKey: ['admin-organizations', status, page], queryFn: () => api<OrganizationPage>(`/admin/organizations?status=${status}&page=${page}`), retry: false })
   return <><div className="page-heading"><div><h1>Revisión de organizaciones</h1><p>Acompaña la incorporación de las organizaciones al piloto.</p></div><Select label="Estado" name="status" value={status} onChange={event => { setStatus(event.target.value); setPage(0) }}>{['PENDING', 'APPROVED', 'REJECTED', 'SUSPENDED'].map(value => <option key={value} value={value}>{reviewName(value)}</option>)}</Select></div>{query.isPending ? <p role="status">Consultando solicitudes…</p> : query.error ? <Feedback error={query.error} /> : query.data?.items.length ? <><div className="organization-list">{query.data.items.map(org => <article key={org.id}><h2>{org.name}</h2><p>{org.description}</p><Link className="action" to={`/admin/organizaciones/${org.id}`}>Revisar solicitud</Link></article>)}</div><Pagination page={page} totalPages={query.data.totalPages} setPage={setPage} /></> : <p className="empty-state">No hay organizaciones en este estado.</p>}</>
 }
 export function AdminReview() {
+  usePageTitle('Revisión de organización')
   const { id } = useParams(), client = useQueryClient(), [busy, setBusy] = useState(false), [error, setError] = useState<unknown>(), [notice, setNotice] = useState('')
   const query = useQuery({ queryKey: ['organization', id], queryFn: () => api<Organization>(`/organizations/${id}`), retry: false })
   const history = useQuery({ queryKey: ['organization-history', id], queryFn: () => api<Page<Schemas['OrganizationVerification']>>(`/organizations/${id}/verifications?size=100`), retry: false })

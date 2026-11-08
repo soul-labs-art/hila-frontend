@@ -1,3 +1,4 @@
+import { usePageTitle } from './page-title'
 import { formValue, nullableValue } from './form-values'
 import { modalityName, reviewName } from './labels'
 import { useState, type FormEvent } from 'react'
@@ -9,10 +10,12 @@ import { ImageEditor, ProfileCard, Publication, type Organization, type Voluntee
 import { useSession } from './session-context'
 
 export function Account() {
+  usePageTitle('Mi cuenta')
   const { user } = useSession()
   return <section className="account-welcome"><h1>Qué bueno encontrarte, {user?.displayName}.</h1><p>Este es tu espacio para compartir lo que puedes aportar y acompañar a tus organizaciones.</p><div className="account-choices"><article><h2>Mi perfil voluntario</h2><p>Cuenta quién eres, lo que sabes hacer y cómo te gustaría participar.</p><Link className="action primary" to="/mi-perfil">{user?.volunteerProfileExists ? 'Ver mi perfil' : 'Crear mi perfil'}</Link></article><article><h2>Mis organizaciones</h2><p>Registra una fundación o colectivo y prepara su presentación para el piloto.</p><Link className="action" to="/mis-organizaciones">Ver mis organizaciones</Link></article></div><p className="empty-note">Las convocatorias todavía están en preparación. Puedes avanzar con tu perfil mientras se incorporan organizaciones del territorio.</p></section>
 }
 export function VolunteerPage() {
+  usePageTitle('Mi perfil')
   const session = useSession(), client = useQueryClient(), [editing, setEditing] = useState(false), [busy, setBusy] = useState(false), [error, setError] = useState<unknown>(), [notice, setNotice] = useState('')
   const query = useQuery({ queryKey: ['volunteer'], queryFn: async () => { try { return await api<Volunteer>('/me/volunteer-profile') } catch (error) { if (error instanceof ApiFailure && error.detail.code === 'PROFILE_NOT_FOUND') return null; throw error } }, retry: false })
   const profile = query.data
@@ -34,12 +37,13 @@ export function VolunteerPage() {
       <div className="form-columns"><Field label="Profesión u oficio (opcional)" name="profession" defaultValue={profile?.profession ?? ''} maxLength={140} error={error} /><Field label="Nivel educativo (opcional y privado)" name="educationLevel" defaultValue={profile?.educationLevel ?? ''} maxLength={80} error={error} /></div>
       <Select label="Modalidad preferida" name="preferredModality" defaultValue={profile?.preferredModality ?? ''} error={error}><option value="">Por definir</option><option value="IN_PERSON">Presencial</option><option value="REMOTE">Remoto</option><option value="HYBRID">Híbrido</option></Select>
       <Submit busy={busy}>Guardar perfil</Submit>
-    </form></section> : <div className="profile-layout"><ProfileCard name={session.user!.displayName} description={profile.biography || 'Todavía no has escrito tu presentación.'} subtitle="Persona voluntaria" avatar={profile.avatar} cover={profile.cover}><dl className="profile-facts"><div><dt>Profesión u oficio</dt><dd>{profile.profession || 'Por completar'}</dd></div><div><dt>Modalidad</dt><dd>{modalityName(profile.preferredModality)}</dd></div></dl></ProfileCard><aside className="profile-side"><h2>Lo que compartes</h2><p>Tu nombre, presentación, oficio, modalidad e imágenes se verán si publicas el perfil.</p><p>Tu correo y nivel educativo permanecen privados.</p><span className="status-label">{profile.visibility === 'PUBLIC' ? 'Perfil público' : 'Perfil privado'}</span></aside></div>}
+    </form></section> : <div className="profile-layout"><ProfileCard headingLevel={2} name={session.user!.displayName} description={profile.biography || 'Todavía no has escrito tu presentación.'} subtitle="Persona voluntaria" avatar={profile.avatar} cover={profile.cover}><dl className="profile-facts"><div><dt>Profesión u oficio</dt><dd>{profile.profession || 'Por completar'}</dd></div><div><dt>Modalidad</dt><dd>{modalityName(profile.preferredModality)}</dd></div></dl></ProfileCard><aside className="profile-side"><h2>Lo que compartes</h2><p>Tu nombre, presentación, oficio, modalidad e imágenes se verán si publicas el perfil.</p><p>Tu correo y nivel educativo permanecen privados.</p><span className="status-label">{profile.visibility === 'PUBLIC' ? 'Perfil público' : 'Perfil privado'}</span></aside></div>}
     {profile && !editing && <><ImageEditor base="/me/volunteer-profile" images={profile} onSaved={refresh} /><Publication base="/me/volunteer-profile" visibility={profile.visibility} link={`/voluntarios/${profile.userId}`} onSaved={refresh} /></>}
   </>
 }
 
 export function PublicProfile({ organization = false }: { organization?: boolean }) {
+  usePageTitle(organization ? 'Perfil de organización' : 'Perfil de voluntario')
   const { id } = useParams()
   const query = useQuery<Schemas['PublicOrganization'] | Schemas['PublicVolunteer']>({ queryKey: ['public-profile', organization, id], queryFn: () => organization
     ? api<Schemas['PublicOrganization']>(`/organizations/${id}/public-profile`)
@@ -55,6 +59,7 @@ export function PublicProfile({ organization = false }: { organization?: boolean
 
 export type OrganizationPage = { items: Organization[]; page: number; size: number; totalElements: number; totalPages: number }
 export function OrganizationList() {
+  usePageTitle('Mis organizaciones')
   const [page, setPage] = useState(0)
   const query = useQuery({ queryKey: ['organizations', page], queryFn: () => api<OrganizationPage>(`/me/organizations?page=${page}`), retry: false })
   return <><div className="page-heading"><div><h1>Mis organizaciones</h1><p>Fundaciones y colectivos que acompañas.</p></div><Link className="action primary" to="/organizaciones/nueva">Registrar organización</Link></div>{query.isPending ? <p role="status">Cargando organizaciones…</p> : query.error ? <Feedback error={query.error} /> : query.data?.items.length ? <><div className="organization-list">{query.data.items.map(org => <article key={org.id}><h2><Link to={`/organizaciones/${org.id}/editar`}>{org.name}</Link></h2><p>{org.description}</p><span className="status-label">{reviewName(org.verificationStatus)}</span><Link className="text-link" to={`/organizaciones/${org.id}/editar`}>Abrir organización</Link></article>)}</div><Pagination page={page} totalPages={query.data.totalPages} setPage={setPage} /></> : <section className="empty-state"><h2>Aquí comienza tu organización.</h2><p>Puedes registrar una fundación formal o un colectivo sin NIT. Hila revisará su información antes de habilitar su perfil público.</p></section>}</>
