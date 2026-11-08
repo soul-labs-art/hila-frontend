@@ -1,6 +1,11 @@
+import { Link } from 'react-router-dom'
+import { usePageTitle } from './page-title'
+import { useSession } from './session-context'
 import './App.css'
 
 function Landing() {
+  const { user } = useSession()
+  usePageTitle('Capacidades que se encuentran')
   return (
     <div className="site-shell" id="inicio">
       <a className="skip-link" href="#contenido">
@@ -18,9 +23,9 @@ function Landing() {
           <a href="#organizaciones">Organizaciones</a>
         </nav>
 
-        <a className="header-link" href="/ingresar">
-          Ingresar
-        </a>
+        <Link className="header-link" to={user ? '/mi-cuenta' : '/ingresar'}>
+          {user ? 'Ir a mi cuenta' : 'Ingresar'}
+        </Link>
       </header>
 
       <main id="contenido" tabIndex={-1}>
@@ -35,9 +40,9 @@ function Landing() {
               Hila acerca las capacidades de las personas a necesidades concretas de organizaciones y colectivos comunitarios.
             </p>
             <div className="hero-actions">
-              <a className="button button-primary" href="/registro">
-                Crear mi cuenta
-              </a>
+              <Link className="button button-primary" to={user ? '/mi-cuenta' : '/registro'}>
+                {user ? 'Ir a mi cuenta' : 'Crear mi cuenta'}
+              </Link>
               <a className="hero-text-link" href="#personas">
                 Quiénes participan
               </a>
@@ -105,6 +110,9 @@ function Landing() {
                 Organizaciones formales y colectivos pueden describir lo que necesitan y acompañar cada compromiso hasta su cierre.
               </p>
               <p className="audience-note">Un colectivo puede solicitar revisión sin NIT ni personería jurídica.</p>
+              <Link className="audience-link" to={user ? '/mis-organizaciones' : '/registro'}>
+                {user ? 'Ver mis organizaciones' : 'Crea una cuenta para registrar tu organización'}
+              </Link>
             </div>
           </article>
         </section>
@@ -115,9 +123,14 @@ function Landing() {
               <p className="section-kicker">Hila está preparando su piloto</p>
               <h2 id="pilot-title">Las primeras oportunidades se abrirán con organizaciones del territorio.</h2>
             </div>
-            <p className="pilot-note">
-              Ya puedes crear tu cuenta y preparar tu perfil. Las convocatorias se habilitarán con las primeras organizaciones del territorio.
-            </p>
+            <div className="pilot-aside">
+              <p className="pilot-note">
+                Ya puedes crear tu cuenta y preparar tu perfil. Las convocatorias se habilitarán con las primeras organizaciones del territorio.
+              </p>
+              <Link className="button button-light" to={user ? '/mi-perfil' : '/registro'}>
+                {user ? 'Preparar mi perfil' : 'Crear mi cuenta'}
+              </Link>
+            </div>
           </div>
         </section>
       </main>
