@@ -1,6 +1,7 @@
 import type { components } from './schema'
 
 export type Schemas = components['schemas']
+async function transport(): Promise<typeof fetch> { return import.meta.env.DEV && import.meta.env.VITE_API_MOCK === 'true' ? (await import('./mock')).mockFetch : fetch }
 export class ApiFailure extends Error {
   status: number
   detail: Schemas['ApiError']
@@ -14,7 +15,7 @@ let csrfRequest: Promise<string> | undefined
 export function clearCsrf() { csrf = undefined; csrfRequest = undefined }
 async function csrfToken() {
   if (csrf) return csrf
-  if (!csrfRequest) csrfRequest = fetch('/api/v1/auth/csrf', { credentials: 'include', cache: 'no-store' })
+  if (!csrfRequest) csrfRequest = transport().then(send => send('/api/v1/auth/csrf', { credentials: 'include', cache: 'no-store' }))
     .then(async response => {
       if (!response.ok) throw new Error('No fue posible preparar una conexión segura. Recarga e inténtalo otra vez.')
       const value = await response.json() as Schemas['CsrfToken']
@@ -32,7 +33,7 @@ export async function api<T>(path: string, options: { method?: string; body?: un
   if (!['GET', 'HEAD', 'OPTIONS'].includes(method)) headers.set('X-CSRF-TOKEN', await csrfToken())
   let response: Response
   try {
-    response = await fetch(`/api/v1${path}`, { method, headers, credentials: 'include', cache: 'no-store', signal: options.signal,
+    response = await (await transport())(`/api/v1${path}`, { method, headers, credentials: 'include', cache: 'no-store', signal: options.signal,
       body: options.body === undefined ? undefined : form ? options.body as FormData : JSON.stringify(options.body) })
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') throw error

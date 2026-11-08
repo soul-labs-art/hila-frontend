@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { Link, NavLink, Outlet, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import Landing from './Landing'
 import { CheckEmail, ForgotAccess, Login, Register, ResetAccess, VerifyEmail } from './Access'
@@ -11,6 +11,8 @@ import { usePageTitle } from './page-title'
 import './App.css'
 import './workspace.css'
 
+const MockBanner = import.meta.env.DEV && import.meta.env.VITE_API_MOCK === 'true' ? lazy(() => import('./MockBanner')) : null
+
 function Shell() {
   const session = useSession(), navigate = useNavigate(), location = useLocation(), [error, setError] = useState<unknown>(), [busy, setBusy] = useState(false)
   useEffect(() => { window.scrollTo(0, 0); document.getElementById('workspace-content')?.focus({ preventScroll: true }) }, [location.pathname])
@@ -21,7 +23,7 @@ function NotFound() {
   return <section className="empty-state"><h1>No encontramos esta página.</h1><Link className="action" to="/">Volver al inicio</Link></section>
 }
 export default function App() {
-  return <Routes><Route path="/" element={<Landing />} /><Route element={<Shell />}>
+  return <>{MockBanner && <Suspense fallback={null}><MockBanner /></Suspense>}<Routes><Route path="/" element={<Landing />} /><Route element={<Shell />}>
     <Route path="ingresar" element={<GuestOnly><Login /></GuestOnly>} /><Route path="registro" element={<GuestOnly><Register /></GuestOnly>} />
     <Route path="registro/enviado" element={<CheckEmail />} /><Route path="verificar-correo" element={<VerifyEmail />} />
     <Route path="recuperar-acceso" element={<ForgotAccess />} /><Route path="restablecer-acceso" element={<ResetAccess />} />
@@ -31,5 +33,5 @@ export default function App() {
     <Route path="voluntarios/:id" element={<PublicProfile />} /><Route path="organizaciones/:id" element={<PublicProfile organization />} />
     <Route path="admin/organizaciones" element={<Protected admin><AdminOrganizations /></Protected>} /><Route path="admin/organizaciones/:id" element={<Protected admin><AdminReview /></Protected>} />
     <Route path="*" element={<NotFound />} />
-  </Route></Routes>
+  </Route></Routes></>
 }
