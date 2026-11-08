@@ -1,7 +1,7 @@
-import { Context, useSession, type User, type Session } from './session-context'
+import { Context, safeReturnTo, useSession, type User, type Session } from './session-context'
 import { useEffect, type ReactNode } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { Navigate, useLocation } from 'react-router-dom'
+import { Navigate, useLocation, useSearchParams } from 'react-router-dom'
 import { api, ApiFailure, clearCsrf } from './api/client'
 
 export function SessionProvider({ children }: { children: ReactNode }) {
@@ -27,6 +27,12 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     },
   }
   return <Context.Provider value={value}>{children}</Context.Provider>
+}
+export function GuestOnly({ children }: { children: ReactNode }) {
+  const session = useSession(), [search] = useSearchParams()
+  if (session.loading) return <p role="status">Consultando tu sesión…</p>
+  if (session.user) return <Navigate replace to={safeReturnTo(search.get('returnTo'))} />
+  return children
 }
 export function Protected({ children, admin = false }: { children: ReactNode; admin?: boolean }) {
   const session = useSession(), location = useLocation()

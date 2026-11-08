@@ -25,4 +25,4 @@ export function Password({ label = 'Contraseña', ...props }: FieldProps & Input
   const [visible, setVisible] = useState(false)
   return <div className="password-field"><Field {...props} label={label} type={visible ? 'text' : 'password'} /><button type="button" className="text-button" aria-pressed={visible} onClick={() => setVisible(!visible)}>{visible ? 'Ocultar contraseña' : 'Mostrar contraseña'}</button></div>
 }
-export function Submit({ busy, children }: { busy: boolean; children: ReactNode }) { return <button className="action primary" disabled={busy} type="submit">{busy ? 'Guardando…' : children}</button> }
+export function Submit({ busy, busyLabel = 'Guardando…', disabled = false, children }: { busy: boolean; busyLabel?: string; disabled?: boolean; children: ReactNode }) { return <button className="action primary" disabled={busy || disabled} type="submit">{busy ? busyLabel : children}</button> }
