@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode, type InputHTMLAttributes, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react'
+import { useEffect, useRef, useState, type ChangeEvent, type ReactNode, type InputHTMLAttributes, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react'
 import { ApiFailure } from './api/client'
 
 export function Feedback({ error, success }: { error?: unknown; success?: string }) {
@@ -28,3 +28,9 @@ export function Password({ label = 'Contraseña', toggleName = 'contraseña', fo
   return <Field {...props} label={label} type={visible ? 'text' : 'password'} footer={footer} adornment={<button type="button" className="field-toggle" aria-label={`${action} ${toggleName}`} onClick={() => setVisible(!visible)}>{action}</button>} />
 }
 export function Submit({ busy, busyLabel = 'Guardando…', disabled = false, children }: { busy: boolean; busyLabel?: string; disabled?: boolean; children: ReactNode }) { return <button className="action primary" disabled={busy || disabled} type="submit">{busy ? busyLabel : children}</button> }
+export function StatusBadge({ tone = 'neutral', children }: { tone?: 'ok' | 'wait' | 'no' | 'neutral'; children: ReactNode }) { return <span className={`badge badge-${tone}`}>{children}</span> }
+export function PageHeading({ title, lead, children }: { title: string; lead?: string; children?: ReactNode }) { return <div className="page-heading"><div><h1>{title}</h1>{lead && <p>{lead}</p>}</div>{children}</div> }
+export function Row({ title, badge, action, children }: { title: ReactNode; badge?: ReactNode; action: ReactNode; children?: ReactNode }) { return <li className="row"><div className="row-main">{badge}<h2>{title}</h2>{children && <p>{children}</p>}</div><div className="row-side">{action}</div></li> }
+export function FilePicker({ id, label, file, disabled, accept, onChange }: { id: string; label: string; file?: File; disabled?: boolean; accept: string; onChange: (event: ChangeEvent<HTMLInputElement>) => void }) {
+  return <div className="file-picker"><input id={id} className="file-input" type="file" accept={accept} disabled={disabled} aria-describedby={`${id}-name`} onChange={onChange} /><label className="action" htmlFor={id}>{label}</label><span id={`${id}-name`} className="file-name">{file ? file.name : 'Ningún archivo elegido'}</span></div>
+}

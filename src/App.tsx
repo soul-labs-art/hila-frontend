@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, Route, Routes, useLocation, useNavigate } from '
 import Landing from './Landing'
 import { CheckEmail, ForgotAccess, Login, Register, ResetAccess, VerifyEmail } from './Access'
 import { Account, OrganizationList, PublicProfile, VolunteerPage } from './Profiles'
+import { Privacy } from './Privacy'
 import { AdminOrganizations, AdminReview, OrganizationDetail, OrganizationForm } from './Organizations'
 import { GuestOnly, Protected } from './session'
 import { useSession } from './session-context'
@@ -27,7 +28,7 @@ export default function App() {
     <Route path="ingresar" element={<GuestOnly><Login /></GuestOnly>} /><Route path="registro" element={<GuestOnly><Register /></GuestOnly>} />
     <Route path="registro/enviado" element={<CheckEmail />} /><Route path="verificar-correo" element={<VerifyEmail />} />
     <Route path="recuperar-acceso" element={<ForgotAccess />} /><Route path="restablecer-acceso" element={<ResetAccess />} />
-    <Route path="mi-cuenta" element={<Protected><Account /></Protected>} /><Route path="mi-perfil" element={<Protected><VolunteerPage /></Protected>} />
+    <Route path="mi-cuenta" element={<Protected><Account /></Protected>} /><Route path="mi-cuenta/privacidad" element={<Protected><Privacy /></Protected>} /><Route path="mi-perfil" element={<Protected><VolunteerPage /></Protected>} />
     <Route path="mis-organizaciones" element={<Protected><OrganizationList /></Protected>} /><Route path="organizaciones/nueva" element={<Protected><OrganizationForm /></Protected>} />
     <Route path="organizaciones/:id/editar" element={<Protected><OrganizationDetail /></Protected>} />
     <Route path="voluntarios/:id" element={<PublicProfile />} /><Route path="organizaciones/:id" element={<PublicProfile organization />} />
