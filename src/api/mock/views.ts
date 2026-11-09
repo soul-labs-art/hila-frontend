@@ -1,12 +1,12 @@
 import type { Schemas } from '../client'
 import { Fail, forbidden, notFound } from './errors'
-import { territoryById } from './seed'
 import { db } from './store'
 import type { Account } from './types'
 
+export const territoryById = (id: string | null) => db().territories.find(item => item.id === id) ?? null
 export const toUser = (account: Account): Schemas['CurrentUser'] => ({ id: account.id, email: account.email, displayName: account.displayName, status: 'ACTIVE',
   emailVerifiedAt: account.verifiedAt!, roles: account.roles, volunteerProfileExists: account.profile !== null, createdAt: account.createdAt })
-export function signedIn(): Account | null { const state = db(); return state.accounts.find(item => item.id === state.sessionId && item.verifiedAt) ?? null }
+export function signedIn(): Account | null { const state = db(); return state.accounts.find(item => item.id === state.sessionId && item.verifiedAt && item.status !== 'SUSPENDED') ?? null }
 export function requireUser(): Account {
   const account = signedIn()
   if (!account) throw new Fail(401, 'AUTHENTICATION_REQUIRED', 'Inicia sesión para continuar.')

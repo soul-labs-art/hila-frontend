@@ -2,11 +2,10 @@ import type { Schemas } from '../../client'
 import { badTransition, forbidden, invalid } from '../errors'
 import { receiveImage, slotOf } from '../images'
 import { route } from '../router'
-import { territoryById } from '../seed'
 import { db } from '../store'
 import { noContent, now, ok, paginate, sortNewest, uid } from '../util'
 import { choice, flag, optional, text, validate } from '../validate'
-import { membershipOf, ownedOrganization, readableOrganization, requireUser } from '../views'
+import { membershipOf, ownedOrganization, readableOrganization, requireUser, territoryById } from '../views'
 
 const write = () => ({ name: text(180), organizationType: choice(['FORMAL', 'COLLECTIVE']), legalIdentifier: optional(40), description: text(2000), verificationContext: optional(2000),
   publicEmail: optional(320, { format: 'email' }), publicWebsite: optional(500, { format: 'uri' }), serviceTerritoryId: optional(36, { format: 'uuid' }) })

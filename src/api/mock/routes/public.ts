@@ -1,7 +1,7 @@
 import type { Schemas } from '../../client'
 import { notFound, profileNotFound } from '../errors'
 import { route } from '../router'
-import { policies, territories } from '../seed'
+import { policies } from '../seed'
 import { db } from '../store'
 import { ok, paginate, plain } from '../util'
 import { publicOrganization, publicVolunteer, signedIn } from '../views'
@@ -24,7 +24,7 @@ export const publicRoutes = [
   route('GET', '/catalogs/territories', ({ query }) => {
     const q = plain(query.get('q') ?? ''), parentId = query.get('parentId'), type = query.get('type')
     if (type !== null && !types.includes(type)) return ok(paginate([], query))
-    const items = territories.filter(item => item.active && (!q || plain(item.name).includes(q)) && (!parentId || item.parentId === parentId) && (!type || item.type === type))
+    const items = db().territories.filter(item => item.active && (!q || plain(item.name).includes(q)) && (!parentId || item.parentId === parentId) && (!type || item.type === type))
     return ok(paginate([...items].sort((a, b) => a.name.localeCompare(b.name, 'es')), query) satisfies Schemas['TerritoryPage'])
   }),
   route('GET', '/volunteers/{userId}/public-profile', ({ params }) => {

@@ -4,6 +4,7 @@ import { route } from '../router'
 import { db } from '../store'
 import { now, ok, paginate, sortNewest, uid } from '../util'
 import { choice, text, validate } from '../validate'
+import { audit, notify, teamOf } from '../domain'
 import { findOrganization, requireAdmin } from '../views'
 
 const statuses = ['PENDING', 'APPROVED', 'REJECTED', 'SUSPENDED'] as const
@@ -26,7 +27,8 @@ export const adminRoutes = [
     org.statusReason = data.reason; org.updatedAt = now()
     if (org.verificationStatus !== 'APPROVED') org.visibility = 'PRIVATE'
     const entry: Schemas['OrganizationVerification'] = { id: uid(), organizationId: org.id, reviewedBy: admin.id, decision: data.decision, reason: data.reason, decidedAt: now() }
-    db().verifications.push(entry)
+    db().verifications.push(entry); audit(admin.id, `ORGANIZATION_${data.decision}`, 'ORGANIZATION', org.id)
+    for (const userId of teamOf(org.id)) notify(userId, 'ORGANIZATION_REVIEWED', 'Revisaron tu organización', `${org.name}: ${data.reason}`, 'ORGANIZATION', org.id)
     return ok(entry, 201)
   }),
 ]

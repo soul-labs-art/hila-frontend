@@ -4,9 +4,9 @@ import type { Schemas } from '../client'
 import type { Account, State } from './types'
 
 export const examplePassword = 'ejemplo-hila-2026'
-export const ids = { valentina: 1, camilo: 2, mariana: 3, admin: 4, semillas: 1, huerta: 2, caminoNuevo: 3 }
+export const ids = { valentina: 1, camilo: 2, mariana: 3, admin: 4, hernan: 5, isabel: 6, andres: 7, sebastian: 8, daniela: 9, juan: 10, natalia: 11, semillas: 1, huerta: 2, caminoNuevo: 3, memoria: 4 }
 export const seedId = (group: number, n: number) => `${group.toString(16).padStart(8, '0')}-0000-4000-8000-${n.toString(16).padStart(12, '0')}`
-const accountId = (n: number) => seedId(0xa, n), orgId = (n: number) => seedId(0xb, n), territoryId = (n: number) => seedId(0xc, n)
+export const accountId = (n: number) => seedId(0xa, n), orgId = (n: number) => seedId(0xb, n), territoryId = (n: number) => seedId(0xc, n)
 
 export const policies: Schemas['Policy'][] = [
   { type: 'DATA_PROCESSING', version: 'ejemplo-2026-01', title: 'Política de tratamiento de datos (ejemplo)', publishedAt: '2026-01-15T12:00:00Z',
@@ -26,7 +26,6 @@ const places: [number, string, string, Schemas['Territory']['type'], number | nu
   [18, 'Santo Domingo Savio', 'medellin-santo-domingo-savio', 'NEIGHBORHOOD', 12],
 ]
 export const territories: Schemas['Territory'][] = places.map(([n, name, slug, type, parent]) => ({ id: territoryId(n), slug, name, type, parentId: parent ? territoryId(parent) : null, active: true }))
-export const territoryById = (id: string | null) => territories.find(item => item.id === id) ?? null
 
 function account(n: number, email: string, displayName: string, verified: boolean, roles: Account['roles'], extra: Partial<Account> = {}): Account {
   const createdAt = '2026-07-20T15:00:00Z'
@@ -42,6 +41,15 @@ export function seedState(): State {
     createdAt: '2026-07-22T10:00:00Z', updatedAt: '2026-08-02T09:30:00Z', visibility: 'PUBLIC', ...base } })
   const camilo = account(ids.camilo, 'camilo.zapata@example.test', 'Camilo Zapata Ríos', true, ['USER'])
   const mariana = account(ids.mariana, 'mariana.londono@example.test', 'Mariana Londoño Cardona', false, ['USER'])
+  const person = (n: number, email: string, displayName: string, extra: Partial<Account> = {}) => account(n, email, displayName, true, ['USER'], extra)
+  const profile = (n: number, biography: string, profession: string, educationLevel: string, preferredModality: Schemas['VolunteerProfile']['preferredModality'], visibility: Schemas['VolunteerProfile']['visibility'], emailOpportunityAlerts = false): Schemas['VolunteerProfile'] =>
+    ({ userId: accountId(n), biography, profession, educationLevel, preferredModality, emailOpportunityAlerts, createdAt: '2026-08-05T10:00:00Z', updatedAt: '2026-08-20T10:00:00Z', visibility, ...base })
+  const hernan = person(ids.hernan, 'hernan.cadavid@example.test', 'Hernán Darío Cadavid Pérez'), isabel = person(ids.isabel, 'isabel.mejia@example.test', 'Isabel Cristina Mejía Uribe'), andres = person(ids.andres, 'andres.gaviria@example.test', 'Andrés Felipe Gaviria Henao')
+  const sebastian = person(ids.sebastian, 'sebastian.villa@example.test', 'Sebastián Villa Montoya', { profile: profile(ids.sebastian, 'Diseñador gráfico y fotógrafo aficionado de Bello. Me interesa documentar la memoria de los barrios.', 'Diseñador gráfico', 'Profesional universitario', 'HYBRID', 'PUBLIC') })
+  const daniela = person(ids.daniela, 'daniela.osorio@example.test', 'Daniela Osorio Ceballos', { profile: profile(ids.daniela, 'Enfermera y cocinera de olla comunitaria. Disfruto acompañar a personas mayores y cocinar para grupos grandes.', 'Enfermera', 'Técnica profesional', 'IN_PERSON', 'PRIVATE', true),
+    consents: [{ type: 'DATA_PROCESSING', version: policies[0].version, acceptedAt: '2026-07-20T15:00:00Z', revokedAt: null }, { type: 'OPPORTUNITY_ALERTS', version: policies[1].version, acceptedAt: '2026-08-05T10:00:00Z', revokedAt: null }], alerts: { enabled: true, policyVersion: policies[1].version, updatedAt: '2026-08-05T10:00:00Z' } })
+  const juan = person(ids.juan, 'juan.arango@example.test', 'Juan Esteban Arango Vélez', { profile: profile(ids.juan, 'Desarrollador web en Itagüí. Quiero ayudar a organizaciones pequeñas con su presencia digital y a enseñar lo básico de computador.', 'Desarrollador web', 'Tecnólogo', 'REMOTE', 'PUBLIC') })
+  const natalia = person(ids.natalia, 'natalia.agudelo@example.test', 'Natalia Agudelo Mesa', { status: 'SUSPENDED' })
   const admin = account(ids.admin, 'admin.hila@example.test', 'Equipo de revisión Hila (ejemplo)', true, ['USER', 'ADMIN'])
   const org = (n: number, owner: number, rest: Omit<Schemas['Organization'], 'id' | 'createdBy' | 'avatar' | 'cover'>): Schemas['Organization'] => ({ id: orgId(n), createdBy: accountId(owner), ...base, ...rest })
   const organizations = [
@@ -55,13 +63,18 @@ export function seedState(): State {
       description: 'Ofrecemos apoyo escolar y espacios de recreación para niñas y niños de barrios de Itagüí.', publicEmail: null, publicWebsite: null,
       serviceTerritoryId: territoryId(5), verificationStatus: 'REJECTED', statusReason: 'No pudimos validar el identificador legal con la información enviada. Puedes reenviar la solicitud con datos complementarios.',
       createdAt: '2026-09-05T08:00:00Z', updatedAt: '2026-09-12T10:00:00Z', visibility: 'PRIVATE' }),
+    org(ids.memoria, ids.hernan, { name: 'Corporación Memoria Viva Manrique', organizationType: 'FORMAL', legalIdentifier: '900000003-3', verificationContext: 'Archivo fotográfico barrial y talleres de memoria con personas mayores de la Comuna 3 desde 2016.',
+      description: 'Recogemos relatos, fotografías y objetos del barrio con vecinas y vecinos mayores de Manrique, y los devolvemos en talleres y exposiciones abiertas.', publicEmail: 'memoria@example.test', publicWebsite: 'https://memoriaviva.example.test',
+      serviceTerritoryId: territoryId(13), verificationStatus: 'APPROVED', statusReason: 'Documentos y trayectoria verificados.', createdAt: '2026-08-12T09:00:00Z', updatedAt: '2026-08-20T11:00:00Z', visibility: 'PUBLIC' }),
   ]
-  const membership = (n: number, owner: Account): Schemas['Membership'] => ({ organizationId: orgId(n), userId: owner.id, displayName: owner.displayName, role: 'ORG_OWNER', status: 'ACTIVE', createdAt: organizations.find(item => item.id === orgId(n))!.createdAt })
+  const membership = (n: number, owner: Account, role: Schemas['Membership']['role'] = 'ORG_OWNER'): Schemas['Membership'] => ({ organizationId: orgId(n), userId: owner.id, displayName: owner.displayName, role, status: 'ACTIVE', createdAt: organizations.find(item => item.id === orgId(n))!.createdAt })
   const step = (key: number, n: number, decision: Schemas['OrganizationVerification']['decision'], decidedAt: string, reason: string | null): Schemas['OrganizationVerification'] =>
     ({ id: seedId(0xd, key), organizationId: orgId(n), reviewedBy: decision === 'SUBMITTED' ? null : accountId(ids.admin), decision, reason, decidedAt })
-  return { version: 1, sessionId: null, accounts: [valentina, camilo, mariana, admin], organizations, tokens: [],
-    memberships: [membership(ids.semillas, valentina), membership(ids.huerta, camilo), membership(ids.caminoNuevo, camilo)],
+  return { version: 2, sessionId: null, accounts: [valentina, camilo, mariana, admin, hernan, isabel, andres, sebastian, daniela, juan, natalia], organizations, tokens: [],
+    skills: [], resources: [], territories: territories.map(item => ({ ...item })), causes: [], needs: [], applications: [], participations: [], evidence: [], feedback: [], notifications: [], audit: [],
+    memberships: [membership(ids.semillas, valentina), membership(ids.huerta, camilo), membership(ids.caminoNuevo, camilo), membership(ids.memoria, hernan), membership(ids.memoria, isabel, 'ORG_COORDINATOR'), membership(ids.semillas, andres, 'ORG_COORDINATOR')],
     verifications: [step(1, ids.semillas, 'SUBMITTED', '2026-07-25T14:00:00Z', null), step(2, ids.semillas, 'APPROVED', '2026-08-10T16:00:00Z', 'Documentos y trayectoria verificados.'),
       step(3, ids.huerta, 'SUBMITTED', '2026-10-20T11:00:00Z', null),
-      step(4, ids.caminoNuevo, 'SUBMITTED', '2026-09-05T08:00:00Z', null), step(5, ids.caminoNuevo, 'REJECTED', '2026-09-12T10:00:00Z', organizations[2].statusReason)] }
+      step(4, ids.caminoNuevo, 'SUBMITTED', '2026-09-05T08:00:00Z', null), step(5, ids.caminoNuevo, 'REJECTED', '2026-09-12T10:00:00Z', organizations[2].statusReason),
+      step(6, ids.memoria, 'SUBMITTED', '2026-08-12T09:00:00Z', null), step(7, ids.memoria, 'APPROVED', '2026-08-20T11:00:00Z', 'Documentos y trayectoria verificados.')] }
 }

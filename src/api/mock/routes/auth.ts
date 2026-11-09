@@ -55,6 +55,7 @@ export const authRoutes = [
     const account = findByEmail(data.email)
     if (!account || account.password !== data.password) throw new Fail(401, 'INVALID_CREDENTIALS', 'El correo o la contraseña no coinciden. Revísalos e inténtalo de nuevo.')
     if (!account.verifiedAt) throw new Fail(403, 'EMAIL_NOT_VERIFIED', 'Aún no verificaste tu correo. Revisa tu bandeja o solicita otro enlace.')
+    if (account.status === 'SUSPENDED') throw new Fail(403, 'ACCOUNT_SUSPENDED', 'Tu cuenta está suspendida. Escríbenos si crees que se trata de un error.')
     db().sessionId = account.id
     return ok(toUser(account))
   }),
