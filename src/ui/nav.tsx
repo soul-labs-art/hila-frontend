@@ -2,9 +2,10 @@ import { Fragment, useRef, useState, type KeyboardEvent, type ReactNode } from '
 import { Link } from 'react-router-dom'
 import { Icon } from '../icons'
 
-/** Indicador de pasos. `current` es el índice (desde 0) del paso activo. */
-export function Stepper({ steps, current, label = 'Progreso del perfil' }: { steps: string[]; current: number; label?: string }) {
-  return <nav className="stepper" aria-label={label}><ol>{steps.map((step, index) => <li key={step} className={index < current ? 'done' : index === current ? 'current' : ''} aria-current={index === current ? 'step' : undefined}><span className="step-dot" aria-hidden="true">{index < current ? <Icon name="check" size={14} /> : index + 1}</span><span>{step}{index < current && <span className="sr-only"> (completado)</span>}</span></li>)}</ol></nav>
+/** Indicador de pasos. `current` es el índice (desde 0) del paso activo. Con `onStep` cada paso es un botón para ir directo a él. */
+export function Stepper({ steps, current, label = 'Progreso del perfil', onStep }: { steps: string[]; current: number; label?: string; onStep?: (index: number) => void }) {
+  return <nav className="stepper" aria-label={label}><ol>{steps.map((step, index) => { const body = <><span className="step-dot" aria-hidden="true">{index < current ? <Icon name="check" size={14} /> : index + 1}</span><span>{step}{index < current && <span className="sr-only"> (completado)</span>}</span></>
+    return <li key={step} className={index < current ? 'done' : index === current ? 'current' : ''}>{onStep ? <button type="button" className="step-button" aria-current={index === current ? 'step' : undefined} onClick={() => onStep(index)}>{body}</button> : <span className="step-body" aria-current={index === current ? 'step' : undefined}>{body}</span>}</li> })}</ol></nav>
 }
 
 export type TabItem = { id: string; label: string; panel: ReactNode; badge?: ReactNode }

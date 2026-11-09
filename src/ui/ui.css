@@ -84,6 +84,10 @@
 /* Pasos, pestañas y migas */
 .stepper ol { list-style: none; margin: 0 0 28px; padding: 0; display: flex; position: relative; }
 .stepper li { position: relative; flex: 1; display: grid; justify-items: center; gap: 6px; font-size: .85rem; font-weight: 600; color: var(--muted); text-align: center; }
+.step-button, .step-body { display: grid; justify-items: center; align-content: start; gap: 6px; min-width: 0; padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: center; }
+.step-button { cursor: pointer; min-height: 44px; width: 100%; }
+.step-button:hover .step-dot { border-color: var(--clay); }
+.step-button:focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; box-shadow: 0 0 0 2px var(--ink); border-radius: 8px; }
 .stepper li::before { content: ''; position: absolute; top: 13px; right: 50%; width: 100%; height: 2px; background: #c9b6a1; }
 .stepper li:first-child::before { display: none; }
 .stepper li.done::before, .stepper li.current::before { background: var(--clay); }

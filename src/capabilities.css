@@ -1,0 +1,37 @@
+/* Capacidades del perfil: habilidades, recursos, disponibilidad, territorio y modalidad. */
+.step-panel { outline: none; }
+.capacity-stack { display: grid; gap: 20px; }
+.capacity-card { max-width: 760px; }
+.capacity-card > h2 { margin-bottom: 6px; }
+.capacity-card > p.panel-lead { margin: 0 0 20px; color: var(--muted); }
+.capacity-body { display: grid; gap: 20px; }
+.loading-state { margin: 0; padding: 18px 0; color: var(--muted); }
+.chip-sections { display: grid; gap: 20px; }
+.chip-section legend { font-size: .92rem; font-weight: 700; color: var(--muted); letter-spacing: .01em; }
+.capacity-count { margin: 0; color: var(--muted); font-size: .92rem; }
+.level-list { display: grid; gap: 12px; padding-top: 18px; border-top: 1px solid var(--hairline); }
+.level-list h3 { margin: 0; font: 550 1.15rem 'Fraunces', Georgia, serif; }
+.capacity-note { margin: -6px 0 0; color: var(--muted); font-size: .92rem; }
+.level-row { margin: 0; min-width: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding: 12px 16px 16px; border: 1px solid var(--hairline); border-radius: 12px; background: rgb(255 250 243 / .6); }
+.level-row legend { padding: 0 6px; font-weight: 700; }
+.level-row.is-single { grid-template-columns: 1fr; }
+.week { display: grid; gap: 12px; }
+.day-row { margin: 0; min-width: 0; display: grid; gap: 12px; padding: 10px 16px 14px; border: 1px solid var(--hairline); border-radius: 12px; background: rgb(255 250 243 / .6); }
+.day-row legend { padding: 0 6px; font-weight: 700; }
+.day-empty { margin: 0; color: var(--muted); font-size: .92rem; }
+.slot { display: grid; gap: 6px; }
+.slot-fields { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 48px; gap: 12px; align-items: start; }
+.icon-button { margin-top: 30px; width: 48px; height: 52px; display: grid; place-items: center; border: 1.5px solid var(--control-line); border-radius: 12px; background: var(--paper); color: var(--clay); cursor: pointer; }
+.icon-button:hover { background: var(--soft-clay); border-color: var(--clay); }
+.add-slot { justify-self: start; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+.add-slot:hover { text-decoration: underline; text-underline-offset: 4px; }
+.slot .field-error { font-size: .86rem; color: #8a2a1f; font-weight: 600; }
+.step-footer { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; max-width: 760px; margin-top: 4px; }
+@media (max-width: 620px) {
+  .level-row { grid-template-columns: 1fr; }
+  .capacity-card { padding: 18px; }
+  .slot-fields { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 44px; gap: 8px; }
+  .icon-button { width: 44px; }
+  .step-footer .action { flex: 1 1 100%; }
+}
+.stepper { max-width: 760px; }

@@ -1,8 +1,8 @@
 import { usePageTitle } from './page-title'
 import { formValue, nullableValue } from './form-values'
 import { modalityName, reviewName, reviewTone } from './labels'
-import { useState, type FormEvent } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { lazy, Suspense, useState, type FormEvent } from 'react'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { api, ApiFailure, type Schemas } from './api/client'
 import { Field, Select, TextArea, Feedback, PageHeading, Row, StatusBadge, Submit } from './components'
@@ -11,8 +11,10 @@ import { ImageEditor, ProfileCard, Publication, VisibilityBadge, type Organizati
 import { photoFor } from './cover-photo'
 import { Avatar, Card, DefinitionList, EmptyState, Icon, Notice, Stepper, type IconName } from './ui'
 import { useSession } from './session-context'
-import { loadVolunteer } from './volunteer'
+import { loadVolunteer, profileSteps } from './volunteer'
 
+// Los pasos de capacidades solo existen en desarrollo con datos de ejemplo; el build de producción descarta el módulo.
+const CapabilityStep = import.meta.env.DEV && import.meta.env.VITE_API_MOCK === 'true' ? lazy(() => import('./Capabilities').then(module => ({ default: module.CapabilityStep }))) : null
 export function Account() {
   usePageTitle('Mi cuenta')
   const { user } = useSession()
@@ -29,8 +31,9 @@ function FeatureCard({ icon, title, badge, action, children }: { icon: IconName;
 export function VolunteerPage() {
   usePageTitle('Mi perfil')
   const session = useSession(), client = useQueryClient(), [editing, setEditing] = useState(false), [busy, setBusy] = useState(false), [error, setError] = useState<unknown>(), [notice, setNotice] = useState('')
-  const query = useQuery({ queryKey: ['volunteer'], queryFn: loadVolunteer, retry: false })
-  const profile = query.data
+  const query = useQuery({ queryKey: ['volunteer'], queryFn: loadVolunteer, retry: false }), [params, setParams] = useSearchParams()
+  const profile = query.data, wizard = features.capabilities && !!profile, slugs = ['datos', 'capacidades', 'disponibilidad'], step = wizard ? Math.max(0, slugs.indexOf(params.get('paso') ?? '')) : 0
+  function go(next: number) { setParams(next ? { paso: slugs[next] } : {}); setEditing(false); setError(undefined); setNotice(''); requestAnimationFrame(() => document.getElementById('step-panel')?.focus()) }
   const refresh = () => { void client.invalidateQueries({ queryKey: ['volunteer'] }); void session.refresh() }
   async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); const data = new FormData(event.currentTarget); setBusy(true); setError(undefined); setNotice('')
@@ -42,15 +45,19 @@ export function VolunteerPage() {
   }
   if (query.isPending) return <p className="loading-state" role="status">Cargando tu perfil…</p>
   if (query.error) return <><Feedback error={query.error} /><button className="action" onClick={() => void query.refetch()}>Volver a intentar</button></>
-  return <><PageHeading title="Mi perfil voluntario" lead="Tu forma de presentarte a la red.">{profile && <button className="action" onClick={() => { setEditing(!editing); setError(undefined) }}>{editing ? 'Volver al perfil' : 'Editar perfil'}</button>}</PageHeading>{features.capabilities && <Stepper steps={['Datos', 'Capacidades', 'Disponibilidad']} current={0} />}<Feedback error={error} success={notice} />
-    {(!profile || editing) ? <Card as="section" className="edit-panel"><h2>{profile ? 'Editar mi información' : 'Cuéntanos sobre ti'}</h2><p className="panel-lead">Tu perfil empieza privado. Podrás revisar su presentación antes de publicarlo.</p><form onSubmit={event => void save(event)}>
+  return <><PageHeading title="Mi perfil voluntario" lead={features.capabilities ? 'Cuéntanos sobre ti para encontrar oportunidades que se ajusten a tus intereses y disponibilidad.' : 'Tu forma de presentarte a la red.'}>{profile && step === 0 && <button className="action" onClick={() => { setEditing(!editing); setError(undefined) }}>{editing ? 'Volver al perfil' : 'Editar perfil'}</button>}</PageHeading>{features.capabilities && <Stepper steps={profileSteps} current={step} onStep={profile ? go : undefined} />}<Feedback error={error} success={notice} />
+    <div id="step-panel" className="step-panel" tabIndex={-1} role="group" aria-label={wizard ? `Paso ${step + 1} de ${profileSteps.length}: ${profileSteps[step]}` : undefined}>
+    {CapabilityStep && step > 0 && profile && <Suspense fallback={<p className="loading-state" role="status">Cargando…</p>}><CapabilityStep step={step} profile={profile} onStep={go} onSaved={refresh} /></Suspense>}
+    {step === 0 && <>{(!profile || editing) ? <Card as="section" className="edit-panel"><h2>{profile ? 'Editar mi información' : 'Cuéntanos sobre ti'}</h2><p className="panel-lead">Tu perfil empieza privado. Podrás revisar su presentación antes de publicarlo.</p><form onSubmit={event => void save(event)}>
       <Field label="Tu nombre" name="displayName" defaultValue={session.user?.displayName} required maxLength={140} error={error} autoComplete="name" />
       <TextArea label="Presentación" name="biography" defaultValue={profile?.biography ?? ''} maxLength={1200} rows={5} hint="Qué te mueve y qué te gustaría aportar. Hasta 1200 caracteres." error={error} />
       <div className="form-columns"><Field label="Profesión u oficio (opcional)" name="profession" defaultValue={profile?.profession ?? ''} maxLength={140} error={error} /><Field label="Nivel educativo (opcional y privado)" name="educationLevel" defaultValue={profile?.educationLevel ?? ''} maxLength={80} error={error} /></div>
       <Select label="Modalidad preferida" name="preferredModality" defaultValue={profile?.preferredModality ?? ''} error={error}><option value="">Por definir</option><option value="IN_PERSON">Presencial</option><option value="REMOTE">Remoto</option><option value="HYBRID">Híbrido</option></Select>
       <div className="form-actions"><Submit busy={busy}>Guardar perfil</Submit></div>
     </form></Card> : <div className="profile-layout"><ProfileCard headingLevel={2} name={session.user!.displayName} description={profile.biography || 'Todavía no has escrito tu presentación.'} subtitle="Persona voluntaria" avatar={profile.avatar} cover={profile.cover}><DefinitionList items={[{ icon: 'tag', term: 'Profesión u oficio', children: profile.profession || 'Por completar' }, { icon: 'pin', term: 'Modalidad', children: modalityName(profile.preferredModality) }]} /></ProfileCard><Card as="aside" tone="soft" className="profile-side"><h2>Lo que compartes</h2><p>Tu nombre, presentación, oficio, modalidad e imágenes se verán si publicas el perfil.</p><p>Tu correo y nivel educativo permanecen privados.</p><div><VisibilityBadge visibility={profile.visibility} /></div></Card></div>}
-    {profile && !editing && <><ImageEditor base="/me/volunteer-profile" images={profile} onSaved={refresh} /><Publication base="/me/volunteer-profile" visibility={profile.visibility} link={`/voluntarios/${profile.userId}`} onSaved={refresh} /></>}
+    {profile && !editing && <><ImageEditor base="/me/volunteer-profile" images={profile} onSaved={refresh} /><Publication base="/me/volunteer-profile" visibility={profile.visibility} link={`/voluntarios/${profile.userId}`} onSaved={refresh} /></>}</>}
+    {step === 0 && wizard && !editing && <div className="step-footer"><span /><button type="button" className="action" onClick={() => go(1)}>{profileSteps[1]}<Icon name="arrowRight" size={20} /></button></div>}
+    </div>
   </>
 }
 

@@ -15,6 +15,9 @@ import './ui/ui.css'
 
 const MockBanner = import.meta.env.DEV && import.meta.env.VITE_API_MOCK === 'true' ? lazy(() => import('./MockBanner')) : null
 const Gallery = import.meta.env.DEV && import.meta.env.VITE_API_MOCK === 'true' ? lazy(() => import('./ui/Gallery')) : null
+const planned = import.meta.env.DEV && import.meta.env.VITE_API_MOCK === 'true'
+const Explore = planned ? lazy(() => import('./Explore').then(module => ({ default: module.Explore }))) : null
+const NeedDetail = planned ? lazy(() => import('./Explore').then(module => ({ default: module.NeedDetail }))) : null
 
 function NotFound() {
   usePageTitle('Página no encontrada')
@@ -30,6 +33,7 @@ export default function App() {
     <Route path="organizaciones/:id/editar" element={<Protected><OrganizationDetail /></Protected>} />
     <Route path="voluntarios/:id" element={<PublicProfile />} /><Route path="organizaciones/:id" element={<PublicProfile organization />} />
     <Route path="admin/organizaciones" element={<Protected admin><AdminOrganizations /></Protected>} /><Route path="admin/organizaciones/:id" element={<Protected admin><AdminReview /></Protected>} />
+    {Explore && NeedDetail && <><Route path="explorar" element={<Protected><Suspense fallback={null}><Explore /></Suspense></Protected>} /><Route path="explorar/:needId" element={<Protected><Suspense fallback={null}><NeedDetail /></Suspense></Protected>} /></>}
     {Gallery && <Route path="guia-ui" element={<Suspense fallback={null}><Gallery /></Suspense>} />}
     <Route path="*" element={<NotFound />} />
   </Route></Routes></>
