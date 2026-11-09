@@ -259,7 +259,7 @@
   right: 12%;
   left: 8%;
   height: 1px;
-  background: #d8c5ae;
+  background: var(--rule);
   content: '';
 }
 
@@ -310,7 +310,7 @@
   display: grid;
   grid-template-columns: minmax(230px, 0.9fr) minmax(0, 1.1fr);
   gap: clamp(36px, 9vw, 128px);
-  border-top: 1px solid #d7c5b0;
+  border-top: 1px solid var(--rule);
   scroll-margin-top: 24px;
 }
 
@@ -362,11 +362,42 @@
   font-size: clamp(35px, 4vw, 48px);
 }
 
+.pilot-aside {
+  display: grid;
+  justify-items: start;
+  gap: 24px;
+}
+
 .pilot-note {
   margin: 0;
   color: #f1e5d9;
   font-size: 15px;
   line-height: 1.75;
+}
+
+.button-light {
+  color: var(--plum);
+  background: var(--linen);
+}
+
+.button-light:hover {
+  color: var(--ink);
+  background: var(--sun);
+}
+
+.pilot-section a:focus-visible {
+  outline-color: var(--linen);
+}
+
+.audience-link {
+  min-height: 44px;
+  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  color: var(--clay);
+  font-size: 14px;
+  font-weight: 600;
+  text-underline-offset: 5px;
 }
 
 .site-footer {
@@ -439,7 +470,7 @@
     min-height: 47px;
     justify-content: space-between;
     gap: 8px;
-    border-top: 1px solid #d7c5b0;
+    border-top: 1px solid var(--rule);
   }
 
   .main-nav a {

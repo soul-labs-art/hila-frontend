@@ -1,0 +1,53 @@
+/* Postulaciones de la organización: lista y detalle. Reutiliza .need-row, .act-pill, .badge y .dialog. */
+.board-head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 16px 24px; }
+.workspace-content .board-head h1, .workspace-content .closure-head h1 { margin: 0; }
+.board-need { margin: 6px 0 0; font: 550 1.45rem/1.25 'Fraunces', Georgia, serif; color: var(--ink); overflow-wrap: anywhere; }
+.workspace-content .board-need a { color: inherit; text-decoration: none; }
+.workspace-content .board-need a:hover { text-decoration: underline; text-underline-offset: 4px; }
+.card.slots-card { display: flex; align-items: center; gap: 16px; padding: 16px 22px; }
+.slots-card > svg { color: var(--clay); }
+.slots-card p { margin: 0; display: grid; gap: 2px; }
+.slots-card strong { font-size: 1.05rem; }
+.slots-card span { color: var(--muted); font-size: .93rem; }
+.board { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 28px; align-items: start; }
+.board-list { display: grid; gap: 14px; align-content: start; min-width: 0; }
+.workspace-content .board-list h2 { margin: 0; font: 550 1.35rem/1.25 'Fraunces', Georgia, serif; outline: none; }
+.board-filters legend { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.app-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.card.app-row { display: flex; align-items: center; gap: 14px; min-height: 76px; padding: 14px 16px; color: var(--ink); text-decoration: none; transition: background var(--ease), border-color var(--ease); }
+a.card.app-row:hover { border-color: var(--clay); }
+a.card.app-row.is-selected { background: var(--soft-clay); border-color: var(--clay); }
+a.card.app-row:focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; box-shadow: 0 0 0 2px var(--ink); }
+.app-row-main { flex: 1; min-width: 0; display: grid; gap: 6px; justify-items: start; }
+.app-row-main strong { font-size: 1.08rem; overflow-wrap: anywhere; }
+.app-row > svg:last-child { color: var(--clay); }
+.card.app-row.skeleton { pointer-events: none; }
+.card.detail-card { display: grid; gap: 20px; align-content: start; padding: 24px; }
+.workspace-content .detail-card h2 { margin: 0; font: 550 1.35rem/1.25 'Fraunces', Georgia, serif; outline: none; }
+.detail-card > section { display: grid; gap: 8px; padding-top: 18px; border-top: 1px solid var(--hairline); min-width: 0; }
+.workspace-content .detail-card section h3 { margin: 0; font: 700 1.02rem/1.3 'DM Sans', sans-serif; letter-spacing: 0; }
+.detail-card p { margin: 0; overflow-wrap: anywhere; }
+.person-head { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 14px; }
+.person-head > div { flex: 1; min-width: 0; }
+.workspace-content .person-head h3 { margin: 0; font: 550 1.4rem/1.2 'Fraunces', Georgia, serif; overflow-wrap: anywhere; }
+.person-head p { color: var(--muted); font-size: .93rem; }
+.detail-card .def-list { margin-top: 4px; }
+.fit-skills { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.fit-skills li { display: flex; gap: 8px; align-items: flex-start; }
+.fit-skills li svg { margin-top: 3px; }
+.fit-skills .has svg { color: var(--ok-ink); }
+.fit-skills .lacks svg { color: var(--no-ink); }
+.about-bio { margin-top: 6px; }
+.decision { display: grid; gap: 12px; }
+.decision .action { min-height: 52px; }
+.decision .act-buttons .action { flex: 1 1 160px; }
+button.back-link { padding: 0; border: 0; background: none; font-family: inherit; cursor: pointer; justify-self: start; }
+.heading-side { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.row-sublink { justify-self: start; min-height: 44px; display: inline-flex; align-items: center; gap: 6px; color: var(--clay); font-weight: 600; font-size: .92rem; text-underline-offset: 4px; }
+.workspace-content .need-row-main .row-sublink { color: var(--clay); }
+@media (max-width: 959px) { .card.detail-card { padding: 18px; } .board-head .slots-card { width: 100%; } }
+@media (prefers-reduced-motion: reduce) { .card.app-row { transition: none; } }
+.workspace-content a.card.app-row:not(.action):not(.back-link):not(.row-link) { color: var(--ink); }
+.detail-card .def-list > div { grid-template-columns: 26px minmax(0, 1fr); }
+.detail-card .def-list dd { grid-column: 2; }
+.detail-card .def-list dt { font-size: .93rem; }

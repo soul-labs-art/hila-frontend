@@ -5,6 +5,7 @@ Describe la pantalla, interacción o corrección y el motivo.
 ## Cómo se verificó
 
 - [ ] Ejecuté `npm run lint`.
+- [ ] Ejecuté `npm run api:check` (CI lo ejecuta).
 - [ ] Ejecuté `npm run build`.
 - [ ] Revisé teclado, foco, contraste y adaptación móvil en las vistas afectadas.
 

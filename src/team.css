@@ -1,0 +1,37 @@
+/* Equipo de la organización. Reutiliza .work, .dialog, .data-table y .notice. */
+.team-card { padding: 0; }
+.team-table { min-width: 0; }
+.team-table th:first-child { border-top-left-radius: calc(var(--radius-card) - 1px); }
+.team-table th:last-child { border-top-right-radius: calc(var(--radius-card) - 1px); }
+.team-table td { padding: 16px 18px; }
+.team-table .col-actions { width: 72px; text-align: right; }
+.team-table tr.is-revoked .person-text strong { color: var(--muted); }
+.person { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.person-text { display: grid; gap: 2px; min-width: 0; }
+.person-text strong { font: 600 1.08rem/1.25 'Fraunces', Georgia, serif; overflow-wrap: anywhere; }
+.person-text small { color: var(--muted); font-size: .88rem; overflow-wrap: anywhere; }
+.you { font: 500 .9rem 'DM Sans', sans-serif; color: var(--muted); }
+.status-inline { display: none; margin-top: 4px; }
+.role-pill { display: inline-block; padding: 5px 14px; border-radius: 999px; font-size: .88rem; font-weight: 600; line-height: 1.3; }
+.role-owner { background: #dfe6d6; color: #2f4a2b; }
+.role-coordinator { background: var(--soft-clay); color: var(--clay-deep); }
+.role-pill.is-muted { background: var(--neutral-bg); color: var(--neutral-ink); }
+.roles-card { display: grid; gap: 12px; }
+.workspace-content .roles-card h2 { margin: 0; font-size: 1.25rem; }
+.roles-card dl { margin: 0; display: grid; gap: 14px; }
+.roles-card dl > div { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 6px 16px; align-items: start; }
+.roles-card dt { padding-top: 2px; }
+.roles-card dd { margin: 0; color: var(--muted); line-height: 1.55; }
+.team .notice { margin: 0; }
+@media (max-width: 640px) {
+  .team-table .col-status { display: none; }
+  .status-inline { display: block; }
+  .team-table td { padding: 14px 12px; }
+  .team-table th { padding: 12px; }
+  .person { gap: 10px; }
+  .team-table .avatar-md, .users-table .avatar-md { width: 36px; height: 36px; font-size: .82rem; }
+  .person-text strong { font-size: 1rem; }
+  .role-pill { padding: 4px 10px; font-size: .82rem; }
+  .roles-card dl > div { grid-template-columns: minmax(0, 1fr); }
+  .team .page-heading > .action { width: 100%; }
+}

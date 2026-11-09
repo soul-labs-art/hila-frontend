@@ -1,0 +1,10 @@
+/* Menú de acciones por fila (botón ⋮). */
+.action-menu { position: relative; display: inline-block; }
+.action-menu-button { width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid transparent; border-radius: 12px; background: transparent; color: var(--ink); cursor: pointer; transition: background var(--ease), border-color var(--ease); }
+.action-menu-button:hover, .action-menu-button[aria-expanded=true] { background: var(--soft-clay); border-color: var(--hairline); }
+.action-menu-panel { position: absolute; z-index: 40; top: calc(100% + 4px); right: 0; min-width: 240px; max-width: calc(100vw - 32px); margin: 0; padding: 6px; list-style: none; border: 1px solid var(--hairline); border-radius: 14px; background: var(--paper); box-shadow: var(--shadow-lift); }
+.action-menu-panel button { width: 100%; min-height: 46px; display: flex; align-items: center; gap: 12px; padding: 8px 12px; border: 0; border-radius: 10px; background: transparent; color: var(--ink); font: 500 .97rem 'DM Sans', sans-serif; text-align: left; cursor: pointer; }
+.action-menu-panel button svg { color: var(--clay); }
+.action-menu-panel button:hover, .action-menu-panel button:focus-visible { background: var(--soft-clay); }
+.action-menu-panel button.is-danger, .action-menu-panel button.is-danger svg { color: var(--no-ink); }
+.action-menu-panel button.is-danger:hover, .action-menu-panel button.is-danger:focus-visible { background: var(--no-bg); }

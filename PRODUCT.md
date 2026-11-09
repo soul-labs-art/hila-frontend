@@ -16,7 +16,7 @@ Articular capacidades ciudadanas con necesidades concretas de organizaciones en 
 
 ## Capabilities and Constraints
 
-Una cuenta personal puede tener perfil voluntario y representar organizaciones. La entrega actual cubre registro, correo verificado, sesión, recuperación, perfiles básicos, imágenes, publicación voluntaria y revisión de organizaciones. Las oportunidades y postulaciones se implementan después.
+Una cuenta personal puede tener perfil voluntario y representar organizaciones. La entrega actual cubre registro, correo verificado, sesión, recuperación, perfiles básicos de personas y organizaciones, imágenes, publicación de perfiles (las organizaciones, tras su aprobación) y revisión administrativa de organizaciones. Las oportunidades, postulaciones y capacidades ampliadas se implementan después; mientras tanto sus pantallas existen solo en desarrollo, con datos de ejemplo (`VITE_API_MOCK=true`).
 
 Los perfiles comienzan privados. La presentación pública personal excluye correo y educación. La organización requiere aprobación antes de publicar y nunca expone NIT, contexto privado de revisión o información del representante. No hay ranking, seguidores ni evaluaciones públicas.
 
@@ -26,7 +26,7 @@ Conservar la identidad aprobada de Hila: wordmark y emblema locales, fuentes Fra
 
 ## Evidence on Hand
 
-Documentación de dominio en hila-backend; identidad en docs/IDENTIDAD_VISUAL.md; sistema visual en design-system/MASTER.md; marca y fuentes en public/. El piloto está en preparación: no inventar oportunidades ni resultados reales.
+Documentación de dominio en hila-backend; identidad en docs/IDENTIDAD_VISUAL.md; sistema visual en design-system/MASTER.md; marca y fuentes en public/. El piloto está en preparación: no inventar oportunidades ni resultados reales en lo que se publica. Para desarrollar pantallas cuyo backend aún no existe se usa el modo de datos de ejemplo (`VITE_API_MOCK=true`): solo en desarrollo, con aviso visible, datos ficticios y sin personas reales. Las fotografías de ambiente (por ejemplo de Unsplash) se guardan como archivos locales en `public/` y no se usan como retratos de cuentas inventadas.
 
 ## Accessibility & Inclusion
 

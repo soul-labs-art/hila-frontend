@@ -1,8 +1,9 @@
-import { Context, useSession, type User, type Session } from './session-context'
+import { Context, safeReturnTo, useSession, type User, type Session } from './session-context'
 import { useEffect, type ReactNode } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { Navigate, useLocation } from 'react-router-dom'
+import { Link, Navigate, useLocation, useSearchParams } from 'react-router-dom'
 import { api, ApiFailure, clearCsrf } from './api/client'
+import { EmptyState } from './ui'
 
 export function SessionProvider({ children }: { children: ReactNode }) {
   const client = useQueryClient()
@@ -28,11 +29,17 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   }
   return <Context.Provider value={value}>{children}</Context.Provider>
 }
+export function GuestOnly({ children }: { children: ReactNode }) {
+  const session = useSession(), [search] = useSearchParams()
+  if (session.loading) return <p role="status">Consultando tu sesión…</p>
+  if (session.user) return <Navigate replace to={safeReturnTo(search.get('returnTo'))} />
+  return children
+}
 export function Protected({ children, admin = false }: { children: ReactNode; admin?: boolean }) {
   const session = useSession(), location = useLocation()
   if (session.loading) return <p role="status">Consultando tu sesión…</p>
   if (session.error) return <div role="alert"><p>{session.error.message}</p><button onClick={() => void session.refresh()}>Volver a intentar</button></div>
   if (!session.user) return <Navigate replace to={`/ingresar?returnTo=${encodeURIComponent(location.pathname + location.search)}`} />
-  if (admin && !session.user.roles.includes('ADMIN')) return <div><h1>Esta sección requiere acceso administrativo</h1><p>Vuelve a tu cuenta para continuar.</p></div>
+  if (admin && !session.user.roles.includes('ADMIN')) return <EmptyState headingLevel={1} title="Esta sección requiere acceso administrativo" action={<Link className="action primary" to="/mi-cuenta">Volver a mi cuenta</Link>}>Vuelve a tu cuenta para continuar.</EmptyState>
   return children
 }

@@ -8,4 +8,4 @@ Estos documentos describen la presentación y experiencia de uso. Actualízalos 
 
 Los requisitos del producto, los flujos y estados, y el modelo de datos son responsabilidad de [hila-backend](https://github.com/soul-labs-art/hila-backend/tree/main/docs).
 
-El trabajo de producto comienza con el [registro y perfil inicial de una persona voluntaria](https://github.com/soul-labs-art/hila-backend/blob/main/docs/PRIMER_FLUJO_VERTICAL.md).
+El trabajo de producto comenzó con el [registro y perfil inicial de una persona voluntaria](https://github.com/soul-labs-art/hila-backend/blob/main/docs/PRIMER_FLUJO_VERTICAL.md), ya implementado junto con organizaciones, imágenes, publicación y revisión administrativa. Oportunidades, postulaciones y capacidades ampliadas siguen pendientes.

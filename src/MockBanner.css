@@ -1,0 +1,12 @@
+.mock-banner { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 20px; padding: 8px 18px; background: var(--plum); color: var(--linen); font-size: 14px; line-height: 1.4; text-align: center; }
+.mock-banner p { margin: 0; font-weight: 600; }
+.mock-banner button { min-height: 44px; min-width: 44px; padding: 0 18px; border: 0; border-radius: 999px; background: var(--sun); color: var(--ink); font: inherit; font-weight: 700; cursor: pointer; }
+.mock-banner button:disabled { opacity: 0.7; cursor: progress; }
+.workspace-content .mock-accounts { margin-top: 36px; padding: 20px 22px; border: 1px dashed var(--plum); border-radius: 8px; }
+.workspace-content .mock-accounts h2 { margin: 0 0 8px; font: 600 1.05rem/1.3 'DM Sans', sans-serif; letter-spacing: 0; color: var(--plum); }
+.mock-accounts p { margin: 0 0 12px; font-size: .9rem; color: var(--muted); }
+.mock-accounts code { padding: 2px 6px; border-radius: 4px; background: #efe0cf; color: var(--ink); font-size: .85rem; }
+.mock-accounts ul { margin: 0; padding: 0; list-style: none; }
+.mock-accounts li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 16px; padding: 12px 0; border-top: 1px solid var(--rule); }
+.mock-accounts li div { display: grid; gap: 2px; min-width: 0; flex: 1 1 240px; }
+.mock-accounts li span { font-size: .85rem; color: var(--muted); overflow-wrap: anywhere; }

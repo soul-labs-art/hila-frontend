@@ -34,6 +34,30 @@
   --ink: #2e2623;
   --muted: #665951;
   --rule: #d7c5b0;
+
+  /* Diseño v2: superficies, estados, sombras y foco */
+  --linen-hi: #f8ebdd;
+  --linen-lo: #f3e0d0;
+  --paper: #fffaf3;
+  --hairline: rgb(140 64 46 / 0.14);
+  --clay-deep: #6f3123;
+  --plum-deep: #4a2a3d;
+  --soft-clay: #f3dccd;
+  --ok-bg: #e3ead9;
+  --ok-ink: #2f4a2b;
+  --warn-bg: #f9e5bd;
+  --warn-ink: #66440c;
+  --no-bg: #f6dcd5;
+  --no-ink: #86291d;
+  --neutral-bg: #ece2d5;
+  --neutral-ink: #4f443d;
+  --info-bg: #efe3d6;
+  --control-line: #9a8672;
+  --radius-card: 16px;
+  --radius-control: 12px;
+  --shadow-card: 0 1px 2px rgb(74 42 30 / 0.05), 0 8px 24px rgb(74 42 30 / 0.07);
+  --shadow-lift: 0 2px 4px rgb(74 42 30 / 0.06), 0 12px 30px rgb(74 42 30 / 0.12);
+  --ease: 150ms ease;
 }
 
 * {

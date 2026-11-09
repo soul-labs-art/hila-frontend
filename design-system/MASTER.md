@@ -21,6 +21,8 @@ La portada usa una composición editorial en dos columnas, fondo lino y texto en
 | `--sage` | `#83907A` | Acentos secundarios. |
 | `--linen` | `#F6EBDD` | Superficie clara principal. |
 | `--ink` | `#2E2623` | Texto largo y contraste. |
+| `--muted` | `#665951` | Texto secundario y ayudas. |
+| `--rule` | `#D7C5B0` | Líneas y separadores. |
 
 Fraunces se usa en titulares; DM Sans en navegación, cuerpo e interfaz. Las dos fuentes se sirven localmente desde `public/fonts/`.
 
@@ -38,16 +40,31 @@ Fraunces se usa en titulares; DM Sans en navegación, cuerpo e interfaz. Las dos
 
 Las pantallas de producto conservan la marca y las fuentes. Los formularios usan controles de 48 px, etiquetas visibles y mensajes asociados a campos; las acciones principales usan arcilla. El login presenta el emblema junto al formulario en escritorio y concentra el formulario en móvil.
 
+La portada y la cabecera reconocen la sesión: con sesión activa ofrecen «Ir a mi cuenta» en lugar de «Ingresar» y «Crear mi cuenta». `/ingresar` y `/registro` redirigen a quien ya ingresó (respetando `returnTo`); los enlaces de verificación y recuperación siguen abiertos. La sección ciruela de la portada cierra con una acción en lino sobre ciruela. Cada pantalla tiene un `<title>` propio y un solo `<h1>`; el emblema junto al formulario es decorativo (`alt=""`). El correo escrito pasa entre pantallas de acceso por el estado del router, nunca por la URL.
+
 Los perfiles toman de la referencia aprobada la portada 3:1 y el avatar superpuesto. La presentación queda sobre una superficie clara; no se usan estrellas, seguidores ni cifras decorativas. La vista del propietario separa información, imágenes y publicación; la organización también muestra revisión e historial. La aprobación y la visibilidad son estados diferentes.
 
 Las imágenes tienen recorte centrado y previsualización. Las acciones de publicación son explícitas y se acompañan de una explicación de los campos visibles. Ninguna acción de interfaz sustituye la autorización del servidor.
 
 Al cambiar de ruta dentro del espacio de acceso y perfiles, el contenido vuelve al inicio y el foco pasa al elemento principal, que también es el destino de «Saltar al contenido». Este destino programático no dibuja un contorno alrededor de toda la página; los enlaces, botones y campos conservan foco visible. El enlace de salto permanece oculto hasta recibir foco.
 
-Los campos enlazan su etiqueta, ayuda y error por identificadores. El resumen de error recibe foco y se anuncia como alerta; las confirmaciones se anuncian como estado. Mostrar u ocultar contraseña es un botón separado del envío y expone su estado con `aria-pressed`.
+Los campos enlazan su etiqueta, ayuda y error por identificadores. El resumen de error recibe foco y se anuncia como alerta; las confirmaciones se anuncian como estado. Mostrar u ocultar la contraseña es un botón dentro del campo, separado del envío; su nombre cambia entre «Mostrar» y «Ocultar» para anunciar el estado.
 
 ## Referencias
 
 - Identidad de marca y uso del wordmark: [docs/IDENTIDAD_VISUAL.md](../docs/IDENTIDAD_VISUAL.md).
 - Requisitos y flujos del producto: [documentación de dominio en hila-backend](https://github.com/soul-labs-art/hila-backend/tree/main/docs).
 - Guías verificadas de UX y React consultadas en la skill `ui-ux-pro-max`: navegación por teclado, salto al contenido, controles semánticos, foco visible y etiquetas enlazadas a sus campos.
+
+## Diseño v2 (aplicación)
+
+La portada no cambia. El resto de la aplicación sigue las referencias visuales del piloto:
+
+- **Estructura**: `src/shell/` (barra superior, selector de contexto, campana, menú de usuario, lateral de organización y de administración, barra de pestañas inferior en móvil). Las rutas y entradas de funciones pendientes solo existen con su bandera en `src/features.ts`.
+- **Superficie**: fondo lino con degradado cálido, hojas botánicas decorativas (`src/Leaves.tsx`) solo en los márgenes de pantallas anchas, tarjetas `#FFFAF3` con radio 16 px, borde tenue y sombra suave.
+- **Componentes**: `src/ui/` (Card, Notice, Avatar de iniciales, EmptyState, Chip/ChipGroup, Toggle, RadioCards, RatingScale, Stepper, Tabs, Breadcrumbs, Timeline, DataTable, DefinitionList) e iconos de línea en `src/icons.tsx`. En desarrollo con datos de ejemplo, `/guia-ui` los muestra todos.
+- **Foco**: anillo doble (tinta + `--sun`) para verse sobre lino, arcilla y ciruela. Controles mínimos de 44 px.
+
+### Fotografías
+
+Las fotografías de ambiente vienen de Unsplash (Unsplash License) y se sirven como archivos locales desde `public/photos/`, nunca desde el sitio de origen. `public/photos/CREDITS.md` registra fotógrafo, ficha y licencia; `src/photos.ts` define el texto alternativo, el foco de recorte y el uso sugerido de cada una. Criterios: territorio y trabajo comunitario, paleta cálida, planos amplios, manos y detalles; sin retratos ni rostros en primer plano. Los avatares son círculos con iniciales, porque las cuentas de ejemplo son ficticias. Las tarjetas con foto llevan `alt=""` cuando el título ya describe el contenido, y sin pie de foto.

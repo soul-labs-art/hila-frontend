@@ -8,7 +8,7 @@ Este repositorio contiene la interfaz web de Hila, construida con React, TypeScr
 
 Este proyecto es dueño de la presentación, navegación, accesibilidad, contenido de interfaz y sistema visual. Incluye el wordmark y el emblema oficiales en [`public/brand/`](public/brand/), y las fuentes locales en [`public/fonts/`](public/fonts/).
 
-La portada pública se complementa con registro, verificación y reenvío de correo, inicio/cierre de sesión, recuperación, perfiles básicos voluntarios y de organizaciones, foto/portada editables, publicación voluntaria y revisión administrativa. Estas pantallas consumen la API real; requieren el backend. El catálogo de oportunidades y las postulaciones siguen pendientes.
+La portada pública se complementa con registro, verificación y reenvío de correo, inicio/cierre de sesión, recuperación, perfiles básicos voluntarios y de organizaciones, foto/portada editables, publicación de perfiles (las organizaciones, tras su aprobación) y revisión administrativa. Estas pantallas consumen la API real; requieren el backend. El catálogo de oportunidades, las postulaciones y las capacidades ampliadas siguen pendientes.
 
 La [copia del contrato del MVP](openapi/hila-v1.json) y los [tipos generados](src/api/schema.d.ts) permiten preparar el frontend con los formatos acordados. Cada operación declara su estado de implementación; el contrato también incluye funciones futuras. Consulta la [guía de integración](docs/API_INTEGRATION.md) y actualiza desde el backend con `npm run api:sync`; CI verifica la correspondencia mediante `npm run api:check`.
 
@@ -23,12 +23,30 @@ npm run dev
 
 Vite sirve la interfaz en <http://127.0.0.1:5173>. El proxy de desarrollo reenvía `/api`, `/swagger-ui` y `/v3/api-docs` a `127.0.0.1:8080`, donde debe estar disponible el backend. Este proxy solo es para desarrollo.
 
+### Datos de ejemplo (sin backend)
+
+Para desarrollar pantallas sin backend, o cuyas operaciones del contrato siguen `planned`, activa el modo de datos de ejemplo. Solo funciona en desarrollo, está apagado por defecto, muestra un aviso «Datos de ejemplo» en cada pantalla y usa únicamente datos ficticios (correos `@example.test`). El build de producción falla si la variable está activa.
+
+```sh
+# PowerShell
+$env:VITE_API_MOCK='true'; npm run dev
+# bash
+VITE_API_MOCK=true npm run dev
+```
+
+Las cuentas ficticias y su contraseña de ejemplo están descritas en `src/api/mock/`. Cuando el backend implemente una operación, se retira su mock; el contrato `hila-v1.json` sigue siendo la referencia de formas y errores.
+
+Con el modo activo hay pantallas para todas las operaciones `planned` del contrato (capacidades, Explorar, Mi actividad, Avisos, causas y necesidades, postulaciones, cierre de la actividad, equipo y administración), cada una detrás de una bandera de `src/features.ts`; el mapa completo está en [Integración con la API](docs/API_INTEGRATION.md#pantallas-con-datos-de-ejemplo). `/guia-ui` muestra los componentes del sistema de diseño y `/ingresar` lista las cuentas ficticias.
+
 Para validar cambios:
 
 ```sh
 npm run lint
+npm run api:check
 npm run build
 ```
+
+CI ejecuta esos tres comandos. Las pruebas E2E (`npm run test:e2e`) necesitan el backend y no corren en CI; consulta [Recorridos y pruebas](docs/API_INTEGRATION.md#recorridos-y-pruebas).
 
 ## Ejecutar la imagen Docker
 
