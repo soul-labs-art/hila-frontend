@@ -2,14 +2,14 @@
 import { useEffect, useRef, useState, type ChangeEvent, type FormEvent, type ReactNode, type SelectHTMLAttributes } from 'react'
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { dateTime } from './activity-format'
 import { api, ApiFailure, type Schemas } from './api/client'
 import { Feedback, Field, PageHeading, StatusBadge, TextArea } from './components'
+import { features } from './features'
 import { formValue } from './form-values'
 import { modalityName } from './labels'
 import { clock, longDay, needPhoto, placeLabel, proficiencyName, shortDay, territoryGroups, timeRange } from './need-format'
 import { clientFailure, everyPage, fieldMessage, needLook, refreshWork, remap, resourcesAll, skillsAll, territoriesQuery, isMember404, type Cause, type Managed, type Org } from './needs-data'
-import { Dialog, ErrorSummary, OrgGate, Unavailable, ApprovalNotice } from './needs-shared'
+import { Dialog, ErrorSummary, OrgGate, OutcomeResult, Unavailable, ApprovalNotice } from './needs-shared'
 import { usePageTitle } from './page-title'
 import { photo, photoSrc } from './photos'
 import { Breadcrumbs, Card, Chip, ChipGroup, EmptyState, Icon, Notice, RadioCards, type IconName } from './ui'
@@ -98,28 +98,6 @@ function Preview({ d, need, cause, territories }: { d: Draft; need?: Managed; ca
         {skills.length > 0 && <div><h4>Habilidades</h4><ul className="need-tags">{skills.map(row => <li key={row.id}><span className="tag-name">{row.name}</span><span className={`tag-kind${row.required ? ' is-required' : ''}`}>{row.required ? 'Obligatoria' : 'Deseable'}{row.extra && ` · nivel ${proficiencyName(row.extra).toLowerCase()}`}</span></li>)}</ul></div>}</div></Card></section>
 }
 
-function OutcomeCard({ need, onDone }: { need: Managed; onDone: (value: Managed) => void }) {
-  const client = useQueryClient(), [busy, setBusy] = useState(false), [error, setError] = useState<unknown>(), [status, setStatus] = useState('')
-  async function save(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault(); const data = new FormData(event.currentTarget); setError(undefined)
-    if (!status) { setError(clientFailure([{ field: 'outcomeStatus', message: 'Elige cómo terminó la actividad.' }])); return }
-    setBusy(true)
-    try { const saved = await api<Managed>(`/needs/${need.id}/outcome`, { method: 'PUT', body: { outcomeStatus: status as Schemas['CloseNeedRequest']['outcomeStatus'], summary: formValue(data, 'summaryOutcome') } satisfies Schemas['CloseNeedRequest'] }); await refreshWork(client); onDone(saved) } catch (failure) { setError(failure) } finally { setBusy(false) }
-  }
-  return <Card as="section" className="outcome-card" aria-labelledby="outcome-title"><h2 id="outcome-title">Registrar el resultado</h2><p>La actividad ya terminó. Cuéntanos cómo salió: al guardarlo, la necesidad se cierra y el resultado no se puede cambiar.</p>
-    <form noValidate onSubmit={event => void save(event)}><ErrorSummary error={error} labels={{ outcomeStatus: 'Resultado', summary: 'Resumen' }} />
-      <div><RadioCards name="outcomeStatus" legend="¿Cómo terminó la actividad?" value={status} onChange={setStatus} options={[{ value: 'FULFILLED', label: 'Cumplida', hint: 'Se logró lo esperado' }, { value: 'PARTIAL', label: 'Parcial', hint: 'Se logró en parte' }, { value: 'NOT_FULFILLED', label: 'No cumplida', hint: 'No se logró' }]} />{fieldMessage(error, 'outcomeStatus') && <small id="outcomeStatus" tabIndex={-1} className="field-error">{fieldMessage(error, 'outcomeStatus')}</small>}</div>
-      <TextArea label="Resumen del resultado *" name="summaryOutcome" required rows={4} maxLength={2000} hint="Qué se hizo, qué quedó pendiente y qué aprendieron. Hasta 2000 caracteres." error={remapOutcome(error)} />
-      <p className="dialog-note">Si hay compromisos confirmados sin participación registrada, tendrás que registrarlos antes de cerrar.</p>
-      <div className="form-actions"><button type="submit" className="action primary" disabled={busy}>{busy ? 'Cerrando…' : 'Cerrar necesidad'}</button></div></form></Card>
-}
-const remapOutcome = (error: unknown) => error instanceof ApiFailure ? new ApiFailure(error.status, { ...error.detail, fieldErrors: error.detail.fieldErrors?.map(item => ({ ...item, field: item.field === 'summary' ? 'summaryOutcome' : item.field })) ?? [] }) : error
-function OutcomeResult({ need }: { need: Managed }) {
-  const result = need.outcome, name = { FULFILLED: 'Cumplida', PARTIAL: 'Parcial', NOT_FULFILLED: 'No cumplida' } as const
-  if (!result) return null
-  return <Card as="section" className="outcome-card" aria-labelledby="outcome-title"><h2 id="outcome-title">Resultado registrado</h2><StatusBadge tone={result.status === 'FULFILLED' ? 'ok' : result.status === 'PARTIAL' ? 'wait' : 'no'}>{name[result.status]}</StatusBadge><p className="preserve-lines">{result.summary}</p><p className="act-note">Registrado el {dateTime(result.verifiedAt)}. Ya no se puede cambiar.</p></Card>
-}
-
 function NeedForm({ org, need: initial }: { org: Org; need?: Managed }) {
   const client = useQueryClient(), navigate = useNavigate(), location = useLocation(), [params] = useSearchParams()
   const causes = useQuery({ queryKey: ['causes', org.id], queryFn: () => everyPage<Cause>(`/organizations/${org.id}/causes`), retry: false }), territories = useQuery(territoriesQuery), skills = useQuery(skillsAll), resources = useQuery(resourcesAll)
@@ -163,15 +141,15 @@ function NeedForm({ org, need: initial }: { org: Org; need?: Managed }) {
   const hint = !approved ? 'Publicar se habilita cuando Hila apruebe la organización.' : cause && cause.status !== 'ACTIVE' ? 'Para publicar, primero activa la causa elegida.' : ''
   return <div className="work need-editor">
     <Breadcrumbs items={crumbs} />
-    <PageHeading title={need ? 'Editar necesidad' : 'Nueva necesidad'}><StatusBadge tone={look.tone}>{look.label}</StatusBadge></PageHeading>
+    <PageHeading title={need ? 'Editar necesidad' : 'Nueva necesidad'}><div className="heading-side"><StatusBadge tone={look.tone}>{look.label}</StatusBadge>{need && status !== 'DRAFT' && features.applications && <Link className="action" to={`${base}/${need.id}/postulaciones`}><Icon name="people" size={20} />Ver postulaciones</Link>}</div></PageHeading>
     <ApprovalNotice org={org} />
     {arrived?.warning && <Notice tone="warning">{arrived.warning} Revisa lo que dice abajo y vuelve a intentarlo.</Notice>}
     <div ref={resultRef} tabIndex={-1} className="act-result"><Feedback success={notice} /></div>
     <ErrorSummary error={shown} labels={labels} />
-    {status === 'CLOSED' && need && <OutcomeResult need={need} />}
+    {status === 'CLOSED' && need && <><OutcomeResult need={need} />{features.participation && <p><Link className="action" to={`${base}/${need.id}/cierre`}>Ver el cierre de la actividad<Icon name="arrowRight" size={20} /></Link></p>}</>}
     {status === 'CANCELLED' && <Notice icon="info">Esta necesidad fue cancelada y ya no se puede editar. Puedes crear otra con los mismos datos.</Notice>}
     {status === 'CLOSED' && <Notice icon="info">Esta necesidad está cerrada: queda como registro y ya no se puede editar.</Notice>}
-    {need && status === 'PUBLISHED' && (needLook(need).label === 'Por cerrar' ? <OutcomeCard need={need} onDone={saved => { setNeed(saved); client.setQueryData(['need-management', saved.id], saved); announce('Registramos el resultado y cerramos la necesidad.') }} /> : <Notice icon="clock">Podrás registrar el resultado cuando la actividad termine, el {longDay(need.endsAt).toLowerCase()} a las {clock(need.endsAt)}.</Notice>)}
+    {need && status === 'PUBLISHED' && (needLook(need).label === 'Por cerrar' ? <Notice icon="clock"><p><strong>La actividad ya terminó.</strong> Registra la participación y el resultado para cerrar la necesidad.</p>{features.participation && <p><Link className="action primary" to={`${base}/${need.id}/cierre`}>Ir al cierre de la actividad<Icon name="arrowRight" size={20} /></Link></p>}</Notice> : <Notice icon="clock">Podrás registrar el resultado cuando la actividad termine, el {longDay(need.endsAt).toLowerCase()} a las {clock(need.endsAt)}.</Notice>)}
     {fixed && <Notice tone="warning" icon="lock"><p><strong>Hay {held} {held === 1 ? 'compromiso confirmado' : 'compromisos confirmados'}.</strong> Por eso no puedes cambiar la fecha, el horario, la modalidad ni el territorio: las personas ya organizaron su tiempo. Si algo cambió, cancela la necesidad y crea otra.</p></Notice>}
     {blockedEdit && <Notice tone="warning" icon="lock">Mientras la organización no esté aprobada no puedes modificar necesidades publicadas.</Notice>}
     <form className="card ne-form" noValidate onSubmit={(event: FormEvent) => { event.preventDefault(); if (!locked && !blockedEdit) void run(false) }}>

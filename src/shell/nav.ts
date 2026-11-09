@@ -4,7 +4,7 @@ import type { IconName } from '../icons'
 import type { User } from '../session-context'
 
 /** Una entrada de navegación. `match` lista rutas (patrones de React Router) que la marcan como activa. */
-export type NavItem = { to: string; label: string; icon: IconName; match?: string[] }
+export type NavItem = { to: string; label: string; icon: IconName; match?: string[]; not?: string[] }
 export type Area = 'plain' | 'org' | 'admin'
 
 const orgSection = (pathname: string) => matchPath({ path: '/organizaciones/:id/:section', end: false }, pathname)
@@ -17,7 +17,9 @@ export function areaOf(pathname: string, admin = false): Area {
 /** Id de la organización en curso (rutas /organizaciones/:id/...), si hay una. */
 export const orgIdOf = (pathname: string) => orgSection(pathname)?.params.id
 
-export const isActive = (item: NavItem, pathname: string) => (item.match ?? [item.to]).some(pattern => !!matchPath({ path: pattern, end: false }, pathname))
+const inside = (patterns: string[], pathname: string) => patterns.some(pattern => !!matchPath({ path: pattern, end: false }, pathname))
+/** `not` excluye rutas anidadas que pertenecen a otra entrada (p. ej. las postulaciones de una necesidad). */
+export const isActive = (item: NavItem, pathname: string) => inside(item.match ?? [item.to], pathname) && !inside(item.not ?? [], pathname)
 
 /** Navegación superior (escritorio). Las entradas de funciones pendientes solo existen con su bandera. */
 export function topNav(): NavItem[] {
@@ -51,9 +53,9 @@ export function sideNav(area: Area, orgId?: string): NavItem[] {
   const own = orgId ? `/organizaciones/${orgId}` : ''
   return [
     ...(orgId ? [{ to: `${own}/editar`, label: 'Resumen', icon: 'home' as const }] : []),
-    ...(orgId && features.needs ? [{ to: `${own}/causas`, label: 'Causas', icon: 'leaf' as const }, { to: `${own}/necesidades`, label: 'Necesidades', icon: 'document' as const }] : []),
-    ...(orgId && features.applications ? [{ to: `${own}/postulaciones`, label: 'Postulaciones', icon: 'people' as const }] : []),
-    ...(orgId && features.participation ? [{ to: `${own}/participacion`, label: 'Participación', icon: 'calendar' as const }] : []),
+    ...(orgId && features.needs ? [{ to: `${own}/causas`, label: 'Causas', icon: 'leaf' as const }, { to: `${own}/necesidades`, label: 'Necesidades', icon: 'document' as const, not: ['/organizaciones/:id/necesidades/:needId/postulaciones', '/organizaciones/:id/necesidades/:needId/cierre'] }] : []),
+    ...(orgId && features.applications ? [{ to: `${own}/postulaciones`, label: 'Postulaciones', icon: 'people' as const, match: [`${own}/postulaciones`, '/organizaciones/:id/necesidades/:needId/postulaciones'] }] : []),
+    ...(orgId && features.participation ? [{ to: `${own}/participacion`, label: 'Participación', icon: 'calendar' as const, match: [`${own}/participacion`, '/organizaciones/:id/necesidades/:needId/cierre'] }] : []),
     ...(orgId && features.team ? [{ to: `${own}/equipo`, label: 'Equipo', icon: 'userPlus' as const }] : []),
     { to: '/mis-organizaciones', label: 'Mis organizaciones', icon: 'folder', match: ['/mis-organizaciones'] },
     { to: '/organizaciones/nueva', label: 'Nueva organización', icon: 'plus' },

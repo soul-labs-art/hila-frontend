@@ -2,6 +2,7 @@
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { Feedback, PageHeading, Select, StatusBadge } from './components'
+import { features } from './features'
 import { needPhoto, placeLabel, whenLabel } from './need-format'
 import { usePageTitle } from './page-title'
 import { photo, photoSrc } from './photos'
@@ -22,13 +23,13 @@ function Meta({ icon, children }: { icon: IconName; children: React.ReactNode })
 
 function NeedRow({ need, cause, territories, org }: { need: Managed; cause?: Cause; territories: Parameters<typeof placeLabel>[1]; org: string }) {
   const look = needLook(need), pic = needPhoto(need), editable = need.status === 'DRAFT' || need.status === 'PUBLISHED', full = need.status === 'PUBLISHED' && need.slotsAvailable === 0
-  const action = look.label === 'Por cerrar' ? 'Registrar resultado' : editable ? 'Editar' : 'Ver detalle', held = need.slotsRequired - need.slotsAvailable
+  const closing = look.label === 'Por cerrar' && features.participation, action = closing ? 'Cerrar actividad' : look.label === 'Por cerrar' ? 'Registrar resultado' : editable ? 'Editar' : 'Ver detalle', held = need.slotsRequired - need.slotsAvailable, base = `/organizaciones/${org}/necesidades/${need.id}`
   return <li><Card as="article" className="need-row" aria-labelledby={`need-${need.id}`}>
     <span className="act-thumb"><img src={photoSrc(pic, 800)} alt="" loading="lazy" style={{ objectPosition: photo(pic).focus }} /></span>
     <div className="need-row-main"><div className="need-row-tags"><StatusBadge tone={look.tone}>{look.label}</StatusBadge>{full && <StatusBadge tone="wait">Cupos completos</StatusBadge>}{cause && <span className="cause-chip"><Icon name="leaf" size={16} />{cause.title}</span>}</div>
       <h2 id={`need-${need.id}`}><Link to={`/organizaciones/${org}/necesidades/${need.id}`}>{need.title}</Link></h2>
-      <ul className="need-meta"><Meta icon="calendar">{whenLabel(need)}</Meta><Meta icon="people">{need.status === 'DRAFT' ? `${need.slotsRequired} ${need.slotsRequired === 1 ? 'cupo' : 'cupos'}` : `${held} de ${need.slotsRequired} ${need.slotsRequired === 1 ? 'cupo reservado' : 'cupos reservados'}`}</Meta><Meta icon="pin">{placeLabel(need, territories)}</Meta></ul></div>
-    <Link className={`action${look.label === 'Por cerrar' ? ' primary' : ''}`} to={`/organizaciones/${org}/necesidades/${need.id}`} aria-label={`${action}: ${need.title}`}>{action}<Icon name="arrowRight" size={20} /></Link>
+      <ul className="need-meta"><Meta icon="calendar">{whenLabel(need)}</Meta><Meta icon="people">{need.status === 'DRAFT' ? `${need.slotsRequired} ${need.slotsRequired === 1 ? 'cupo' : 'cupos'}` : `${held} de ${need.slotsRequired} ${need.slotsRequired === 1 ? 'cupo reservado' : 'cupos reservados'}`}</Meta><Meta icon="pin">{placeLabel(need, territories)}</Meta></ul>{features.applications && (need.status === 'PUBLISHED' || need.status === 'CLOSED') && <Link className="row-sublink" to={`${base}/postulaciones`}><Icon name="people" size={18} />Ver postulaciones</Link>}</div>
+    <Link className={`action${look.label === 'Por cerrar' ? ' primary' : ''}`} to={closing ? `${base}/cierre` : base} aria-label={`${action}: ${need.title}`}>{action}<Icon name="arrowRight" size={20} /></Link>
   </Card></li>
 }
 function Skeleton() { return <ul className="need-rows" aria-hidden="true">{[0, 1, 2].map(item => <li key={item}><div className="card need-row skeleton"><span className="act-thumb" /><div className="need-row-main"><span className="sk-line w40" /><span className="sk-line w70" /><span className="sk-line w60" /></div></div></li>)}</ul> }

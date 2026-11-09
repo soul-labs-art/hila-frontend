@@ -1,11 +1,13 @@
 // Piezas visuales comunes de causas y necesidades de una organización (planned: solo con features.needs).
-import { useEffect, useId, useRef, type FormEvent, type ReactNode } from 'react'
+import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
-import { ApiFailure } from './api/client'
-import { isMember404, orgQuery, type Org } from './needs-data'
-import { Feedback } from './components'
-import { Icon, Notice, EmptyState } from './ui'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { dateTime } from './activity-format'
+import { api, ApiFailure, type Schemas } from './api/client'
+import { Feedback, StatusBadge, TextArea } from './components'
+import { formValue } from './form-values'
+import { clientFailure, fieldMessage, isMember404, orgQuery, refreshWork, type Managed, type Org } from './needs-data'
+import { Card, EmptyState, Icon, Notice, RadioCards } from './ui'
 
 
 /** Cuerpo del aviso sobre la aprobación de la organización: quién puede publicar y qué falta. Sin culpar a nadie. */
@@ -49,4 +51,29 @@ export function ErrorSummary({ error, labels }: { error?: unknown; labels: Recor
   if (!items.length) return <Feedback error={error} />
   return <div ref={ref} tabIndex={-1} className="form-feedback error" role="alert"><Icon name="alert" size={22} /><div><p><strong>Revisa estos campos para continuar.</strong></p>
     <ul className="error-list">{items.map((item, index) => <li key={index}><a href={`#${item.field}`} onClick={event => { event.preventDefault(); document.getElementById(item.field)?.focus() }}>{labels[item.field] ? `${labels[item.field]}: ` : ''}{item.message}</a></li>)}</ul></div></div>
+}
+
+const remapOutcome = (error: unknown) => error instanceof ApiFailure ? new ApiFailure(error.status, { ...error.detail, fieldErrors: error.detail.fieldErrors?.map(item => ({ ...item, field: item.field === 'summary' ? 'summaryOutcome' : item.field })) ?? [] }) : error
+
+/** Resultado de la actividad: Cumplida / Parcial / No cumplida y resumen. Cierra la necesidad; con `blocked` explica qué falta y no deja guardar. */
+export function OutcomeCard({ need, blocked, onDone }: { need: Managed; blocked?: ReactNode; onDone: (value: Managed) => void }) {
+  const client = useQueryClient(), [busy, setBusy] = useState(false), [error, setError] = useState<unknown>(), [status, setStatus] = useState('')
+  async function save(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault(); const data = new FormData(event.currentTarget); setError(undefined)
+    if (!status) { setError(clientFailure([{ field: 'outcomeStatus', message: 'Elige cómo terminó la actividad.' }])); return }
+    setBusy(true)
+    try { const saved = await api<Managed>(`/needs/${need.id}/outcome`, { method: 'PUT', body: { outcomeStatus: status as Schemas['CloseNeedRequest']['outcomeStatus'], summary: formValue(data, 'summaryOutcome') } satisfies Schemas['CloseNeedRequest'] }); await refreshWork(client); onDone(saved) } catch (failure) { setError(failure) } finally { setBusy(false) }
+  }
+  const shown = remapOutcome(error)
+  return <Card as="section" className="outcome-card" aria-labelledby="outcome-title"><h2 id="outcome-title">Resultado de la actividad</h2><p className="outcome-lead">Indica si se cumplió el objetivo. Al guardarlo, la necesidad se cierra y el resultado no se puede cambiar.</p>
+    {blocked && <div id="outcome-blocked">{blocked}</div>}
+    <form noValidate onSubmit={event => void save(event)}><ErrorSummary error={shown} labels={{ outcomeStatus: 'Resultado', summaryOutcome: 'Resumen' }} />
+      <div className="outcome-grid"><div><RadioCards name="outcomeStatus" legend="¿Cómo terminó la actividad?" value={status} onChange={setStatus} options={[{ value: 'FULFILLED', label: 'Cumplida', hint: 'Se logró lo esperado' }, { value: 'PARTIAL', label: 'Parcial', hint: 'Se logró en parte' }, { value: 'NOT_FULFILLED', label: 'No cumplida', hint: 'No se logró' }]} />{fieldMessage(error, 'outcomeStatus') && <small id="outcomeStatus" tabIndex={-1} className="field-error">{fieldMessage(error, 'outcomeStatus')}</small>}</div>
+        <TextArea label="Resumen del resultado *" name="summaryOutcome" required rows={4} maxLength={2000} hint="Qué se hizo, qué quedó pendiente y qué aprendieron. Hasta 2000 caracteres." error={shown} /></div>
+      <div className="form-actions"><button type="submit" className="action primary" disabled={busy || !!blocked} aria-describedby={blocked ? 'outcome-blocked' : undefined}>{busy ? 'Guardando…' : 'Guardar cierre'}</button></div></form></Card>
+}
+export function OutcomeResult({ need }: { need: Managed }) {
+  const result = need.outcome, name = { FULFILLED: 'Cumplida', PARTIAL: 'Parcial', NOT_FULFILLED: 'No cumplida' } as const
+  if (!result) return null
+  return <Card as="section" className="outcome-card" aria-labelledby="outcome-title"><h2 id="outcome-title">Resultado registrado</h2><StatusBadge tone={result.status === 'FULFILLED' ? 'ok' : result.status === 'PARTIAL' ? 'wait' : 'no'}>{name[result.status]}</StatusBadge><p className="preserve-lines">{result.summary}</p><p className="act-note">Registrado el {dateTime(result.verifiedAt)}. Ya no se puede cambiar.</p></Card>
 }
