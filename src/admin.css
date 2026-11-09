@@ -1,0 +1,47 @@
+/* Administración: catálogos, usuarios y trazabilidad. Reutiliza .work, .team-card, .data-table, .person y .dialog. */
+.catalog-toolbar { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; align-items: end; }
+.catalog-toolbar .form-field, .users-filters .form-field, .audit-grid .form-field { margin: 0; }
+.catalog-count { margin: 0; color: var(--muted); font-size: .92rem; }
+.catalog-panel { display: grid; gap: 16px; align-content: start; }
+.catalog-panel > .act-result, .admin-users > .act-result { margin: 0; }
+.catalog-table, .users-table { min-width: 0; }
+.catalog-table td, .users-table td { vertical-align: middle; }
+.catalog-table .col-actions { width: 1%; white-space: nowrap; text-align: right; }
+.catalog-table .action { min-height: 44px; padding: 8px 16px; }
+.entry-name { display: block; font: 600 1.05rem/1.3 'Fraunces', Georgia, serif; overflow-wrap: anywhere; }
+.entry-slug, .entry-extra { display: block; color: var(--muted); font-size: .86rem; overflow-wrap: anywhere; }
+.entry-extra { display: none; }
+.users-filters { display: grid; gap: 14px; max-width: 760px; }
+.users-table .col-user-action { text-align: right; width: 1%; white-space: nowrap; }
+.users-table .col-user-action .action { min-height: 44px; padding: 8px 18px; }
+.users-table td.col-user-action { display: table-cell; }
+.muted-note { display: block; max-width: 210px; margin-left: auto; margin-top: 4px; color: var(--muted); font-size: .86rem; line-height: 1.4; white-space: normal; text-align: right; }
+.users-table .action:disabled { opacity: .55; cursor: not-allowed; }
+.audit-filters { display: grid; gap: 14px; }
+.audit-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+.audit-filters > .action { justify-self: start; }
+.audit-card { padding: 24px 22px; }
+.audit-card .timeline-meta { display: grid; gap: 1px; }
+.audit-time { display: block; }
+.admin-audit .notice { margin: 0; }
+.admin-users .notice { margin: 0; }
+@media (min-width: 720px) {
+  .catalog-toolbar { grid-template-columns: minmax(0, 1fr) 190px auto; }
+  .audit-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1000px) { .audit-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 640px) {
+  .catalog-table .col-wide, .users-table .col-wide, .users-table .col-status { display: none; }
+  .entry-extra { display: block; }
+  .catalog-table th, .catalog-table td, .users-table th, .users-table td { padding: 12px; }
+  .catalog-table .edit-text { display: none; }
+  .catalog-table .action { padding: 8px 12px; }
+  .users-table .person { align-items: flex-start; }
+  .users-table .person .avatar { display: none; }
+  .users-table .action { padding: 8px 12px; }
+  .users-table .action svg { display: none; }
+  .catalog-toolbar > .action { width: 100%; }
+  .audit-card { padding: 20px 14px; }
+  .timeline li { grid-template-columns: 14px 40px minmax(0, 1fr); gap: 10px; }
+  .audit-card .timeline-icon { width: 40px; height: 40px; }
+}

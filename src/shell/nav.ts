@@ -49,7 +49,7 @@ export function tabBar(user: User): NavItem[] {
 /** Barra lateral de organización (con id de organización añade sus secciones) o de administración. */
 export function sideNav(area: Area, orgId?: string): NavItem[] {
   if (area === 'admin') return [{ to: '/admin/organizaciones', label: 'Organizaciones', icon: 'people', match: ['/admin/organizaciones'] },
-    ...(features.adminTools ? [{ to: '/admin/catalogos', label: 'Catálogos', icon: 'folder' as const }, { to: '/admin/trazabilidad', label: 'Trazabilidad', icon: 'trace' as const }] : [])]
+    ...(features.adminTools ? [{ to: '/admin/usuarios', label: 'Usuarios', icon: 'person' as const }, { to: '/admin/catalogos', label: 'Catálogos', icon: 'folder' as const }, { to: '/admin/trazabilidad', label: 'Trazabilidad', icon: 'trace' as const }] : [])]
   const own = orgId ? `/organizaciones/${orgId}` : ''
   return [
     ...(orgId ? [{ to: `${own}/editar`, label: 'Resumen', icon: 'home' as const }] : []),

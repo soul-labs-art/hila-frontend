@@ -27,6 +27,10 @@ const ApplicationNeeds = planned ? lazy(() => import('./Applications').then(modu
 const ApplicationBoard = planned ? lazy(() => import('./Applications').then(module => ({ default: module.ApplicationBoard }))) : null
 const ParticipationNeeds = planned ? lazy(() => import('./Closure').then(module => ({ default: module.ParticipationNeeds }))) : null
 const Closure = planned ? lazy(() => import('./Closure').then(module => ({ default: module.Closure }))) : null
+const Team = planned ? lazy(() => import('./Team').then(module => ({ default: module.Team }))) : null
+const AdminCatalogs = planned ? lazy(() => import('./AdminCatalogs').then(module => ({ default: module.AdminCatalogs }))) : null
+const AdminUsers = planned ? lazy(() => import('./AdminUsers').then(module => ({ default: module.AdminUsers }))) : null
+const AdminAudit = planned ? lazy(() => import('./AdminAudit').then(module => ({ default: module.AdminAudit }))) : null
 const Notices = planned ? lazy(() => import('./Notices').then(module => ({ default: module.Notices }))) : null
 
 function NotFound() {
@@ -49,6 +53,8 @@ export default function App() {
     {Causes && Needs && NeedEditor && <><Route path="organizaciones/:id/causas" element={<Protected><Suspense fallback={null}><Causes /></Suspense></Protected>} /><Route path="organizaciones/:id/necesidades" element={<Protected><Suspense fallback={null}><Needs /></Suspense></Protected>} /><Route path="organizaciones/:id/necesidades/nueva" element={<Protected><Suspense fallback={null}><NeedEditor /></Suspense></Protected>} /><Route path="organizaciones/:id/necesidades/:needId" element={<Protected><Suspense fallback={null}><NeedEditor /></Suspense></Protected>} /></>}
     {ApplicationNeeds && ApplicationBoard && <><Route path="organizaciones/:id/postulaciones" element={<Protected><Suspense fallback={null}><ApplicationNeeds /></Suspense></Protected>} /><Route path="organizaciones/:id/necesidades/:needId/postulaciones" element={<Protected><Suspense fallback={null}><ApplicationBoard /></Suspense></Protected>} /></>}
     {ParticipationNeeds && Closure && <><Route path="organizaciones/:id/participacion" element={<Protected><Suspense fallback={null}><ParticipationNeeds /></Suspense></Protected>} /><Route path="organizaciones/:id/necesidades/:needId/cierre" element={<Protected><Suspense fallback={null}><Closure /></Suspense></Protected>} /></>}
+    {Team && <Route path="organizaciones/:id/equipo" element={<Protected><Suspense fallback={null}><Team /></Suspense></Protected>} />}
+    {AdminCatalogs && AdminUsers && AdminAudit && <><Route path="admin/catalogos" element={<Protected admin><Suspense fallback={null}><AdminCatalogs /></Suspense></Protected>} /><Route path="admin/usuarios" element={<Protected admin><Suspense fallback={null}><AdminUsers /></Suspense></Protected>} /><Route path="admin/trazabilidad" element={<Protected admin><Suspense fallback={null}><AdminAudit /></Suspense></Protected>} /></>}
     {Gallery && <Route path="guia-ui" element={<Suspense fallback={null}><Gallery /></Suspense>} />}
     <Route path="*" element={<NotFound />} />
   </Route></Routes></>
