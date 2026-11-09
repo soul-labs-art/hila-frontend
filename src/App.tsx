@@ -18,6 +18,9 @@ const Gallery = import.meta.env.DEV && import.meta.env.VITE_API_MOCK === 'true' 
 const planned = import.meta.env.DEV && import.meta.env.VITE_API_MOCK === 'true'
 const Explore = planned ? lazy(() => import('./Explore').then(module => ({ default: module.Explore }))) : null
 const NeedDetail = planned ? lazy(() => import('./Explore').then(module => ({ default: module.NeedDetail }))) : null
+const ActivityList = planned ? lazy(() => import('./Activity').then(module => ({ default: module.ActivityList }))) : null
+const ActivityDetail = planned ? lazy(() => import('./Activity').then(module => ({ default: module.ActivityDetail }))) : null
+const Notices = planned ? lazy(() => import('./Notices').then(module => ({ default: module.Notices }))) : null
 
 function NotFound() {
   usePageTitle('Página no encontrada')
@@ -34,6 +37,8 @@ export default function App() {
     <Route path="voluntarios/:id" element={<PublicProfile />} /><Route path="organizaciones/:id" element={<PublicProfile organization />} />
     <Route path="admin/organizaciones" element={<Protected admin><AdminOrganizations /></Protected>} /><Route path="admin/organizaciones/:id" element={<Protected admin><AdminReview /></Protected>} />
     {Explore && NeedDetail && <><Route path="explorar" element={<Protected><Suspense fallback={null}><Explore /></Suspense></Protected>} /><Route path="explorar/:needId" element={<Protected><Suspense fallback={null}><NeedDetail /></Suspense></Protected>} /></>}
+    {ActivityList && ActivityDetail && <><Route path="actividad" element={<Protected><Suspense fallback={null}><ActivityList /></Suspense></Protected>} /><Route path="actividad/:applicationId" element={<Protected><Suspense fallback={null}><ActivityDetail /></Suspense></Protected>} /></>}
+    {Notices && <Route path="avisos" element={<Protected><Suspense fallback={null}><Notices /></Suspense></Protected>} />}
     {Gallery && <Route path="guia-ui" element={<Suspense fallback={null}><Gallery /></Suspense>} />}
     <Route path="*" element={<NotFound />} />
   </Route></Routes></>

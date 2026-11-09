@@ -135,10 +135,11 @@ function Apply({ need, hasProfile }: { need: Need; hasProfile: boolean }) {
   const feedback = <><Feedback error={error} success={notice} />{code === 'PROFILE_NOT_FOUND' && <p><Link to="/mi-perfil">Crear mi perfil</Link></p>}</>
   if (current) return <div className="apply-box">{feedback}
     {current.status === 'APPLIED' ? <><Notice icon="people"><strong>La organización revisa tu postulación.</strong> Te avisaremos cuando responda.</Notice>
+      {features.applications && <Link className="text-button" to={`/actividad/${current.id}`}>Ver el estado en Mi actividad</Link>}
       {confirm ? <div className="confirm-box" role="group" aria-label="Confirmar retiro"><Notice tone="warning">Si retiras tu postulación no podrás volver a postularte a esta actividad.</Notice><div className="actions"><button type="button" className="action primary" disabled={busy} onClick={() => void withdraw(current.id)}>{busy ? 'Retirando…' : 'Sí, retirar'}</button><button type="button" className="action" disabled={busy} onClick={() => setConfirm(false)}>Mejor no</button></div></div>
         : <button type="button" className="action block" onClick={() => { setConfirm(true); setNotice('') }}>Retirar postulación</button>}</>
       : <><div role="status"><Notice tone={current.status === 'ACCEPTED' ? 'success' : 'info'} icon={current.status === 'ACCEPTED' ? 'checkCircle' : 'info'}><strong>{statusCopy[current.status]}.</strong>{current.status === 'ACCEPTED' && ' Confirma tu compromiso si puedes asistir: aceptar no reserva tu cupo.'}{current.status === 'WITHDRAWN' && ' Solo se permite una postulación por persona en cada actividad.'}{current.decisionReason && <> Motivo: {current.decisionReason}</>}</Notice></div>
-        {current.status === 'ACCEPTED' && <Link className="action primary block" to="/actividad">Ver mi actividad<Icon name="arrowRight" size={20} /></Link>}</>}</div>
+        {current.status === 'ACCEPTED' && <Link className="action primary block" to={`/actividad/${current.id}`}>Ver mi actividad<Icon name="arrowRight" size={20} /></Link>}</>}</div>
   if (isPast(need.startsAt)) return <div className="apply-box">{feedback}<Notice icon="clock">Esta actividad ya empezó, así que no recibe más postulaciones.</Notice></div>
   if (!hasProfile) return <div className="apply-box">{feedback}<Notice icon="person">Para postularte necesitas tu perfil voluntario.</Notice><Link className="action primary block" to="/mi-perfil">Crear mi perfil<Icon name="arrowRight" size={20} /></Link></div>
   return <div className="apply-box">{feedback}
