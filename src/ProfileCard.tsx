@@ -2,16 +2,19 @@ import { useEffect, useState, type ChangeEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { api, type Schemas } from './api/client'
 import { Feedback, FilePicker, StatusBadge } from './components'
+import { Leaves } from './Leaves'
+import { photo, photoSrc, type PhotoId } from './photos'
+import { Avatar, Card, Notice } from './ui'
 
 export type ImageRef = { id: string; url: string; width: number; height: number; contentType: string }
 export type ProfileImages = { avatar: ImageRef | null; cover: ImageRef | null }
-export function ProfileCard({ name, description, subtitle, avatar, cover, headingLevel = 1, children }: ProfileImages & { name: string; description?: string | null; subtitle?: string; headingLevel?: 1 | 2; children?: React.ReactNode }) {
+export function ProfileCard({ name, description, subtitle, avatar, cover, fallbackPhoto, headingLevel = 1, children }: ProfileImages & { name: string; description?: string | null; subtitle?: string; fallbackPhoto?: PhotoId; headingLevel?: 1 | 2; children?: React.ReactNode }) {
   const Heading = headingLevel === 1 ? 'h1' : 'h2'
-  return <article className="profile-card"><div className="profile-cover">{cover ? <img src={cover.url} alt="Portada del perfil" /> : <span className="cover-mark" aria-hidden="true">hila</span>}</div><div className="profile-body"><div className="profile-avatar">{avatar ? <img src={avatar.url} alt={`Imagen de ${name}`} /> : <span aria-hidden="true">{name.split(' ').filter(Boolean).slice(0, 2).map(part => part[0]).join('')}</span>}</div><div className="profile-identity"><Heading>{name}</Heading>{subtitle && <p className="profile-subtitle">{subtitle}</p>}</div>{description && <p className="profile-description">{description}</p>}{children}</div></article>
+  return <Card as="article" className="profile-card"><div className="profile-cover">{cover ? <img src={cover.url} alt="Portada del perfil" /> : fallbackPhoto ? <img src={photoSrc(fallbackPhoto, 1600)} alt="" style={{ objectPosition: photo(fallbackPhoto).focus }} /> : <Leaves variant="corner" />}</div><div className="profile-body"><div className="profile-avatar">{avatar ? <img src={avatar.url} alt={`Imagen de ${name}`} /> : <Avatar name={name} size="xl" />}</div><div className="profile-identity"><Heading>{name}</Heading>{subtitle && <p className="profile-subtitle">{subtitle}</p>}</div>{description && <p className="profile-description">{description}</p>}{children}</div></Card>
 }
 
 export function ImageEditor({ base, images, onSaved }: { base: string; images: ProfileImages; onSaved: () => void }) {
-  return <section className="image-editor"><h2>Tu imagen en Hila</h2><p>Elige una foto o logotipo y una portada. JPEG o PNG, hasta 10 MiB y 16 megapíxeles. El recorte se centra automáticamente.</p><div className="image-editor-grid">{(['avatar', 'cover'] as const).map(slot => <ImageSlot key={slot} base={base} slot={slot} image={images[slot]} onSaved={onSaved} />)}</div></section>
+  return <Card as="section" className="section-card image-editor"><h2>Tu imagen en Hila</h2><p>Elige una foto o logotipo y una portada. JPEG o PNG, hasta 10 MiB y 16 megapíxeles. El recorte se centra automáticamente.</p><div className="image-editor-grid">{(['avatar', 'cover'] as const).map(slot => <ImageSlot key={slot} base={base} slot={slot} image={images[slot]} onSaved={onSaved} />)}</div></Card>
 }
 function ImageSlot({ base, slot, image, onSaved }: { base: string; slot: 'avatar' | 'cover'; image: ImageRef | null; onSaved: () => void }) {
   const [file, setFile] = useState<File>(), [preview, setPreview] = useState(''), [busy, setBusy] = useState(false), [error, setError] = useState<unknown>(), [notice, setNotice] = useState('')
@@ -39,10 +42,10 @@ function ImageSlot({ base, slot, image, onSaved }: { base: string; slot: 'avatar
 export function Publication({ base, visibility, disabled, link, onSaved }: { base: string; visibility: string; disabled?: boolean; link: string; onSaved: () => void }) {
   const [busy, setBusy] = useState(false), [error, setError] = useState<unknown>(), [notice, setNotice] = useState('')
   const isPublic = visibility === 'PUBLIC'
-  return <section className="publication"><h2>Tu perfil público</h2><p>{isPublic ? 'Tu perfil se puede consultar mediante su enlace. Puedes ocultarlo cuando quieras.' : 'Tu perfil es privado. Publicarlo permite consultar su presentación e imágenes mediante un enlace; los datos privados de tu cuenta no se comparten.'}</p>{disabled && <p className="callout">La organización necesita aprobación de Hila antes de publicar su perfil.</p>}<Feedback error={error} success={notice} /><div className="actions"><button className={isPublic ? 'action' : 'action primary'} disabled={busy || (disabled && !isPublic)} onClick={async () => {
+  return <Card as="section" className="section-card publication"><h2>Tu perfil público</h2><p>{isPublic ? 'Tu perfil se puede consultar mediante su enlace. Puedes ocultarlo cuando quieras.' : 'Tu perfil es privado. Publicarlo permite consultar su presentación e imágenes mediante un enlace; los datos privados de tu cuenta no se comparten.'}</p>{disabled && <Notice tone="warning">La organización necesita aprobación de Hila antes de publicar su perfil.</Notice>}<Feedback error={error} success={notice} /><div className="actions"><button className={isPublic ? 'action' : 'action primary'} disabled={busy || (disabled && !isPublic)} onClick={async () => {
     setBusy(true); setError(undefined); setNotice('')
     try { await api(`${base}/publication`, { method: 'PUT', body: { visible: !isPublic } }); onSaved(); setNotice(isPublic ? 'El perfil ahora es privado.' : 'Publicamos tu perfil.') } catch (value) { setError(value) } finally { setBusy(false) }
-  }}>{busy ? 'Guardando…' : isPublic ? 'Ocultar perfil' : 'Publicar perfil'}</button>{isPublic && <><Link className="action primary" to={link}>Ver perfil público</Link><button className="text-button" onClick={async () => { try { await navigator.clipboard.writeText(new URL(link, location.origin).href); setNotice('Enlace copiado.') } catch { setError(new Error('No se pudo copiar el enlace. Abre el perfil y copia su dirección.')) } }}>Copiar enlace</button></>}</div></section>
+  }}>{busy ? 'Guardando…' : isPublic ? 'Ocultar perfil' : 'Publicar perfil'}</button>{isPublic && <><Link className="action primary" to={link}>Ver perfil público</Link><button className="text-button" onClick={async () => { try { await navigator.clipboard.writeText(new URL(link, location.origin).href); setNotice('Enlace copiado.') } catch { setError(new Error('No se pudo copiar el enlace. Abre el perfil y copia su dirección.')) } }}>Copiar enlace</button></>}</div></Card>
 }
 
 export function VisibilityBadge({ visibility }: { visibility: string }) { return <StatusBadge tone={visibility === 'PUBLIC' ? 'ok' : 'neutral'}>{visibility === 'PUBLIC' ? 'Perfil público' : 'Perfil privado'}</StatusBadge> }

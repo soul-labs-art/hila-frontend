@@ -55,3 +55,12 @@ Los campos enlazan su etiqueta, ayuda y error por identificadores. El resumen de
 - Identidad de marca y uso del wordmark: [docs/IDENTIDAD_VISUAL.md](../docs/IDENTIDAD_VISUAL.md).
 - Requisitos y flujos del producto: [documentación de dominio en hila-backend](https://github.com/soul-labs-art/hila-backend/tree/main/docs).
 - Guías verificadas de UX y React consultadas en la skill `ui-ux-pro-max`: navegación por teclado, salto al contenido, controles semánticos, foco visible y etiquetas enlazadas a sus campos.
+
+## Diseño v2 (aplicación)
+
+La portada no cambia. El resto de la aplicación sigue las referencias visuales del piloto:
+
+- **Estructura**: `src/shell/` (barra superior, selector de contexto, campana, menú de usuario, lateral de organización y de administración, barra de pestañas inferior en móvil). Las rutas y entradas de funciones pendientes solo existen con su bandera en `src/features.ts`.
+- **Superficie**: fondo lino con degradado cálido, hojas botánicas decorativas (`src/Leaves.tsx`) solo en los márgenes de pantallas anchas, tarjetas `#FFFAF3` con radio 16 px, borde tenue y sombra suave.
+- **Componentes**: `src/ui/` (Card, Notice, Avatar de iniciales, EmptyState, Chip/ChipGroup, Toggle, RadioCards, RatingScale, Stepper, Tabs, Breadcrumbs, Timeline, DataTable, DefinitionList) e iconos de línea en `src/icons.tsx`. En desarrollo con datos de ejemplo, `/guia-ui` los muestra todos.
+- **Foco**: anillo doble (tinta + `--sun`) para verse sobre lino, arcilla y ciruela. Controles mínimos de 44 px.

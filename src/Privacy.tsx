@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { api, type Schemas } from './api/client'
 import { Feedback, PageHeading, StatusBadge } from './components'
+import { BackLink, Card, Notice, Toggle } from './ui'
 import { usePageTitle } from './page-title'
 import { loadVolunteer } from './volunteer'
 
@@ -30,19 +31,19 @@ export function Privacy() {
     } catch (value) { setError(value) } finally { setBusy(false) }
   }
   return <>
-    <Link className="back-link" to="/mi-cuenta">Mi cuenta</Link>
+    <BackLink to="/mi-cuenta">Mi cuenta</BackLink>
     <PageHeading title="Privacidad y avisos" lead="Aquí ves lo que aceptaste y decides qué correos quieres recibir." />
-    <section className="settings-section" aria-labelledby="data-title"><h2 id="data-title">Tratamiento de datos</h2>
+    <div className="settings-stack"><Card as="section" className="settings-section" aria-labelledby="data-title"><h2 id="data-title">Tratamiento de datos</h2>
       {data ? <><div className="setting-state"><StatusBadge tone="ok">Política aceptada</StatusBadge><span>Versión {data.version}, el {date(data.acceptedAt)}.</span></div></> : <p>No encontramos una aceptación registrada de la política de datos.</p>}
       {dataPolicy && <details className="policy"><summary>{dataPolicy.title} · versión {dataPolicy.version}</summary><div>{dataPolicy.content}</div></details>}
-    </section>
-    <section className="settings-section" aria-labelledby="alerts-title"><h2 id="alerts-title">Avisos de oportunidades por correo</h2>
+    </Card>
+    <Card as="section" className="settings-section" aria-labelledby="alerts-title"><h2 id="alerts-title">Avisos de oportunidades por correo</h2>
       <p>Te escribiremos cuando haya oportunidades que encajen con tu perfil. Esto no afecta los correos de tu cuenta, como la verificación o la recuperación de acceso.</p>
       <Feedback error={error} success={notice} />
-      {volunteer.data ? <><div className="setting-state"><StatusBadge tone={enabled ? 'ok' : 'neutral'}>{enabled ? 'Avisos activados' : 'Avisos desactivados'}</StatusBadge></div>
+      {volunteer.data ? <><Toggle icon="mail" label="Recibir avisos por correo" hint="Oportunidades que encajen con tu perfil." checked={enabled} disabled={busy || !alertPolicy} onChange={value => void setAlerts(value)} onText="Avisos activados" offText="Avisos desactivados" />
         {alertPolicy && <details className="policy"><summary>{alertPolicy.title} · versión {alertPolicy.version}</summary><div>{alertPolicy.content}</div></details>}
-        <div className="actions"><button className={enabled ? 'action' : 'action primary'} type="button" disabled={busy || !alertPolicy} onClick={() => void setAlerts(!enabled)}>{busy ? 'Guardando…' : enabled ? 'Desactivar avisos' : 'Activar avisos'}</button></div></>
-        : <p className="callout">Para recibir avisos necesitas tu perfil voluntario, así sabremos qué oportunidades te corresponden. <Link to="/mi-perfil">Crear mi perfil</Link></p>}
-    </section>
+        </>
+        : <Notice icon="person">Para recibir avisos necesitas tu perfil voluntario, así sabremos qué oportunidades te corresponden. <Link to="/mi-perfil">Crear mi perfil</Link></Notice>}
+    </Card></div>
   </>
 }

@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-do
 import { useQuery } from '@tanstack/react-query'
 import { api, ApiFailure, type Schemas } from './api/client'
 import { Field, Feedback, Password, Submit } from './components'
+import { Leaves } from './Leaves'
 import { usePageTitle } from './page-title'
 import { safeReturnTo, useSession } from './session-context'
 
@@ -26,7 +27,7 @@ function useSubmit() {
 function emailFromState(state: unknown) { return state && typeof state === 'object' && 'email' in state && typeof state.email === 'string' ? state.email : '' }
 function AccessLayout({ title, tab, intro, children }: { title: string; tab: string; intro?: string; children: ReactNode }) {
   usePageTitle(tab)
-  return <div className="access-layout"><aside className="access-story"><img src="/brand/hila-emblema.png" alt="" /><p className="access-story-title">Lo que sabes hacer puede encontrar dónde hace falta.</p><p>Un espacio para acercar tus capacidades a las causas de tu territorio.</p></aside><section className="access-form"><h1>{title}</h1>{intro && <p>{intro}</p>}{children}</section></div>
+  return <div className="access-layout"><aside className="access-story"><Leaves variant="left" className="access-leaf" /><Leaves variant="right" className="access-leaf" /><img src="/brand/hila-emblema.png" alt="" /><p className="access-story-title">Lo que sabes hacer puede encontrar dónde hace falta.</p><p>Un espacio para acercar tus capacidades a las causas de tu territorio.</p></aside><section className="access-form"><h1>{title}</h1>{intro && <p>{intro}</p>}{children}</section></div>
 }
 
 export function Login() {
@@ -64,6 +65,7 @@ export function Register() {
       <label className="check-field"><input name="adultConfirmed" type="checkbox" required /> Soy mayor de 18 años.</label>
       {policy ? <><details className="policy"><summary>{policy.title} · versión {policy.version}</summary><div>{policy.content}</div></details><label className="check-field"><input name="consent" type="checkbox" required /> He leído y acepto esta política de tratamiento de datos.</label></> : <p role="status">{policies.isPending ? 'Cargando la política vigente…' : 'La política no está disponible.'}</p>}
       <Submit busy={form.busy} disabled={!policy} busyLabel="Creando tu cuenta…">Crear mi cuenta</Submit>
+      <p className="form-note">Te enviaremos un enlace para verificar tu correo.</p>
     </form>
     <div className="access-links"><p>¿Ya tienes cuenta? <Link to="/ingresar">Ingresar</Link></p></div>
   </AccessLayout>
