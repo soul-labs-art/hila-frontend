@@ -64,3 +64,7 @@ La portada no cambia. El resto de la aplicación sigue las referencias visuales 
 - **Superficie**: fondo lino con degradado cálido, hojas botánicas decorativas (`src/Leaves.tsx`) solo en los márgenes de pantallas anchas, tarjetas `#FFFAF3` con radio 16 px, borde tenue y sombra suave.
 - **Componentes**: `src/ui/` (Card, Notice, Avatar de iniciales, EmptyState, Chip/ChipGroup, Toggle, RadioCards, RatingScale, Stepper, Tabs, Breadcrumbs, Timeline, DataTable, DefinitionList) e iconos de línea en `src/icons.tsx`. En desarrollo con datos de ejemplo, `/guia-ui` los muestra todos.
 - **Foco**: anillo doble (tinta + `--sun`) para verse sobre lino, arcilla y ciruela. Controles mínimos de 44 px.
+
+### Fotografías
+
+Las fotografías de ambiente vienen de Unsplash (Unsplash License) y se sirven como archivos locales desde `public/photos/`, nunca desde el sitio de origen. `public/photos/CREDITS.md` registra fotógrafo, ficha y licencia; `src/photos.ts` define el texto alternativo, el foco de recorte y el uso sugerido de cada una. Criterios: territorio y trabajo comunitario, paleta cálida, planos amplios, manos y detalles; sin retratos ni rostros en primer plano. Los avatares son círculos con iniciales, porque las cuentas de ejemplo son ficticias. Las tarjetas con foto llevan `alt=""` cuando el título ya describe el contenido, y sin pie de foto.

@@ -59,6 +59,24 @@ Los tipos describen compilación, no validan JSON recibido ni prueban que un end
 
 El recorrido implementado es cuenta adulta → correo verificado → sesión → perfil privado → imágenes → publicación. También se implementan recuperación, registro/revisión organizacional y publicación tras aprobación. Oportunidades, capacidades ampliadas y postulaciones permanecen futuras, y el frontend aún no consume `/me/consents` ni `/me/opportunity-alerts`, aunque el backend los implementa. Antes de habilitar cada nuevo módulo, comparar el contrato con los controladores reales (`/v3/api-docs`).
 
+## Pantallas con datos de ejemplo
+
+Las operaciones `planned` del contrato tienen su pantalla construida, pero solo existen con `VITE_API_MOCK=true` (ver el README). Cada una vive detrás de una bandera de `src/features.ts`, se carga de forma diferida y no entra al bundle de producción. Cuando el backend implemente una operación, se retira su mock en `src/api/mock/routes/planned/` y se pone a `true` la bandera correspondiente, sin tocar la pantalla.
+
+| Área | Rutas | Bandera |
+|---|---|---|
+| Capacidades del voluntario | `/mi-perfil` (pasos Capacidades y Disponibilidad) | `capabilities` |
+| Explorar y postularse | `/explorar`, `/explorar/:needId` | `opportunities`, `applications` |
+| Mi actividad | `/actividad`, `/actividad/:applicationId` | `applications` |
+| Avisos | `/avisos` | `notifications` |
+| Causas y necesidades | `/organizaciones/:id/{causas,necesidades}`, `/necesidades/nueva`, `/necesidades/:needId` | `needs` |
+| Postulaciones | `/organizaciones/:id/postulaciones`, `/necesidades/:needId/postulaciones` | `applications` |
+| Participación y cierre | `/organizaciones/:id/participacion`, `/necesidades/:needId/cierre` | `participation` |
+| Equipo | `/organizaciones/:id/equipo` | `team` |
+| Administración | `/admin/{catalogos,usuarios,trazabilidad}` | `adminTools` |
+
+Cuentas, contraseña de ejemplo y datos semilla: `src/api/mock/seed.ts` y `src/api/mock/seed-planned.ts`. El panel «Cuentas de ejemplo» de `/ingresar` las lista. El mock valida con las mismas reglas del contrato (estados, cupos, permisos, compatibilidad); donde el contrato es ambiguo, la decisión quedó anotada en el código del mock y debe confirmarse con el backend real.
+
 ## Recorridos y pruebas
 
 Rutas: `/` (portada pública), `/registro`, `/registro/enviado`, `/verificar-correo`, `/ingresar`, `/recuperar-acceso`, `/restablecer-acceso`, `/mi-cuenta`, `/mi-perfil`, `/mis-organizaciones`, `/organizaciones/nueva`, `/organizaciones/:id/editar`, `/voluntarios/:id`, `/organizaciones/:id`, `/admin/organizaciones` y `/admin/organizaciones/:id`.

@@ -36,6 +36,8 @@ VITE_API_MOCK=true npm run dev
 
 Las cuentas ficticias y su contraseña de ejemplo están descritas en `src/api/mock/`. Cuando el backend implemente una operación, se retira su mock; el contrato `hila-v1.json` sigue siendo la referencia de formas y errores.
 
+Con el modo activo hay pantallas para todas las operaciones `planned` del contrato (capacidades, Explorar, Mi actividad, Avisos, causas y necesidades, postulaciones, cierre de la actividad, equipo y administración), cada una detrás de una bandera de `src/features.ts`; el mapa completo está en [Integración con la API](docs/API_INTEGRATION.md#pantallas-con-datos-de-ejemplo). `/guia-ui` muestra los componentes del sistema de diseño y `/ingresar` lista las cuentas ficticias.
+
 Para validar cambios:
 
 ```sh
