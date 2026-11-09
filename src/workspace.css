@@ -31,6 +31,7 @@ button:disabled { cursor: wait; opacity: .6; }
 .access-form > p { color: var(--muted); margin: 0 0 30px; }
 form { display: grid; gap: 22px; }
 form > .action { justify-self: start; margin-top: 6px; }
+.access-form form > .action { justify-self: stretch; min-height: 50px; margin-top: 4px; }
 .form-field { display: grid; gap: 8px; min-width: 0; }
 .form-field label, .file-label { font-size: .95rem; font-weight: 600; }
 .form-field input, .form-field textarea, .form-field select { width: 100%; min-width: 0; padding: 12px 14px; border: 1px solid #aa9481; border-radius: 5px; color: var(--ink); background: #fffaf3; min-height: 48px; caret-color: var(--clay); }
@@ -40,7 +41,13 @@ form > .action { justify-self: start; margin-top: 6px; }
 .form-field [aria-invalid=true] { border-color: #9c3026; }
 .form-field small { font-size: .85rem; line-height: 1.55; color: var(--muted); }
 .form-field .field-error { color: #902c24; }
-.password-field .text-button { font-size: .85rem; }
+.input-wrap { position: relative; display: flex; align-items: center; }
+.input-wrap input { padding-right: 96px; }
+.field-toggle { position: absolute; right: 6px; min-width: 44px; min-height: 40px; padding: 0 12px; border: 0; border-radius: 4px; background: transparent; color: var(--clay); font: 600 .85rem 'DM Sans', sans-serif; cursor: pointer; }
+.field-toggle:hover { background: #efe0cf; }
+.field-toggle:focus-visible { outline: 3px solid var(--sun); outline-offset: 0; }
+.field-footer { display: flex; justify-content: flex-end; font-size: .9rem; }
+.field-footer a { min-height: 32px; display: inline-flex; align-items: center; }
 .form-feedback { padding: 14px 18px; border-radius: 6px; margin: 0 0 24px; }
 .form-feedback p { margin: 0; }
 .form-feedback.error { background: #f7ded6; color: #78291f; }
@@ -50,7 +57,8 @@ form > .action { justify-self: start; margin-top: 6px; }
 .policy { background: #efe0cf; padding: 14px 16px; border-radius: 6px; font-size: .9rem; }
 .policy summary { cursor: pointer; font-weight: 600; }
 .policy div { white-space: pre-wrap; margin-top: 14px; max-height: 300px; overflow: auto; }
-.access-links { display: grid; gap: 12px; margin-top: 28px; font-size: .9rem; }
+.access-links { display: grid; gap: 6px; margin-top: 32px; padding-top: 22px; border-top: 1px solid var(--rule); font-size: .95rem; color: var(--muted); }
+.access-links p { margin: 0; max-width: none; }
 .page-heading { display: flex; justify-content: space-between; gap: 24px; align-items: center; margin-bottom: 36px; }
 .page-heading h1 { margin-bottom: 8px; }
 .page-heading p { margin: 0; color: var(--muted); }

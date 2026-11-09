@@ -38,10 +38,10 @@ export function Login() {
     {unverified && <p>Aún no verificaste tu correo. <Link to="/registro/enviado" state={{ email }}>Enviar otro enlace de verificación</Link></p>}
     <form onSubmit={event => void form.run(event, async data => { await session.login(formValue(data, 'email'), String(data.get('password'))); navigate(safeReturnTo(search.get('returnTo')), { replace: true }) })}>
       <Field label="Correo electrónico" name="email" type="email" required autoComplete="email" maxLength={320} error={form.error} value={email} onChange={event => setEmail(event.target.value)} />
-      <Password label="Contraseña" name="password" required minLength={1} maxLength={128} autoComplete="current-password" error={form.error} />
+      <Password label="Contraseña" name="password" required minLength={1} maxLength={128} autoComplete="current-password" error={form.error} footer={<Link to="/recuperar-acceso">Olvidé mi contraseña</Link>} />
       <Submit busy={form.busy} busyLabel="Ingresando…">Ingresar</Submit>
     </form>
-    <div className="access-links"><Link to="/recuperar-acceso">Olvidé mi contraseña</Link><Link to="/registro">Crear una cuenta</Link><Link to="/registro/enviado" state={{ email }}>Necesito verificar mi correo</Link></div>
+    <div className="access-links"><p>¿Primera vez en Hila? <Link to="/registro">Crear una cuenta</Link></p><p>¿No llegó el correo de verificación? <Link to="/registro/enviado" state={{ email }}>Pedir otro enlace</Link></p></div>
     {MockAccounts && <Suspense fallback={null}><MockAccounts onPick={fill} /></Suspense>}
   </AccessLayout>
 }
@@ -65,7 +65,7 @@ export function Register() {
       {policy ? <><details className="policy"><summary>{policy.title} · versión {policy.version}</summary><div>{policy.content}</div></details><label className="check-field"><input name="consent" type="checkbox" required /> He leído y acepto esta política de tratamiento de datos.</label></> : <p role="status">{policies.isPending ? 'Cargando la política vigente…' : 'La política no está disponible.'}</p>}
       <Submit busy={form.busy} disabled={!policy} busyLabel="Creando tu cuenta…">Crear mi cuenta</Submit>
     </form>
-    <div className="access-links"><Link to="/ingresar">Ya tengo cuenta</Link></div>
+    <div className="access-links"><p>¿Ya tienes cuenta? <Link to="/ingresar">Ingresar</Link></p></div>
   </AccessLayout>
 }
 
@@ -77,7 +77,7 @@ export function CheckEmail() {
       <Field label="Correo electrónico" name="email" type="email" required autoComplete="email" maxLength={320} error={form.error} defaultValue={email} />
       <Submit busy={form.busy} busyLabel="Enviando…">Reenviar verificación</Submit>
     </form>
-    <div className="access-links"><Link to="/ingresar">Volver a ingresar</Link></div>
+    <div className="access-links"><p><Link to="/ingresar">Volver a ingresar</Link></p></div>
   </AccessLayout>
 }
 
@@ -92,7 +92,7 @@ export function VerifyEmail() {
       {!token && <p>Este enlace no contiene un token de verificación.</p>}
       <Submit busy={form.busy} busyLabel="Verificando…">Verificar mi correo</Submit>
     </form>}
-    <div className="access-links"><Link to="/ingresar">Volver a ingresar</Link><Link to="/registro/enviado">Solicitar otro enlace de verificación</Link></div>
+    <div className="access-links"><p><Link to="/ingresar">Volver a ingresar</Link></p><p><Link to="/registro/enviado">Solicitar otro enlace de verificación</Link></p></div>
   </AccessLayout>
 }
 
@@ -104,7 +104,7 @@ export function ForgotAccess() {
       <Field label="Correo electrónico" name="email" type="email" required autoComplete="email" maxLength={320} error={form.error} defaultValue={email} />
       <Submit busy={form.busy} busyLabel="Enviando…">Enviar enlace</Submit>
     </form>
-    <div className="access-links"><Link to="/ingresar">Volver a ingresar</Link></div>
+    <div className="access-links"><p><Link to="/ingresar">Volver a ingresar</Link></p></div>
   </AccessLayout>
 }
 
@@ -117,11 +117,11 @@ export function ResetAccess() {
       if (data.get('password') !== data.get('confirmation')) throw new ApiFailure(422, { code: 'VALIDATION_FAILED', message: 'Las contraseñas no coinciden. Revisa ambos campos.', traceId: '', fieldErrors: [{ code: 'INVALID_FORMAT', field: 'confirmation', message: 'Escribe la misma contraseña en los dos campos.' }] })
       await api('/auth/password-resets', { method: 'POST', body: { token, password: String(data.get('password')) } }); form.setSuccess('Guardamos tu nueva contraseña. Ingresa de nuevo para continuar.')
     })}>
-      <Password label="Nueva contraseña" name="password" required minLength={12} maxLength={128} autoComplete="new-password" error={form.error} hint="Entre 12 y 128 caracteres. Puedes utilizar una frase larga." />
-      <Password label="Repite la nueva contraseña" name="confirmation" required minLength={12} maxLength={128} autoComplete="new-password" error={form.error} />
+      <Password label="Nueva contraseña" toggleName="nueva contraseña" name="password" required minLength={12} maxLength={128} autoComplete="new-password" error={form.error} hint="Entre 12 y 128 caracteres. Puedes utilizar una frase larga." />
+      <Password label="Repite la nueva contraseña" toggleName="contraseña repetida" name="confirmation" required minLength={12} maxLength={128} autoComplete="new-password" error={form.error} />
       {!token && <p>Este enlace no contiene un token de recuperación. <Link to="/recuperar-acceso">Solicitar otro enlace</Link></p>}
       <Submit busy={form.busy} busyLabel="Guardando…">Guardar contraseña</Submit>
     </form>}
-    <div className="access-links"><Link to="/ingresar">Volver a ingresar</Link></div>
+    <div className="access-links"><p><Link to="/ingresar">Volver a ingresar</Link></p></div>
   </AccessLayout>
 }

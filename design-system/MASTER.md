@@ -48,7 +48,7 @@ Las imágenes tienen recorte centrado y previsualización. Las acciones de publi
 
 Al cambiar de ruta dentro del espacio de acceso y perfiles, el contenido vuelve al inicio y el foco pasa al elemento principal, que también es el destino de «Saltar al contenido». Este destino programático no dibuja un contorno alrededor de toda la página; los enlaces, botones y campos conservan foco visible. El enlace de salto permanece oculto hasta recibir foco.
 
-Los campos enlazan su etiqueta, ayuda y error por identificadores. El resumen de error recibe foco y se anuncia como alerta; las confirmaciones se anuncian como estado. Mostrar u ocultar contraseña es un botón separado del envío y expone su estado con `aria-pressed`.
+Los campos enlazan su etiqueta, ayuda y error por identificadores. El resumen de error recibe foco y se anuncia como alerta; las confirmaciones se anuncian como estado. Mostrar u ocultar la contraseña es un botón dentro del campo, separado del envío; su nombre cambia entre «Mostrar» y «Ocultar» para anunciar el estado.
 
 ## Referencias
 
