@@ -1,7 +1,7 @@
 import { usePageTitle } from './page-title'
 import { formValue, nullableValue } from './form-values'
 import { reviewName, reviewTone } from './labels'
-import { useState, type FormEvent } from 'react'
+import { lazy, Suspense, useState, type FormEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { api, type Schemas } from './api/client'
@@ -13,6 +13,7 @@ import { photo, photoSrc } from './photos'
 import { useSession } from './session-context'
 import { Avatar, Breadcrumbs, Card, Chip, ChipGroup, DefinitionList, EmptyState, Icon, Notice, RadioCards, Timeline, type IconName, type TimelineItem } from './ui'
 
+const OrgSummary = import.meta.env.DEV && import.meta.env.VITE_API_MOCK === 'true' ? lazy(() => import('./Needs').then(module => ({ default: module.OrgSummary }))) : null
 type Page<T> = { items: T[]; totalPages: number }
 async function allTerritories() {
   const items: Schemas['Territory'][] = []
@@ -68,6 +69,7 @@ export function OrganizationDetail() {
   if (editing && owner) return <><button className="text-button" onClick={() => setEditing(false)}><Icon name="arrowLeft" size={18} /> Volver al perfil</button><OrganizationForm organization={org} onSaved={() => setEditing(false)} /></>
   const badge = <StatusBadge tone={reviewTone(org.verificationStatus)}>{reviewName(org.verificationStatus)}</StatusBadge>
   return <><div className="page-top"><Breadcrumbs items={[{ label: 'Mis organizaciones', to: '/mis-organizaciones' }, { label: org.name }]} />{owner && <button className="action" onClick={() => setEditing(true)}><Icon name="gear" size={20} />Editar organización</button>}</div><Feedback error={members.error} />
+    {OrgSummary && id && <Suspense fallback={null}><OrgSummary id={id} /></Suspense>}
     <div className="profile-layout"><ProfileCard name={org.name} subtitle={org.organizationType === 'FORMAL' ? 'Organización formal' : 'Colectivo comunitario'} description={org.description} avatar={org.avatar} cover={org.cover} fallbackPhoto={photoFor(org.id)}><div className="profile-badges">{badge}<VisibilityBadge visibility={org.visibility} /></div><DefinitionList items={[{ icon: 'pin', term: 'Territorio', children: territory ?? 'Por definir' }, ...(org.publicEmail ? [{ icon: 'mail' as const, term: 'Correo público', children: org.publicEmail }] : []), ...(org.publicWebsite ? [{ icon: 'eye' as const, term: 'Sitio web', children: org.publicWebsite }] : [])]} /></ProfileCard><Card as="aside" tone="soft" className="profile-side"><h2>Estado de la revisión</h2><div>{badge}</div>{org.statusReason && <p>{org.statusReason}</p>}<Notice>La aprobación habilita el perfil público en el piloto; no constituye una certificación legal.</Notice></Card></div>
     {owner && <><ImageEditor base={`/organizations/${id}`} images={org} onSaved={refresh} /><Publication base={`/organizations/${id}`} visibility={org.visibility} disabled={org.verificationStatus !== 'APPROVED'} link={`/organizaciones/${id}`} onSaved={refresh} /></>}
     <Card as="section" className="section-card history-card"><h2>Historial de revisión</h2><Feedback error={history.error || error} success={notice} />{history.isPending ? <p role="status">Consultando el historial…</p> : <Timeline label="Historial de revisión" items={historyItems(history.data?.items ?? [], 'Hace falta información', value => new Date(value).toLocaleDateString('es-CO'))} />}

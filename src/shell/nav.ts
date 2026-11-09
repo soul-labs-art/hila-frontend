@@ -7,7 +7,7 @@ import type { User } from '../session-context'
 export type NavItem = { to: string; label: string; icon: IconName; match?: string[] }
 export type Area = 'plain' | 'org' | 'admin'
 
-const orgSection = (pathname: string) => matchPath('/organizaciones/:id/:section', pathname)
+const orgSection = (pathname: string) => matchPath({ path: '/organizaciones/:id/:section', end: false }, pathname)
 /** Qué barra lateral pide la ruta. */
 export function areaOf(pathname: string, admin = false): Area {
   if (pathname.startsWith('/admin')) return admin ? 'admin' : 'plain'

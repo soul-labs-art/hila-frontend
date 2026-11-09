@@ -20,6 +20,9 @@ const Explore = planned ? lazy(() => import('./Explore').then(module => ({ defau
 const NeedDetail = planned ? lazy(() => import('./Explore').then(module => ({ default: module.NeedDetail }))) : null
 const ActivityList = planned ? lazy(() => import('./Activity').then(module => ({ default: module.ActivityList }))) : null
 const ActivityDetail = planned ? lazy(() => import('./Activity').then(module => ({ default: module.ActivityDetail }))) : null
+const Causes = planned ? lazy(() => import('./Causes').then(module => ({ default: module.Causes }))) : null
+const Needs = planned ? lazy(() => import('./Needs').then(module => ({ default: module.Needs }))) : null
+const NeedEditor = planned ? lazy(() => import('./NeedEditor').then(module => ({ default: module.NeedEditor }))) : null
 const Notices = planned ? lazy(() => import('./Notices').then(module => ({ default: module.Notices }))) : null
 
 function NotFound() {
@@ -39,6 +42,7 @@ export default function App() {
     {Explore && NeedDetail && <><Route path="explorar" element={<Protected><Suspense fallback={null}><Explore /></Suspense></Protected>} /><Route path="explorar/:needId" element={<Protected><Suspense fallback={null}><NeedDetail /></Suspense></Protected>} /></>}
     {ActivityList && ActivityDetail && <><Route path="actividad" element={<Protected><Suspense fallback={null}><ActivityList /></Suspense></Protected>} /><Route path="actividad/:applicationId" element={<Protected><Suspense fallback={null}><ActivityDetail /></Suspense></Protected>} /></>}
     {Notices && <Route path="avisos" element={<Protected><Suspense fallback={null}><Notices /></Suspense></Protected>} />}
+    {Causes && Needs && NeedEditor && <><Route path="organizaciones/:id/causas" element={<Protected><Suspense fallback={null}><Causes /></Suspense></Protected>} /><Route path="organizaciones/:id/necesidades" element={<Protected><Suspense fallback={null}><Needs /></Suspense></Protected>} /><Route path="organizaciones/:id/necesidades/nueva" element={<Protected><Suspense fallback={null}><NeedEditor /></Suspense></Protected>} /><Route path="organizaciones/:id/necesidades/:needId" element={<Protected><Suspense fallback={null}><NeedEditor /></Suspense></Protected>} /></>}
     {Gallery && <Route path="guia-ui" element={<Suspense fallback={null}><Gallery /></Suspense>} />}
     <Route path="*" element={<NotFound />} />
   </Route></Routes></>
