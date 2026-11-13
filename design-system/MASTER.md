@@ -68,3 +68,9 @@ La portada no cambia. El resto de la aplicación sigue las referencias visuales 
 ### Fotografías
 
 Las fotografías de ambiente vienen de Unsplash (Unsplash License) y se sirven como archivos locales desde `public/photos/`, nunca desde el sitio de origen. `public/photos/CREDITS.md` registra fotógrafo, ficha y licencia; `src/photos.ts` define el texto alternativo, el foco de recorte y el uso sugerido de cada una. Criterios: territorio y trabajo comunitario, paleta cálida, planos amplios, manos y detalles; sin retratos ni rostros en primer plano. Los avatares son círculos con iniciales, porque las cuentas de ejemplo son ficticias. Las tarjetas con foto llevan `alt=""` cuando el título ya describe el contenido, y sin pie de foto.
+
+### Registro
+
+La ruta /registro usa una composición editorial de dos columnas: wordmark oficial en la cabecera, mensaje y emblema a la izquierda, formulario sobre una tarjeta clara a la derecha. La acción de crear cuenta usa ciruela. En móvil el mensaje precede al formulario y se omiten el emblema grande y la cita para priorizar los campos. No hay indicador de pasos. La política y su versión vienen de la API; el consentimiento se renueva si cambia la versión.
+
+Las ramas del registro usan los SVG locales `public/brand/hila_rama_izquierda.svg` y `hila_rama_derecha.svg`; `hila_rama_botanica.svg` acompa?a el wordmark oficial en esta cabecera. La referencia de escritorio mide 1719 ? 915, con tarjeta de 730 px y cabecera de 77 px; los campos y la pol?tica siguen siendo controles HTML conectados a la API.

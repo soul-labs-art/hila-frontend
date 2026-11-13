@@ -27,9 +27,12 @@
 .topnav { display: none; }
 .guestnav { justify-self: end; display: flex; align-items: center; gap: 4px; }
 .guestnav a { min-height: 44px; display: inline-flex; align-items: center; padding: 0 12px; color: var(--ink); font-weight: 600; font-size: .95rem; text-decoration: none; border-radius: 999px; }
-.guestnav a[aria-current=page] { color: var(--clay); }
-.guestnav .guest-cta { padding: 0 16px; background: var(--clay); color: var(--paper); transition: background var(--ease); }
-.guestnav .guest-cta:hover { background: var(--clay-deep); }
+.guestnav a:not(.guest-cta)[aria-current=page] { color: var(--clay); }
+.guestnav .guest-cta,
+.guestnav a.guest-cta { padding: 0 16px; background: var(--clay); color: #fff; transition: background var(--ease); }
+.guestnav .guest-cta:hover,
+.guestnav a.guest-cta:hover { background: var(--clay-deep); color: #fff; }
+.guestnav a.guest-cta[aria-current=page] { color: #fff; }
 .burger, .bell { width: 44px; height: 44px; display: inline-grid; place-items: center; border: 0; border-radius: 12px; background: transparent; color: var(--ink); cursor: pointer; position: relative; transition: background var(--ease); }
 .burger:hover, .bell:hover { background: rgb(140 64 46 / .09); }
 .bell-dot { position: absolute; top: 8px; right: 9px; width: 11px; height: 11px; border-radius: 50%; background: var(--coral); border: 2px solid var(--linen-hi); }

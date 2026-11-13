@@ -1,3 +1,5 @@
+import { Icon } from './icons'
+import './register.css'
 import { formValue } from './form-values'
 import { lazy, Suspense, useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
@@ -51,24 +53,222 @@ export function Register() {
   const form = useSubmit(), navigate = useNavigate()
   const policies = useQuery({ queryKey: ['policies'], queryFn: () => api<Schemas['Policy'][]>('/policies/current'), retry: false })
   const policy = policies.data?.find(value => value.type === 'DATA_PROCESSING')
-  return <AccessLayout tab="Crear cuenta" title="Tu aporte empieza contigo." intro="Crea una cuenta personal. Desde ella puedes participar como voluntario o representar una organización.">
-    <Feedback error={form.error || policies.error} />
-    <form onSubmit={event => void form.run(event, async data => {
-      if (!policy) throw new Error('No pudimos cargar la política vigente. Vuelve a intentarlo.')
-      try { await api('/auth/registrations', { method: 'POST', body: { displayName: formValue(data, 'displayName'), email: formValue(data, 'email'), password: String(data.get('password')), adultConfirmed: data.get('adultConfirmed') === 'on', dataProcessingPolicyVersion: policy.version } }) }
-      catch (value) { if (value instanceof ApiFailure && value.detail.code === 'POLICY_VERSION_OUTDATED') void policies.refetch(); throw value }
-      navigate('/registro/enviado', { state: { email: formValue(data, 'email') } })
-    })}>
-      <Field label="Tu nombre" name="displayName" required maxLength={140} autoComplete="name" error={form.error} />
-      <Field label="Correo electrónico" name="email" type="email" required autoComplete="email" maxLength={320} error={form.error} />
-      <Password label="Contraseña" name="password" required minLength={12} maxLength={128} autoComplete="new-password" error={form.error} hint="Entre 12 y 128 caracteres. Puedes utilizar una frase larga." />
-      <label className="check-field"><input name="adultConfirmed" type="checkbox" required /> Soy mayor de 18 años.</label>
-      {policy ? <><details className="policy"><summary>{policy.title} · versión {policy.version}</summary><div>{policy.content}</div></details><label className="check-field"><input name="consent" type="checkbox" required /> He leído y acepto esta política de tratamiento de datos.</label></> : <p role="status">{policies.isPending ? 'Cargando la política vigente…' : 'La política no está disponible.'}</p>}
-      <Submit busy={form.busy} disabled={!policy} busyLabel="Creando tu cuenta…">Crear mi cuenta</Submit>
-      <p className="form-note">Te enviaremos un enlace para verificar tu correo.</p>
-    </form>
-    <div className="access-links"><p>¿Ya tienes cuenta? <Link to="/ingresar">Ingresar</Link></p></div>
-  </AccessLayout>
+  const [showPassword, setShowPassword] = useState(false)
+  const fieldError = (name: string) => form.error instanceof ApiFailure ? form.error.detail.fieldErrors?.filter(value => value.field === name).map(value => value.message).join(' ') : undefined
+  usePageTitle('Crear cuenta')
+
+  return (
+    <div className="register-layout-v2">
+      {/* Curva orgánica en esquina superior izquierda */}
+      <div className="corner-wave-top-left" aria-hidden="true">
+        <svg viewBox="0 0 160 160" preserveAspectRatio="none" fill="none">
+          <path d="M0 0 H160 C132 64 49 65 0 126 Z" fill="#8C402E" opacity="0.9" />
+          <path d="M0 0 L110 0 C95 40 50 85 0 110 Z" fill="#DE9935" opacity="0.6" />
+        </svg>
+      </div>
+
+      {/* Follaje botánico en las esquinas inferiores */}
+      <div className="register-foliage-v2 foliage-bottom-left" aria-hidden="true">
+        <img src="/brand/hila_rama_izquierda.svg" alt="" />
+      </div>
+      <div className="register-foliage-v2 foliage-bottom-right" aria-hidden="true">
+        <img src="/brand/hila_rama_derecha.svg" alt="" />
+      </div>
+
+      {/* Columna Izquierda: Mensaje editorial */}
+      <div className="register-left-col">
+        <h1 className="register-heading-title">Tu aporte empieza contigo.</h1>
+        <p className="register-heading-desc">
+          Crea una cuenta personal. Desde ella puedes participar como voluntario o representar una organización.
+        </p>
+
+        {/* Emblema con aura orgánica suave */}
+        <div className="register-emblem-wrap-v2">
+          <div className="register-emblem-aura-v2" aria-hidden="true" />
+          <img
+            src="/brand/hila-emblema.png"
+            alt=""
+            className="register-emblem-img-v2"
+          />
+        </div>
+
+        {/* Cita en cursiva */}
+        <div className="register-quote-box">
+          <p className="register-quote-text">
+            Lo que sabes hacer<br />
+            puede encontrar<br />
+            dónde hace falta.
+          </p>
+          <div className="register-quote-divider" aria-hidden="true" />
+        </div>
+      </div>
+
+      {/* Columna Derecha: Tarjeta blanca de Crear Cuenta */}
+      <div className="register-right-col">
+        <section className="register-card-v2" aria-labelledby="register-card-heading">
+          <h2 id="register-card-heading" className="card-title-v2">Crear cuenta</h2>
+          <p className="card-subtitle-v2">
+            Completa tus datos para empezar a ser parte de nuestra comunidad.
+          </p>
+
+          <Feedback error={form.error || policies.error} />
+
+          <form onSubmit={event => void form.run(event, async data => {
+            if (!policy || policies.isFetching) throw new Error('No pudimos cargar la política vigente. Vuelve a intentarlo.')
+            try {
+              await api('/auth/registrations', {
+                method: 'POST',
+                body: {
+                  displayName: formValue(data, 'displayName'),
+                  email: formValue(data, 'email'),
+                  password: String(data.get('password')),
+                  adultConfirmed: data.get('adultConfirmed') === 'on',
+                  dataProcessingPolicyVersion: policy.version
+                }
+              })
+            } catch (value) {
+              if (value instanceof ApiFailure && value.detail.code === 'POLICY_VERSION_OUTDATED') void policies.refetch()
+              throw value
+            }
+            navigate('/registro/enviado', { state: { email: formValue(data, 'email') } })
+          })}>
+            {/* Campo: Tu nombre */}
+            <div className="card-field-v2">
+              <label htmlFor="displayName">Tu nombre</label>
+              <div className="card-input-wrap-v2">
+                <span className="input-icon-v2" aria-hidden="true">
+                  <Icon name="person" size={19} />
+                </span>
+                <input
+                  aria-invalid={!!fieldError('displayName')}
+                  aria-describedby={fieldError('displayName') ? 'displayName-error' : undefined}
+                  id="displayName"
+                  name="displayName"
+                  type="text"
+                  required
+                  maxLength={140}
+                  autoComplete="name"
+                  placeholder="Escribe tu nombre completo"
+                />
+              </div>
+              {fieldError('displayName') && <small className="register-field-error" id="displayName-error">{fieldError('displayName')}</small>}
+            </div>
+
+            {/* Campo: Correo electrónico */}
+            <div className="card-field-v2">
+              <label htmlFor="email">Correo electrónico</label>
+              <div className="card-input-wrap-v2">
+                <span className="input-icon-v2" aria-hidden="true">
+                  <Icon name="mail" size={19} />
+                </span>
+                <input
+                  aria-invalid={!!fieldError('email')}
+                  aria-describedby={fieldError('email') ? 'email-error' : undefined}
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  maxLength={320}
+                  autoComplete="email"
+                  placeholder="ejemplo@correo.com"
+                />
+              </div>
+              {fieldError('email') && <small className="register-field-error" id="email-error">{fieldError('email')}</small>}
+            </div>
+
+            {/* Campo: Contraseña */}
+            <div className="card-field-v2">
+              <label htmlFor="password">Contraseña</label>
+              <div className="card-input-wrap-v2 has-toggle">
+                <span className="input-icon-v2" aria-hidden="true">
+                  <Icon name="lock" size={19} />
+                </span>
+                <input
+                  aria-invalid={!!fieldError('password')}
+                  id="password"
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  minLength={12}
+                  maxLength={128}
+                  autoComplete="new-password"
+                  placeholder="Mínimo 12 caracteres"
+                  aria-describedby={fieldError('password') ? 'password-hint password-error' : 'password-hint'}
+                />
+                <button
+                  type="button"
+                  className="password-toggle-v2"
+                  aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  <Icon name={showPassword ? 'eyeOff' : 'eye'} size={19} />
+                </button>
+              </div>
+              {fieldError('password') && <small className="register-field-error" id="password-error">{fieldError('password')}</small>}
+              <p id="password-hint" className="field-hint-v2">
+                Entre 12 y 128 caracteres. Puedes utilizar una frase larga.
+              </p>
+            </div>
+
+            {/* Checkbox: Mayor de 18 años */}
+            <label className="checkbox-row-v2">
+              <input
+                id="adultConfirmed"
+                name="adultConfirmed"
+                type="checkbox"
+                required
+              />
+              <span>Soy mayor de 18 años.</span>
+            </label>
+
+            {/* Política de datos */}
+            {policy ? (
+              <>
+                <details key={policy.version} className="policy-accordion-v2">
+                  <summary>
+                    <span className="policy-arrow-v2" aria-hidden="true">▶</span>
+                    <span className="policy-title-v2">
+                      {policy.title} · versión {policy.version}
+                    </span>
+                    <span className="policy-chevron-v2" aria-hidden="true">›</span>
+                  </summary>
+                  <div className="policy-body-v2">
+                    {policy.content}
+                  </div>
+                </details>
+
+                <label className="checkbox-row-v2">
+                  <input
+                    key={policy.version}
+                    id="consent"
+                    name="consent"
+                    type="checkbox"
+                    required
+                  />
+                  <span>He leído y acepto esta política de tratamiento de datos.</span>
+                </label>
+              </>
+            ) : (
+              <div className="policy-status-v2"><p role="status">
+                {policies.isPending ? 'Cargando la política vigente…' : 'La política no está disponible.'}
+              </p>{!policies.isPending && <button type="button" className="text-button" disabled={policies.isFetching} onClick={() => void policies.refetch()}>Volver a cargar la política</button>}</div>
+            )}
+
+            {/* Botón de envío en vino/ciruela oscuro */}
+            <button
+              className="submit-btn-v2"
+              type="submit"
+              disabled={form.busy || !policy || policies.isFetching}
+              aria-busy={form.busy}
+            >
+              <span>{form.busy ? 'Creando tu cuenta…' : 'Crear mi cuenta'}</span>
+              <Icon name="arrowRight" size={17} />
+            </button>
+          </form>
+        </section>
+      </div>
+    </div>
+  )
 }
 
 export function CheckEmail() {

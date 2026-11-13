@@ -40,6 +40,9 @@ const paths = {
   trace: <><circle cx="6" cy="5" r="2" /><circle cx="6" cy="12" r="2" /><circle cx="6" cy="19" r="2" /><path d="M6 7v3M6 14v3M12 5h8M12 12h6M12 19h8" /></>,
   lock: <><rect x="5" y="11" width="14" height="10" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></>,
   more: <path d="M12 6v.1M12 12v.1M12 18v.1" strokeWidth="2.8" />,
+  handshake: <><path d="m11 17 2 2a1 1 0 0 0 1.4 0l4.3-4.3a1 1 0 0 0 0-1.4l-2.6-2.6a1 1 0 0 0-1.4 0L12 13" /><path d="m13 7-2-2a1 1 0 0 0-1.4 0L5.3 9.3a1 1 0 0 0 0 1.4l2.6 2.6a1 1 0 0 0 1.4 0L12 11" /><path d="m2 14 3.5-3.5" /><path d="m22 10-3.5 3.5" /></>,
+  sproutTwoLeaves: <><path d="M12 21v-8" /><path d="M12 13c-3-4-8-3-8 2 3 1 7 0 8-2z" /><path d="M12 13c3-4 8-3 8 2-3 1-7 0-8-2z" /></>,
+  community: <><circle cx="12" cy="7" r="3.5" /><path d="M5 20v-1a7 7 0 0 1 14 0v1" /><path d="M18 8.5a3 3 0 0 1 0 5" /><path d="M6 8.5a3 3 0 0 0 0 5" /><path d="M20 20v-.5a5.5 5.5 0 0 0-3-4.8" /><path d="M4 20v-.5a5.5 5.5 0 0 1 3-4.8" /></>,
 } satisfies Record<string, ReactNode>
 
 export type IconName = keyof typeof paths
