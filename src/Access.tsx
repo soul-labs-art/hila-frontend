@@ -1,5 +1,7 @@
 import { Icon } from './icons'
 import './register.css'
+import './login.css'
+import './recovery.css'
 import { formValue } from './form-values'
 import { lazy, Suspense, useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
@@ -36,17 +38,50 @@ export function Login() {
   const form = useSubmit(), [email, setEmail] = useState(''), navigate = useNavigate(), [search] = useSearchParams(), session = useSession()
   const unverified = form.error instanceof ApiFailure && form.error.detail.code === 'EMAIL_NOT_VERIFIED'
   function fill(value: string, password: string) { setEmail(value); const input = document.getElementById('password') as HTMLInputElement | null; if (input) { input.value = password; input.focus() } }
-  return <AccessLayout tab="Ingresar" title="Vuelve a tu espacio en Hila." intro="Ingresa para cuidar tu perfil y acompañar tus organizaciones.">
-    <Feedback error={form.error} />
-    {unverified && <p>Aún no verificaste tu correo. <Link to="/registro/enviado" state={{ email }}>Enviar otro enlace de verificación</Link></p>}
-    <form onSubmit={event => void form.run(event, async data => { await session.login(formValue(data, 'email'), String(data.get('password'))); navigate(safeReturnTo(search.get('returnTo')), { replace: true }) })}>
-      <Field label="Correo electrónico" name="email" type="email" required autoComplete="email" maxLength={320} error={form.error} value={email} onChange={event => setEmail(event.target.value)} />
-      <Password label="Contraseña" name="password" required minLength={1} maxLength={128} autoComplete="current-password" error={form.error} footer={<Link to="/recuperar-acceso">Olvidé mi contraseña</Link>} />
-      <Submit busy={form.busy} busyLabel="Ingresando…">Ingresar</Submit>
-    </form>
-    <div className="access-links"><p>¿Primera vez en Hila? <Link to="/registro">Crear una cuenta</Link></p><p>¿No llegó el correo de verificación? <Link to="/registro/enviado" state={{ email }}>Pedir otro enlace</Link></p></div>
-    {MockAccounts && <Suspense fallback={null}><MockAccounts onPick={fill} /></Suspense>}
-  </AccessLayout>
+  usePageTitle('Iniciar sesión')
+  return <div className="login-layout">
+    <div className="login-decoration" aria-hidden="true">
+      <svg className="login-corner" viewBox="0 0 180 155" preserveAspectRatio="none"><path d="M0 0H180C154 76 54 68 0 155Z" fill="currentColor" /></svg>
+      <img className="login-branch login-branch-left" src="/brand/hila_rama_izquierda.svg" alt="" />
+      <img className="login-branch login-branch-right" src="/brand/hila_rama_derecha.svg" alt="" />
+      <svg className="login-hills" viewBox="0 0 850 180" preserveAspectRatio="none">
+        <path d="M0 55C160-65 240 150 440 110S610 47 850 180H0Z" fill="#d9805f" />
+        <path d="M0 76C130 2 205 160 355 138L460 180H0Z" fill="#7a4f63" />
+        <path d="M0 154C160 56 230 118 390 180H0Z" fill="#b1a44e" />
+        <path d="M65 180C270 54 355 22 600 180Z" fill="#e6a93f" />
+        <path d="M65 180C140 131 180 120 230 120L360 180Z" fill="#7a8256" />
+      </svg>
+    </div>
+    <div className="login-story">
+      <Link className="login-brand" to="/" aria-label="Hila, inicio">
+        <img className="login-brand-emblem" src="/brand/hila-emblema.png" alt="" />
+        <span className="login-brand-divider" aria-hidden="true" />
+        <span className="login-wordmark"><img src="/brand/hila-wordmark-delgado.png" alt="" /></span>
+      </Link>
+      <div className="login-welcome">
+        <p className="login-welcome-title">Bienvenido<br />de nuevo<svg className="login-rays" viewBox="0 0 90 80" aria-hidden="true"><path d="M13 35l2-28M38 43l16-25M57 60l27-12" /></svg></p>
+        <p className="login-welcome-description">Gracias por seguir sumando tu tiempo, conocimiento y habilidades a causas que generan un <em>impacto real.</em></p>
+        <div className="login-welcome-rule" aria-hidden="true" />
+      </div>
+    </div>
+    <div className="login-card-wrap">
+      <div className="login-card-back" aria-hidden="true"><img src="/brand/hila_rama_botanica.svg" alt="" /></div>
+      <section className="login-card" aria-labelledby="login-heading">
+        <h1 id="login-heading">Iniciar sesión</h1>
+        <p className="login-intro">Ingresa con tu correo y contraseña para continuar.</p>
+        <Feedback error={form.error} />
+        {unverified && <p className="login-verification">Aún no verificaste tu correo. <Link to="/registro/enviado" state={{ email }}>Enviar otro enlace de verificación</Link></p>}
+        <form onSubmit={event => void form.run(event, async data => { await session.login(formValue(data, 'email'), String(data.get('password'))); navigate(safeReturnTo(search.get('returnTo')), { replace: true }) })}>
+          <Field label="Correo electrónico" name="email" type="email" required autoComplete="email" maxLength={320} error={form.error} value={email} onChange={event => setEmail(event.target.value)} placeholder="ejemplo@correo.com" adornment={<span className="login-email-icon"><Icon name="mail" size={26} /></span>} />
+          <Password label="Contraseña" name="password" required minLength={1} maxLength={128} autoComplete="current-password" error={form.error} placeholder="Tu contraseña" footer={<Link to="/recuperar-acceso">¿Olvidaste tu contraseña?</Link>} />
+          <Submit busy={form.busy} busyLabel="Ingresando…">Iniciar sesión</Submit>
+        </form>
+        <div className="login-divider" aria-hidden="true"><span /><Icon name="sprout" size={28} /><span /></div>
+        <p className="login-signup">¿No tienes una cuenta? <Link to="/registro">Crear una cuenta</Link></p>
+        {MockAccounts && <Suspense fallback={null}><MockAccounts onPick={fill} /></Suspense>}
+      </section>
+    </div>
+  </div>
 }
 
 export function Register() {
@@ -300,14 +335,36 @@ export function VerifyEmail() {
 
 export function ForgotAccess() {
   const form = useSubmit(), email = emailFromState(useLocation().state)
-  return <AccessLayout tab="Recuperar acceso" title="Recupera tu acceso." intro="Escribe el correo de tu cuenta para solicitar un enlace de recuperación.">
-    <Feedback error={form.error} success={form.success} />
-    <form onSubmit={event => void form.run(event, async data => { await api('/auth/password-reset-requests', { method: 'POST', body: { email: formValue(data, 'email') } }); form.setSuccess(linkSent) })}>
-      <Field label="Correo electrónico" name="email" type="email" required autoComplete="email" maxLength={320} error={form.error} defaultValue={email} />
-      <Submit busy={form.busy} busyLabel="Enviando…">Enviar enlace</Submit>
-    </form>
-    <div className="access-links"><p><Link to="/ingresar">Volver a ingresar</Link></p></div>
-  </AccessLayout>
+  usePageTitle('Recuperar acceso')
+  return <div className="recovery-layout">
+    <div className="recovery-decoration" aria-hidden="true">
+      <svg className="recovery-corner" viewBox="0 0 180 155" preserveAspectRatio="none"><path d="M0 0H180C154 76 54 68 0 155Z" fill="#834b61" /></svg>
+      <img className="recovery-branch-left" src="/brand/hila_rama_botanica.svg" alt="" />
+      <img className="recovery-branch-right" src="/brand/hila_rama_derecha.svg" alt="" />
+      <svg className="recovery-hills" viewBox="0 0 340 180" preserveAspectRatio="none"><path d="M0 15C130-15 138 133 340 180H0Z" fill="#e7a079" /><path d="M0 65C100 82 166 110 220 180H0Z" fill="#805064" /><path d="M0 140C150 46 168 50 340 180H0Z" fill="#e6a93f" /><path d="M0 180C100 83 170 92 265 180Z" fill="#85906c" /></svg>
+    </div>
+    <aside className="recovery-story">
+      <img className="recovery-emblem" src="/brand/hila-emblema.png" alt="" />
+      <p className="recovery-story-title">Lo que sabes hacer<br />puede encontrar<br />dónde hace falta.</p>
+      <p className="recovery-story-description">Un espacio para acercar tus capacidades a las causas de tu territorio.</p>
+      <div className="recovery-story-rule" aria-hidden="true" />
+    </aside>
+    <section className="recovery-card" aria-labelledby="recovery-heading">
+      <div className="recovery-mail-art" aria-hidden="true"><svg viewBox="0 0 240 210" fill="none">
+        <path d="M24 60C32 31 62 44 86 18S157 0 189 21 236 65 235 112 210 202 177 198 141 176 96 182 22 155 14 124 9 87 24 60Z" fill="#fbe9d9" />
+        <g stroke="#a4452e" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><rect x="69" y="83" width="105" height="70" rx="10" /><path d="m73 88 44 33a8 8 0 0 0 10 0l43-33" /><path d="m73 146 30-29m67 29-30-29" stroke="#e8b277" /><path d="m152 47 2 18m25-12-10 17m29 1-17 9" /></g>
+        <path d="M64 164C43 152 34 136 28 116c27 10 37 27 36 48Z" fill="#b8a187" /><path d="M169 172c10-27 29-42 51-46-10 25-27 41-51 46Z" fill="#efbd59" /><path d="m64 164-30-41m135 49 42-39" stroke="#fff8f2" strokeWidth="1.5" />
+      </svg></div>
+      <h1 id="recovery-heading">Recupera tu acceso</h1>
+      <p className="recovery-intro">Escribe el correo de tu cuenta para recibir un enlace de recuperación.</p>
+      <Feedback error={form.error} success={form.success} />
+      <form onSubmit={event => void form.run(event, async data => { await api('/auth/password-reset-requests', { method: 'POST', body: { email: formValue(data, 'email') } }); form.setSuccess(linkSent) })}>
+        <Field label="Correo electrónico" name="email" type="email" required autoComplete="email" maxLength={320} error={form.error} defaultValue={email} placeholder="ejemplo@correo.com" adornment={<span className="recovery-email-icon"><Icon name="mail" size={27} /></span>} />
+        <Submit busy={form.busy} busyLabel="Enviando…">Enviar enlace</Submit>
+      </form>
+      <div className="recovery-return"><Link to="/ingresar">Volver a ingresar</Link></div>
+    </section>
+  </div>
 }
 
 export function ResetAccess() {

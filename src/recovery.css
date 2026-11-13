@@ -1,0 +1,115 @@
+﻿/* Recuperación de acceso: misma identidad y controles conectados a la API. */
+.app-shell.is-recovery-shell { background: radial-gradient(ellipse at 45% 35%, #fffaf4, #fcf1e8); }
+.is-recovery-shell .topbar { border: 0; background: transparent; backdrop-filter: none; }
+.is-recovery-shell .topbar-inner { width: min(100% - 64px, 1280px); min-height: 118px; }
+.recovery-brand { display: flex; align-items: center; gap: 16px; }
+.recovery-brand > img { width: 43px; height: 65px; object-fit: contain; }
+.recovery-brand .topbar-brand { width: 126px; height: 72px; overflow: hidden; }
+.recovery-brand .brand img { transform: scale(1.55); }
+.is-recovery-shell .guestnav { gap: 20px; }
+.is-recovery-shell .guestnav a { font-size: 20px; }
+.is-recovery-shell .guestnav .guest-cta { padding-inline: 24px; }
+.is-recovery-shell .workspace-content { width: min(100% - 64px, 1226px); padding: 20px 0 80px; }
+.recovery-layout { display: grid; grid-template-columns: minmax(0, 396px) minmax(0, 770px); gap: 60px; align-items: start; }
+.recovery-story, .recovery-card { position: relative; z-index: 1; min-width: 0; }
+.recovery-story { padding-top: 14px; }
+.recovery-emblem { display: block; width: 300px; height: 270px; object-fit: contain; }
+.workspace-content .recovery-story-title { margin: 32px 0 20px; color: #591c3b; font: 600 40px/1.18 'Fraunces', Georgia, serif; letter-spacing: -.025em; }
+.workspace-content .recovery-story-description { margin: 0; color: var(--ink); font-size: 18px; line-height: 1.45; max-width: 38ch; }
+.recovery-story-rule { width: 104px; height: 4px; border-radius: 3px; background: var(--sun); margin-top: 20px; }
+.recovery-card { padding: 40px 54px 38px; border-radius: 32px; background: rgb(255 252 248 / .83); box-shadow: 0 10px 30px rgb(129 66 42 / .08); overflow: hidden; }
+.workspace-content .recovery-card h1 { position: relative; margin: 0 0 16px; font: 600 46px/1.15 'Fraunces', Georgia, serif; color: #591c3b; letter-spacing: -.025em; }
+.workspace-content .recovery-intro { position: relative; font-size: 21px; line-height: 1.45; margin: 0 0 36px; max-width: 38ch; padding-right: 90px; }
+.recovery-mail-art { position: absolute; top: 0; right: -8px; width: 245px; height: 210px; pointer-events: none; }
+.recovery-mail-art svg { width: 100%; height: 100%; }
+.recovery-card form { position: relative; gap: 30px; }
+.recovery-card .form-field { gap: 5px; }
+.recovery-card .form-field label { font-size: 20px; }
+.recovery-card .form-field input { min-height: 62px; padding: 12px 18px 12px 80px; border-radius: 18px; border: 1.5px solid #cdb8b6; background: transparent; font-size: 20px; }
+.recovery-card .form-field input::placeholder { color: #64666b; }
+.recovery-email-icon { position: absolute; left: 25px; display: flex; color: #693226; pointer-events: none; }
+.recovery-card .action.primary { min-height: 64px; border-radius: 18px; border: 0; background: linear-gradient(110deg, #603047, #58203e); color: white; font-size: 20px; font-weight: 700; gap: 20px; box-shadow: none; }
+.recovery-card .action.primary:hover:not(:disabled) { background: var(--plum-deep); }
+.recovery-return { position: relative; border-top: 1px solid #e7d0c5; margin-top: 36px; padding-top: 18px; }
+.recovery-return a { display: inline-flex; align-items: center; min-height: 44px; font-size: 20px; }
+.is-recovery-shell .workspace-footer { position: relative; z-index: 1; width: min(100% - 64px, 1172px); padding: 14px 0 30px; font-size: 17px; color: var(--plum-deep); }
+.recovery-decoration { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.recovery-corner { position: absolute; top: 0; left: 0; width: 165px; height: 155px; }
+.recovery-branch-left { position: absolute; top: 165px; left: max(32px, calc(50% - 755px)); width: 150px; height: 480px; }
+.recovery-branch-right { position: absolute; right: -25px; bottom: -10px; width: 190px; height: 280px; }
+.recovery-hills { position: absolute; left: 0; bottom: 0; width: 330px; height: 175px; }
+@media (min-width: 1440px) {
+ .is-recovery-shell .workspace-content { margin-left: calc((100% - 1226px) / 2 + 66px); margin-right: 0; }
+ .is-recovery-shell .workspace-footer { margin-left: calc((100% - 1226px) / 2 + 66px); margin-right: 0; }
+}
+@media (min-width: 800px) and (max-width: 1439px) {
+ .recovery-layout { grid-template-columns: minmax(0, .75fr) minmax(0, 1.25fr); gap: 40px; }
+ .recovery-card { padding: 32px; }
+ .workspace-content .recovery-card h1 { font-size: 38px; }
+ .workspace-content .recovery-intro { font-size: 18px; padding-right: 40px; }
+ .workspace-content .recovery-story-title { font-size: 32px; }
+ .recovery-emblem { width: 100%; height: 240px; }
+ .recovery-mail-art { width: 150px; height: 150px; opacity: .55; }
+ .recovery-branch-left { left: -65px; opacity: .4; }
+ .recovery-corner { width: 85px; height: 80px; }
+}
+@media (min-width: 800px) and (max-height: 850px) {
+ .is-recovery-shell .topbar-inner { min-height: 90px; }
+ .is-recovery-shell .workspace-content { padding: 14px 0 32px; }
+ .recovery-emblem { height: 200px; width: min(100%, 250px); }
+ .workspace-content .recovery-story-title { font-size: 32px; margin-top: 20px; }
+ .workspace-content .recovery-story-description { font-size: 16px; }
+ .recovery-card { padding: 28px 32px; }
+ .workspace-content .recovery-card h1 { font-size: 38px; }
+ .workspace-content .recovery-intro { font-size: 17px; margin-bottom: 24px; }
+ .recovery-card .form-field label { font-size: 16px; }
+ .recovery-card .form-field input { min-height: 52px; font-size: 17px; }
+ .recovery-card form { gap: 22px; }
+ .recovery-card .action.primary { min-height: 52px; font-size: 17px; }
+ .recovery-return { margin-top: 24px; padding-top: 12px; }
+ .recovery-return a { font-size: 17px; }
+ .recovery-mail-art { width: 160px; height: 145px; opacity: .55; }
+ .is-recovery-shell .workspace-footer { font-size: 15px; padding-bottom: 20px; }
+ .recovery-branch-left { height: 350px; top: 110px; }
+ .recovery-hills { height: 100px; width: 230px; }
+}
+@media (max-width: 799px) {
+ .is-recovery-shell .topbar-inner { width: calc(100% - 32px); min-height: 88px; }
+ .recovery-brand { gap: 6px; }
+ .recovery-brand > img { width: 24px; height: 44px; }
+ .recovery-brand .topbar-brand { width: 82px; height: 54px; }
+ .is-recovery-shell .guestnav { gap: 0; }
+ .is-recovery-shell .guestnav a { font-size: 14px; padding-inline: 10px; }
+ .is-recovery-shell .guestnav .guest-cta { padding-inline: 12px; }
+ .is-recovery-shell .workspace-content { width: min(100% - 40px, 560px); padding: 20px 0 40px; }
+ .recovery-layout { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+ .recovery-story { padding: 0; display: grid; grid-template-columns: 100px minmax(0, 1fr); column-gap: 18px; align-items: center; }
+ .recovery-emblem { width: 100px; height: 100px; }
+ .workspace-content .recovery-story-title { font-size: 25px; margin: 0; }
+ .workspace-content .recovery-story-description { grid-column: 1 / -1; font-size: 16px; margin-top: 14px; }
+ .recovery-story-rule { grid-column: 1 / -1; margin-top: 14px; width: 80px; height: 3px; }
+ .recovery-card { padding: 28px 24px; border-radius: 26px; }
+ .workspace-content .recovery-card h1 { font-size: 32px; max-width: 13ch; }
+ .workspace-content .recovery-intro { font-size: 16px; padding: 0; margin-bottom: 24px; }
+ .recovery-mail-art { width: 100px; height: 100px; opacity: .35; }
+ .recovery-card .form-field label { font-size: 16px; }
+ .recovery-card .form-field input { min-height: 54px; font-size: 16px; padding-left: 50px; }
+ .recovery-email-icon { left: 14px; }
+ .recovery-card form { gap: 22px; }
+ .recovery-card .action.primary { min-height: 54px; font-size: 17px; }
+ .recovery-return { margin-top: 24px; padding-top: 12px; }
+ .recovery-return a { font-size: 16px; }
+ .is-recovery-shell .workspace-footer { width: min(100% - 40px, 560px); font-size: 14px; padding-bottom: 24px; }
+ .recovery-branch-left, .recovery-branch-right { display: none; }
+ .recovery-corner { display: none; }
+ .recovery-hills { width: 130px; height: 75px; opacity: .4; }
+}
+@media (max-width: 360px) {
+ .recovery-brand > img { display: none; }
+ .recovery-card { padding: 24px 18px; }
+ .recovery-story { grid-template-columns: 80px minmax(0, 1fr); gap: 12px; }
+ .recovery-emblem { width: 80px; height: 90px; }
+ .workspace-content .recovery-story-title { font-size: 22px; }
+ .workspace-content .recovery-card h1 { font-size: 29px; }
+}
+@media (max-width: 799px) { .recovery-mail-art { display: none; } }

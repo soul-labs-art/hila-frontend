@@ -74,3 +74,13 @@ Las fotografías de ambiente vienen de Unsplash (Unsplash License) y se sirven c
 La ruta /registro usa una composición editorial de dos columnas: wordmark oficial en la cabecera, mensaje y emblema a la izquierda, formulario sobre una tarjeta clara a la derecha. La acción de crear cuenta usa ciruela. En móvil el mensaje precede al formulario y se omiten el emblema grande y la cita para priorizar los campos. No hay indicador de pasos. La política y su versión vienen de la API; el consentimiento se renueva si cambia la versión.
 
 Las ramas del registro usan los SVG locales `public/brand/hila_rama_izquierda.svg` y `hila_rama_derecha.svg`; `hila_rama_botanica.svg` acompa?a el wordmark oficial en esta cabecera. La referencia de escritorio mide 1719 ? 915, con tarjeta de 730 px y cabecera de 77 px; los campos y la pol?tica siguen siendo controles HTML conectados a la API.
+
+### Inicio de sesión
+
+La ruta /ingresar usa el emblema y wordmark oficiales como enlace de inicio, bienvenida editorial y tarjeta clara sobre una base ciruela inclinada. Las ramas SVG y las capas de paisaje son decorativas; en móvil la bienvenida precede al formulario. Se conservan los errores por campo, el foco en la alerta, el control de contraseña y la recuperación de acceso. El acceso admite las contraseñas existentes sin imponer el mínimo de longitud del registro.
+
+Las vistas de acceso responden también a la altura disponible: con dos columnas y hasta 850 px de alto reducen márgenes, tipografía y separación manteniendo campos de al menos 48 px. En móvil y ventanas muy bajas se permite desplazamiento vertical natural; el contenido nunca se recorta ni se escala con transformaciones.
+
+### Recuperación de acceso
+
+/recuperar-acceso presenta el emblema y el mensaje de marca junto a una tarjeta clara con ilustración de correo decorativa. En móvil se apilan y la ilustración se omite para preservar la lectura. La tarjeta se compacta en ventanas de hasta 850 px de alto. El formulario conserva la API real, errores accesibles y confirmación genérica para no revelar la existencia de una cuenta.

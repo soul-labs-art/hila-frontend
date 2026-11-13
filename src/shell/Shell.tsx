@@ -47,8 +47,10 @@ export default function Shell() {
   const bell = user && features.notifications && <Link className="bell" to="/avisos" aria-label={pending ? `Avisos, ${pending} sin leer` : 'Avisos'}><Icon name="bell" size={24} />{pending > 0 && <span className="bell-dot" aria-hidden="true" />}</Link>
   const tabs = user ? tabBar(user) : []
   const isRegister = pathname === '/registro'
-  return <div className={`app-shell area-${area}${isRegister ? ' is-register-shell' : ''}`}><a className="skip-link" href="#workspace-content">Saltar al contenido</a>
-    {area === 'plain' && !isRegister && <LeavesBackdrop />}
+  const isLogin = pathname === '/ingresar'
+  const isRecovery = pathname === '/recuperar-acceso'
+  return <div className={`app-shell area-${area}${isRegister ? ' is-register-shell' : ''}${isLogin ? ' is-login-shell' : ''}${isRecovery ? ' is-recovery-shell' : ''}`}><a className="skip-link" href="#workspace-content">Saltar al contenido</a>
+    {area === 'plain' && !isRegister && !isLogin && !isRecovery && <LeavesBackdrop />}
     {side.length > 0 && <div className={`side side-${area}`}><nav aria-label={area === 'admin' ? 'Administración' : 'Mi organización'}><Brand dark={area === 'admin'} className="side-brand" /><ul>{side.map(item => <li key={item.to}><Item item={item} pathname={pathname} className="side-link" /></li>)}</ul></nav><Leaves variant="left" className="side-leaves" /></div>}
     <div className="app-main">
       <header className="topbar"><div className={`topbar-inner${user ? "" : " is-guest"}`}>
@@ -65,7 +67,7 @@ export default function Shell() {
             <Link className="btn-iniciar-sesion" to="/ingresar">Iniciar sesión</Link>
           </div>
         </> : <>
-          <Brand className="topbar-brand" />
+          {isRecovery ? <div className="recovery-brand"><img src="/brand/hila_rama_botanica.svg" alt="" /><Brand className="topbar-brand" /></div> : <Brand className="topbar-brand" />}
           <nav className="guestnav" aria-label="Navegación principal"><Link to="/ingresar" aria-current={pathname === '/ingresar' ? 'page' : undefined}>Ingresar</Link><Link className="guest-cta" to="/registro" aria-current={pathname === '/registro' ? 'page' : undefined}>Crear cuenta</Link></nav>
         </>}
       </div>
@@ -77,7 +79,7 @@ export default function Shell() {
           <li><button type="button" className="drawer-link" disabled={busy} onClick={() => void logout()}><Icon name="logout" size={22} /><span>{busy ? 'Cerrando…' : 'Salir'}</span></button></li></ul></nav></div>}
       </header>
       <main id="workspace-content" className="workspace-content" tabIndex={-1}><Feedback error={error} /><Outlet /></main>
-      {!isRegister && <footer className="workspace-footer"><Link to="/">Hila</Link><p>Capacidades que se encuentran con causas de tu territorio.</p></footer>}
+      {!isRegister && !isLogin && <footer className="workspace-footer"><Link to="/">Hila</Link><p>Capacidades que se encuentran con causas de tu territorio.</p></footer>}
     </div>
     {tabs.length > 0 && <nav className="tabbar" aria-label="Pestañas de la aplicación"><ul>{tabs.map(item => <li key={item.to}><Item item={item} pathname={pathname} className="tab" /></li>)}</ul></nav>}
   </div>
