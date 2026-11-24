@@ -4,6 +4,8 @@ import { crc32 } from 'node:zlib'
 import type { components } from '../src/api/schema'
 import { login, password, register } from './accounts-fixtures'
 
+test.use({ actionTimeout: 12_000 })
+
 type Schemas = components['schemas']
 const adminEmail = process.env.E2E_ADMIN_EMAIL
 const adminPassword = process.env.E2E_ADMIN_PASSWORD
@@ -166,7 +168,7 @@ test('MVP real: convocatoria pública, último cupo, asistencia y evidencias pri
     await expect(organizer.getByText(/Guardamos los cambios/)).toBeVisible()
     await organizer.goto(editor + '/cierre')
     await organizer.getByRole('tab', { name: 'Resultado' }).click()
-    await organizer.getByText('Cumplida', { exact: true }).click()
+    await organizer.getByRole('radio', { name: /^Cumplida/ }).check()
     await organizer.getByLabel('Resumen del resultado').fill('Resultado privado de la actividad de prueba.')
     await organizer.getByRole('button', { name: 'Guardar cierre' }).click()
     await expect(organizer.getByText('Registramos el resultado y cerramos la actividad.')).toBeVisible()
