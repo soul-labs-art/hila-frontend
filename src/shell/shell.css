@@ -30,6 +30,11 @@
 .guestnav a[aria-current=page] { color: var(--clay); }
 .guestnav .guest-cta { padding: 0 16px; background: var(--clay); color: var(--paper); transition: background var(--ease); }
 .guestnav .guest-cta:hover { background: var(--clay-deep); }
+@media (max-width: 420px) {
+  .is-guest .topbar-brand { width: 64px; }
+  .guestnav { flex-wrap: wrap; justify-content: flex-end; gap: 0; }
+  .guestnav a, .guestnav .guest-cta { padding-inline: 8px; font-size: .84rem; }
+}
 .burger, .bell { width: 44px; height: 44px; display: inline-grid; place-items: center; border: 0; border-radius: 12px; background: transparent; color: var(--ink); cursor: pointer; position: relative; transition: background var(--ease); }
 .burger:hover, .bell:hover { background: rgb(140 64 46 / .09); }
 .bell-dot { position: absolute; top: 8px; right: 9px; width: 11px; height: 11px; border-radius: 50%; background: var(--coral); border: 2px solid var(--linen-hi); }

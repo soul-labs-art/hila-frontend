@@ -8,9 +8,9 @@ Este repositorio contiene la interfaz web de Hila, construida con React, TypeScr
 
 Este proyecto es dueño de la presentación, navegación, accesibilidad, contenido de interfaz y sistema visual. Incluye el wordmark y el emblema oficiales en [`public/brand/`](public/brand/), y las fuentes locales en [`public/fonts/`](public/fonts/).
 
-La portada pública se complementa con registro, verificación y reenvío de correo, inicio/cierre de sesión, recuperación, perfiles básicos voluntarios y de organizaciones, foto/portada editables, publicación de perfiles (las organizaciones, tras su aprobación) y revisión administrativa. Estas pantallas consumen la API real; requieren el backend. El catálogo de oportunidades, las postulaciones y las capacidades ampliadas siguen pendientes.
+La API de Hila sirve las cuentas, los perfiles, las organizaciones y la administración. Las personas pueden explorar oportunidades sin sesión. Con cuenta pueden completar sus capacidades, postularse, confirmar un cupo y consultar sus horas y evidencias. Las organizaciones aprobadas publican necesidades y coordinan el cierre de sus actividades.
 
-La [copia del contrato del MVP](openapi/hila-v1.json) y los [tipos generados](src/api/schema.d.ts) permiten preparar el frontend con los formatos acordados. Cada operación declara su estado de implementación; el contrato también incluye funciones futuras. Consulta la [guía de integración](docs/API_INTEGRATION.md) y actualiza desde el backend con `npm run api:sync`; CI verifica la correspondencia mediante `npm run api:check`.
+La [copia del contrato del MVP](openapi/hila-v1.json) y los [tipos generados](src/api/schema.d.ts) permiten preparar el frontend con los formatos acordados. El contrato OpenAPI 1.0.0 reúne las operaciones del MVP. Consulta la [guía de integración](docs/API_INTEGRATION.md) y actualiza desde el backend con `npm run api:sync`; CI verifica la correspondencia mediante `npm run api:check`.
 
 ## Desarrollo local
 
@@ -21,22 +21,9 @@ npm ci
 npm run dev
 ```
 
-Vite sirve la interfaz en <http://127.0.0.1:5173>. El proxy de desarrollo reenvía `/api`, `/swagger-ui` y `/v3/api-docs` a `127.0.0.1:8080`, donde debe estar disponible el backend. Este proxy solo es para desarrollo.
+Vite sirve la interfaz en <http://127.0.0.1:5173>. El proxy de desarrollo reenvía `/api`, `/swagger-ui` y `/v3/api-docs` a `127.0.0.1:8080`, donde debe estar disponible el backend. Define `HILA_API_URL` si la API usa otro puerto. El proxy de Vite se usa en desarrollo.
 
-### Datos de ejemplo (sin backend)
-
-Para desarrollar pantallas sin backend, o cuyas operaciones del contrato siguen `planned`, activa el modo de datos de ejemplo. Solo funciona en desarrollo, está apagado por defecto, muestra un aviso «Datos de ejemplo» en cada pantalla y usa únicamente datos ficticios (correos `@example.test`). El build de producción falla si la variable está activa.
-
-```sh
-# PowerShell
-$env:VITE_API_MOCK='true'; npm run dev
-# bash
-VITE_API_MOCK=true npm run dev
-```
-
-Las cuentas ficticias y su contraseña de ejemplo están descritas en `src/api/mock/`. Cuando el backend implemente una operación, se retira su mock; el contrato `hila-v1.json` sigue siendo la referencia de formas y errores.
-
-Con el modo activo hay pantallas para todas las operaciones `planned` del contrato (capacidades, Explorar, Mi actividad, Avisos, causas y necesidades, postulaciones, cierre de la actividad, equipo y administración), cada una detrás de una bandera de `src/features.ts`; el mapa completo está en [Integración con la API](docs/API_INTEGRATION.md#pantallas-con-datos-de-ejemplo). `/guia-ui` muestra los componentes del sistema de diseño y `/ingresar` lista las cuentas ficticias.
+Las pantallas consumen la API real en desarrollo. Usa PostgreSQL y Mailpit locales con cuentas ficticias para probar los recorridos. `/guia-ui` muestra el sistema de diseño en desarrollo.
 
 Para validar cambios:
 
@@ -57,7 +44,7 @@ docker build -t hila-frontend .
 docker run --rm --name hila-frontend --network hila-backend_default -e API_UPSTREAM=http://api:8080 -p 127.0.0.1:5173:80 hila-frontend
 ```
 
-Abre <http://127.0.0.1:5173>. Nginx reenvía `/api` a `API_UPSTREAM` (por defecto `http://api:8080`), sin cambiar el origen de las cookies. Usa la red del Compose del backend; adapta su nombre si cambiaste el nombre de proyecto. La API y sus credenciales R2 permanecen en el servidor. El proxy admite solicitudes de imágenes de hasta 11 MiB.
+Abre <http://127.0.0.1:5173>. Nginx reenvía `/api` a `API_UPSTREAM` (por defecto `http://api:8080`), sin cambiar el origen de las cookies. Usa la red del Compose del backend; adapta su nombre si cambiaste el nombre de proyecto. La API y sus credenciales R2 permanecen en el servidor. El proxy admite solicitudes de hasta 21 MiB. La API limita cada evidencia a 20 MiB y las fotos de perfil a 10 MiB.
 
 ## Documentación
 

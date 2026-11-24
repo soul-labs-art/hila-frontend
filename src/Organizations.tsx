@@ -1,3 +1,4 @@
+import { features } from './features'
 import { usePageTitle } from './page-title'
 import { formValue, nullableValue } from './form-values'
 import { reviewName, reviewTone } from './labels'
@@ -13,7 +14,7 @@ import { photo, photoSrc } from './photos'
 import { useSession } from './session-context'
 import { Avatar, Breadcrumbs, Card, Chip, ChipGroup, DefinitionList, EmptyState, Icon, Notice, RadioCards, Timeline, type IconName, type TimelineItem } from './ui'
 
-const OrgSummary = import.meta.env.DEV && import.meta.env.VITE_API_MOCK === 'true' ? lazy(() => import('./Needs').then(module => ({ default: module.OrgSummary }))) : null
+const OrgSummary = features.needs ? lazy(() => import('./Needs').then(module => ({ default: module.OrgSummary }))) : null
 type Page<T> = { items: T[]; totalPages: number }
 async function allTerritories() {
   const items: Schemas['Territory'][] = []

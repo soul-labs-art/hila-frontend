@@ -1,6 +1,6 @@
 # Integración con la API
 
-El backend es dueño del contrato. La copia en [openapi/hila-v1.json](../openapi/hila-v1.json) permite generar [tipos TypeScript](../src/api/schema.d.ts) sin una API ejecutándose. La versión actual define **todo el MVP**, con operaciones, campos, errores y permisos, y distingue las operaciones implementadas de las futuras. `x-implementation-status` indica el estado de cada operación; la copia actual (`1.0.0-draft.2`) marca 35 operaciones `implemented` y 60 `planned`.
+El backend es dueño del contrato. La copia en [openapi/hila-v1.json](../openapi/hila-v1.json) permite generar [tipos TypeScript](../src/api/schema.d.ts) sin una API ejecutándose. OpenAPI 1.0.0 define las 95 operaciones del MVP como implementadas.
 
 La fuente canónica y las reglas de sesión, transiciones y privacidad están en `hila-backend/openapi/hila-v1.json` y `hila-backend/docs/API_CONTRACT.md`. En GitHub: [contrato](https://github.com/soul-labs-art/hila-backend/blob/main/openapi/hila-v1.json) y [guía](https://github.com/soul-labs-art/hila-backend/blob/main/docs/API_CONTRACT.md).
 
@@ -41,7 +41,7 @@ Los tipos describen compilación, no validan JSON recibido ni prueban que un end
 
 ## Reglas para el cliente y los formularios
 
-- Prefijo `/api/v1`, rutas relativas y `credentials: 'include'`. El proxy local de Vite ya reenvía `/api`; Nginx también reenvía `/api` mediante `API_UPSTREAM`, con límite de solicitud de 11 MiB.
+- Prefijo `/api/v1`, rutas relativas y `credentials: 'include'`. El proxy local de Vite reenvía `/api` al backend configurado por `HILA_API_URL`. Nginx usa `API_UPSTREAM` y acepta solicitudes de hasta 21 MiB.
 - Sesión mediante cookie `HttpOnly`, `SameSite=Lax`, `Secure` en producción. No guardar credenciales ni tokens de acceso en `localStorage`.
 - Obtener `GET /auth/csrf` antes de cualquier escritura, incluidas las públicas, y enviar `X-CSRF-TOKEN` con la cookie. Renovar el token después de login/logout o expiración y conservarlo solo en memoria.
 - Restaurar cuenta con `GET /me`; un `401` significa sesión ausente/vencida. Un `403` puede ser CSRF o permiso, y se distingue por `code`. No reintentar automáticamente una escritura tras un fallo de red.
@@ -55,13 +55,9 @@ Los tipos describen compilación, no validan JSON recibido ni prueban que un end
 - El servidor decide permisos, cupos y transiciones. Los roles y estados recibidos sirven para presentar acciones; ninguna comprobación de interfaz sustituye autorización.
 - Las pantallas deben manejar carga, error, vacío y éxito. Datos de demostración solo en entornos explícitos de desarrollo; no anunciar registros ni convocatorias reales mientras estén pendientes.
 
-## Secuencia de trabajo
+## Pantallas del MVP
 
-El recorrido implementado es cuenta adulta → correo verificado → sesión → perfil privado → imágenes → publicación. También se implementan recuperación, registro/revisión organizacional y publicación tras aprobación. Oportunidades, capacidades ampliadas y postulaciones permanecen futuras, y el frontend aún no consume `/me/consents` ni `/me/opportunity-alerts`, aunque el backend los implementa. Antes de habilitar cada nuevo módulo, comparar el contrato con los controladores reales (`/v3/api-docs`).
-
-## Pantallas con datos de ejemplo
-
-Las operaciones `planned` del contrato tienen su pantalla construida, pero solo existen con `VITE_API_MOCK=true` (ver el README). Cada una vive detrás de una bandera de `src/features.ts`, se carga de forma diferida y no entra al bundle de producción. Cuando el backend implemente una operación, se retira su mock en `src/api/mock/routes/planned/` y se pone a `true` la bandera correspondiente, sin tocar la pantalla.
+Explorar y el detalle de una oportunidad admiten visitas sin sesión. Postularse requiere cuenta verificada y perfil voluntario. Compatibilidad, gestión, instrucciones, seguimiento y evidencias usan los permisos del backend. Las áreas de trabajo se cargan de forma diferida.
 
 | Área | Rutas | Bandera |
 |---|---|---|
@@ -75,11 +71,9 @@ Las operaciones `planned` del contrato tienen su pantalla construida, pero solo 
 | Equipo | `/organizaciones/:id/equipo` | `team` |
 | Administración | `/admin/{catalogos,usuarios,trazabilidad}` | `adminTools` |
 
-Cuentas, contraseña de ejemplo y datos semilla: `src/api/mock/seed.ts` y `src/api/mock/seed-planned.ts`. El panel «Cuentas de ejemplo» de `/ingresar` las lista. El mock valida con las mismas reglas del contrato (estados, cupos, permisos, compatibilidad); donde el contrato es ambiguo, la decisión quedó anotada en el código del mock y debe confirmarse con el backend real.
-
 ## Recorridos y pruebas
 
-Rutas: `/` (portada pública), `/registro`, `/registro/enviado`, `/verificar-correo`, `/ingresar`, `/recuperar-acceso`, `/restablecer-acceso`, `/mi-cuenta`, `/mi-perfil`, `/mis-organizaciones`, `/organizaciones/nueva`, `/organizaciones/:id/editar`, `/voluntarios/:id`, `/organizaciones/:id`, `/admin/organizaciones` y `/admin/organizaciones/:id`.
+El conjunto de Playwright cubre cuenta, correo, perfiles e imágenes, revisión de organizaciones, navegación móvil y el recorrido del MVP desde una convocatoria pública hasta asistencia, feedback y evidencias.
 
 Los perfiles empiezan privados. La persona decide publicarlos; las organizaciones además requieren aprobación. Las vistas públicas no reciben campos privados. Un fallo en la carga de una imagen conserva la anterior. La vista previa usa el mismo recorte centrado que el servidor; no se permite SVG, GIF, HEIC ni formatos distintos de JPEG/PNG, y el cliente valida hasta 10 MiB y 16 megapíxeles.
 
@@ -91,9 +85,9 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-CI ejecuta solo `npm run lint`, `npm run api:check` y `npm run build`; estas pruebas necesitan el backend y no corren en CI. Playwright inicia `npm run dev` si no hay un servidor en `127.0.0.1:5173`. Variables opcionales: `E2E_BASE_URL` (por defecto `http://127.0.0.1:5173`) y `E2E_MAILPIT_URL` (por defecto `http://127.0.0.1:8025`).
+CI ejecuta solo `npm run lint`, `npm run api:check` y `npm run build`; estas pruebas necesitan el backend y no corren en CI. Playwright inicia `npm run dev` si no hay un servidor en `127.0.0.1:5173`. Si defines `E2E_BASE_URL`, Playwright usa ese frontend ya iniciado. Usa esa opción para comprobar el límite de evidencia a través de Nginx y configura `WEB_ORIGIN` en el backend con ese mismo origen. `E2E_MAILPIT_URL` apunta por defecto a `http://127.0.0.1:8025`.
 
-El test de revisión requiere una cuenta administrativa de desarrollo ya verificada y habilitada mediante el comando interno documentado en backend:
+Las pruebas de revisión y del MVP requieren una cuenta administrativa de desarrollo ya verificada y habilitada mediante el comando interno documentado en backend:
 
 ```powershell
 $env:E2E_ADMIN_EMAIL='admin-de-prueba@example.test'
@@ -101,4 +95,4 @@ $env:E2E_ADMIN_PASSWORD='contraseña local de la cuenta de prueba'
 npm run test:e2e
 ```
 
-No introducir credenciales reales en archivos. Sin estas variables se omite solo la prueba administrativa, indicándolo en el resultado. Las pruebas crean cuentas `example.test` y reciben enlaces mediante la API de Mailpit; no usan endpoints especiales de verificación ni escriben roles en PostgreSQL. Ejecutar sobre una base de desarrollo aislada; los límites de intentos siguen activos. Capturas, trazas y reportes quedan ignorados por Git.
+No introducir credenciales reales en archivos. Sin estas variables se omiten los recorridos que requieren una aprobación administrativa. Las pruebas crean cuentas `example.test` y reciben enlaces mediante la API de Mailpit; no usan endpoints especiales de verificación ni escriben roles en PostgreSQL. Usa una base de desarrollo aislada con el catálogo de oportunidades vacío. Hila conserva sus límites de intentos, por lo que conviene partir de una base de pruebas nueva al repetir el conjunto en pocos minutos. El escenario del último cupo espera a que la actividad de prueba termine para registrar horas con la API real. Capturas, trazas y reportes quedan ignorados por Git.

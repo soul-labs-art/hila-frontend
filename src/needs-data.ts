@@ -1,4 +1,4 @@
-// Datos y reglas comunes de causas y necesidades de una organización (planned: solo con features.needs).
+// Datos y reglas comunes de causas y necesidades de una organización.
 import { useQuery, type QueryClient } from '@tanstack/react-query'
 import { api, ApiFailure, type Schemas } from './api/client'
 import { isPast } from './need-format'

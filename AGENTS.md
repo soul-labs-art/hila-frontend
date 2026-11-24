@@ -4,7 +4,7 @@
 
 Este repositorio es dueño de la interfaz web, sus componentes, accesibilidad, navegación y sistema visual. La API y las reglas de negocio viven en [hila-backend](https://github.com/soul-labs-art/hila-backend). No copies Java, migraciones ni lógica de autorización a este repositorio.
 
-Hila conecta capacidades ciudadanas con necesidades de organizaciones y colectivos comunitarios en Medellín y el Valle de Aburrá. La portada describe el propósito y el estado del piloto; la cuenta, los perfiles, las organizaciones, las imágenes, la publicación y la revisión administrativa ya consumen la API, mientras las oportunidades, las postulaciones y las capacidades ampliadas siguen pendientes. Consulta [identidad visual](docs/IDENTIDAD_VISUAL.md) y [sistema visual](design-system/MASTER.md).
+Hila conecta capacidades ciudadanas con necesidades de organizaciones y colectivos comunitarios en Medellín y el Valle de Aburrá. La portada describe el propósito y el estado del piloto; las pantallas del MVP consumen la API, incluidas oportunidades, capacidades, postulaciones, equipo, participación y administración. Consulta [identidad visual](docs/IDENTIDAD_VISUAL.md) y [sistema visual](design-system/MASTER.md).
 
 ## Documentación del repositorio
 
@@ -17,9 +17,9 @@ Hila conecta capacidades ciudadanas con necesidades de organizaciones y colectiv
 - Respetar la paleta arcilla, lino, tinta y ciruela. Evitar etiquetas decorativas o textos sin jerarquía clara.
 - Diseñar desde móvil, evitar desplazamiento horizontal y conservar áreas táctiles cómodas.
 - Usar landmarks y controles semánticos, etiquetas asociadas a sus campos, navegación por teclado, foco visible y enlace para saltar al contenido. Respetar `prefers-reduced-motion`.
-- No simular datos reales ni habilitar convocatorias pendientes en producción. Los recorridos de cuenta, perfiles, organizaciones y revisión usan API real. Excepción acotada: el modo de datos de ejemplo (`VITE_API_MOCK=true`, solo en desarrollo, apagado por defecto, con aviso visible y datos ficticios con correos `@example.test`) permite avanzar en pantallas cuya operación del contrato sigue `planned`. El build de producción falla si está activo. Cada pantalla de una operación `planned` vive detrás de su bandera de `src/features.ts` y se carga de forma diferida, para que no llegue al bundle de producción. Al implementarse una operación en el backend, se quita su mock y se activa su bandera.
+- Las pantallas consumen la API de Hila. Para pruebas usa una base local aislada y cuentas ficticias con correos `@example.test`. Las áreas del MVP se cargan de forma diferida y se habilitan desde `src/features.ts`.
 - Usar los contratos OpenAPI publicados por hila-backend y nunca implementar autorización en el navegador.
-- La copia en `openapi/hila-v1.json` y `src/api/schema.d.ts` se generan con `npm run api:sync`. No editarlas manualmente; consultar `docs/API_INTEGRATION.md` y ejecutar `npm run api:check`. El contrato incluye operaciones aún pendientes de implementación.
+- La copia en `openapi/hila-v1.json` y `src/api/schema.d.ts` se generan con `npm run api:sync`. No editarlas manualmente; consultar `docs/API_INTEGRATION.md` y ejecutar `npm run api:check`. Mantén el contrato alineado con el backend que se ejecuta en integración.
 - No guardar secretos ni datos personales reales. No añadir dependencias sin necesidad descrita.
 
 ## Flujo de trabajo

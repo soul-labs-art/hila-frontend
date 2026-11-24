@@ -1,4 +1,4 @@
-// Equipo de la organización: quién colabora y con qué rol (planned: solo con features.team).
+// Equipo de la organización: quién colabora y con qué rol.
 import { useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'

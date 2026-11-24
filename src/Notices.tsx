@@ -1,4 +1,4 @@
-// Avisos: bandeja de notificaciones y preferencia de correo (planned: solo con features.notifications).
+// Avisos: bandeja de notificaciones y preferencia de correo.
 import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { keepPreviousData, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
@@ -27,7 +27,7 @@ function targetOf(item: Notification) {
   if (item.resourceType === 'NEED') return features.opportunities ? `/explorar/${item.resourceId}` : null
   if (item.resourceType === 'APPLICATION') return features.applications ? `/actividad/${item.resourceId}` : null
   if (item.resourceType === 'PARTICIPATION') return features.applications ? '/actividad?vista=historial' : null
-  return `/organizaciones/${item.resourceId}`
+  return `/organizaciones/${item.resourceId}/editar`
 }
 const invalidate = (client: QueryClient) => Promise.all([client.invalidateQueries({ queryKey: ['notifications'] }), client.invalidateQueries({ queryKey: ['unread-count'] })])
 const markRead = async (client: QueryClient, item: Notification) => { if (item.readAt) return; await api(`/me/notifications/${item.id}`, { method: 'PATCH', body: { read: true } }); await invalidate(client) }

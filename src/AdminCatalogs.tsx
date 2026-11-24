@@ -1,4 +1,4 @@
-// Catálogos de administración: habilidades, recursos y territorios (planned: solo con features.adminTools).
+// Catálogos de administración: habilidades, recursos y territorios.
 import { useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query'

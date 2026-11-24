@@ -1,6 +1,6 @@
-// Mi actividad: postulaciones y compromisos de la persona voluntaria (planned: solo con features.applications).
+// Mi actividad: postulaciones y compromisos de la persona voluntaria.
 import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from 'react'
-import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom'
+import { Link, Navigate, useLocation, useParams, useSearchParams } from 'react-router-dom'
 import { useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
 import { dateTime, dayYear, hoursLabel, sizeLabel } from './activity-format'
 import { api, ApiFailure, type Schemas } from './api/client'
@@ -11,7 +11,9 @@ import { isPast, longDay, needPhoto, placeLabel, timeRange, whenLabel } from './
 import { usePageTitle } from './page-title'
 import { photo, photoSrc } from './photos'
 import { Pagination } from './Profiles'
+import { myApplications } from './application-data'
 import { useSession } from './session-context'
+import { managedQuery } from './team-data'
 import { Breadcrumbs, Card, DefinitionList, EmptyState, Icon, Notice, RatingScale, Stepper, Tabs, Timeline, type IconName, type TimelineItem } from './ui'
 import './explore.css'
 import './activity.css'
@@ -24,12 +26,6 @@ type Report = (result: Result) => void
 type Tone = 'ok' | 'wait' | 'no' | 'neutral'
 const pageSize = 6
 
-async function loadAll() {
-  const items: Application[] = []
-  for (let page = 0; page < 10; page++) { const data = await api<Schemas['ApplicationPage']>(`/me/applications?size=100&page=${page}`); items.push(...data.items); if (page + 1 >= data.totalPages) break }
-  return items
-}
-const myApplications = { queryKey: ['my-applications', 'all'], queryFn: loadAll, retry: false }
 const territoriesQuery = { queryKey: ['catalog', 'territories'], queryFn: () => api<Schemas['TerritoryPage']>('/catalogs/territories?size=100'), staleTime: 300_000, retry: false }
 const needQuery = (id: string) => ({ queryKey: ['need', id], queryFn: () => api<Need>(`/needs/${id}`), retry: false, staleTime: 60_000 })
 const participationQuery = (id: string, enabled: boolean) => ({ queryKey: ['participation', id], enabled, retry: false, queryFn: async () => { try { return await api<Participation>(`/applications/${id}/participation`) } catch (error) { if (error instanceof ApiFailure && error.status === 404) return null; throw error } } })
@@ -49,6 +45,7 @@ function stateOf(app: Application, need?: Need): View {
   if (app.commitmentStatus === 'CANCELLED') return { label: 'Compromiso cancelado', tone: 'neutral', icon: 'x', lead: 'El compromiso se canceló y el cupo quedó libre.' }
   if (app.status === 'REJECTED') return { label: 'Postulación no aceptada', tone: 'no', icon: 'x', lead: 'Esta vez la organización no continuó con tu postulación.' }
   if (app.status === 'WITHDRAWN') return { label: 'Postulación retirada', tone: 'neutral', icon: 'x', lead: 'Retiraste tu postulación. Solo se permite una por persona en cada actividad.' }
+  if (need && need.status !== 'PUBLISHED' && (app.status === 'APPLIED' || needsConfirm(app))) return { label: 'Sin compromiso', tone: 'neutral', icon: 'clock', lead: 'Esta actividad ya no admite confirmaciones.' }
   if (app.status === 'APPLIED') return { label: 'En revisión', tone: 'wait', icon: 'clock', lead: 'La organización revisa tu postulación. Te avisaremos cuando responda.' }
   if (app.commitmentStatus === 'NOT_CONFIRMED') return started ? { label: 'Sin confirmar', tone: 'neutral', icon: 'clock', lead: 'La actividad ya empezó y tu compromiso no se confirmó.' } : { label: 'Pendiente de tu confirmación', tone: 'wait', icon: 'clock', lead: 'Tu postulación fue aceptada. Ahora solo falta que confirmes tu participación.' }
   if (ended) return { label: 'Esperando registro de horas', tone: 'neutral', icon: 'calendar', lead: 'La actividad ya terminó. La organización registrará tus horas.' }
@@ -82,7 +79,7 @@ function ConfirmDialog({ title, confirmLabel, busy, onConfirm, onClose, children
 function ApplicationActions({ app, need, report }: { app: Application; need?: Need; report: Report }) {
   const client = useQueryClient(), [busy, setBusy] = useState(false), [dialog, setDialog] = useState<'withdraw' | 'cancel' | null>(null)
   const started = !!need && isPast(need.startsAt), ended = !!need && isPast(need.endsAt)
-  const confirm = needsConfirm(app) && !started, withdraw = app.status === 'APPLIED' || needsConfirm(app), cancel = isConfirmed(app) && !ended
+  const confirm = needsConfirm(app) && need?.status === 'PUBLISHED' && !started, withdraw = app.status === 'APPLIED' || needsConfirm(app), cancel = isConfirmed(app) && !ended
   async function run(path: string, init: { method: 'PUT' | 'POST'; body?: unknown }, success: string) {
     setBusy(true); report({})
     try { await api(path, init); setDialog(null); await refresh(client, app); report({ success }) } catch (error) { setDialog(null); report({ error }); void refresh(client, app) } finally { setBusy(false) }
@@ -220,18 +217,28 @@ function FeedbackCard({ app, item }: { app: Application; item: Participation }) 
   </Card>
 }
 
+function OrganizationApplication({ app }: { app: Application }) {
+  const management = useQuery(managedQuery(app.needId))
+  if (management.isPending) return <p role="status">Consultando la organización…</p>
+  if (management.data) {
+    const path = `/organizaciones/${management.data.organization.id}/necesidades/${app.needId}/postulaciones`
+    return <Navigate replace to={path + '?postulacion=' + encodeURIComponent(app.id)} />
+  }
+  return <EmptyState headingLevel={1} title="La postulación corresponde a una organización." action={<Link className="action primary" to="/mis-organizaciones">Ir a mis organizaciones</Link>}>Revisa las postulaciones desde la organización responsable.</EmptyState>
+}
+
 export function ActivityDetail() {
   const { applicationId = '' } = useParams(), location = useLocation(), { user } = useSession()
   const back = `/actividad${(location.state as { from?: string } | null)?.from ?? ''}`
   const query = useQuery({ queryKey: ['application', applicationId], queryFn: () => api<Application>(`/applications/${applicationId}`), retry: false })
-  const app = query.data, needQ = useQuery({ ...needQuery(app?.needId ?? ''), enabled: !!app }), territories = useQuery(territoriesQuery), need = needQ.data
-  const ended = !!need && isPast(need.endsAt), wantsParticipation = !!app && (app.commitmentStatus === 'COMPLETED' || app.commitmentStatus === 'NO_SHOW' || (isConfirmed(app) && ended))
+  const app = query.data, own = !!app && app.volunteerId === user?.id, needQ = useQuery({ ...needQuery(app?.needId ?? ''), enabled: own }), territories = useQuery(territoriesQuery), need = needQ.data
+  const ended = !!need && isPast(need.endsAt), wantsParticipation = own && (app.commitmentStatus === 'COMPLETED' || app.commitmentStatus === 'NO_SHOW' || (isConfirmed(app) && ended))
   const part = useQuery(participationQuery(applicationId, wantsParticipation)), [result, setResult] = useState<Result>({}), resultRef = useRef<HTMLDivElement>(null)
   usePageTitle(need?.title ?? 'Mi actividad')
   const report: Report = value => { setResult(value); if (value.success) setTimeout(() => resultRef.current?.focus(), 60) } // tras cerrar el diálogo
   if (query.isPending) return <p className="loading-state" role="status">Cargando tu postulación…</p>
   if (query.error) return query.error instanceof ApiFailure && query.error.status === 404 ? <EmptyState headingLevel={1} title="No encontramos esta postulación." action={<Link className="action primary" to="/actividad">Ver mi actividad</Link>}>Puede que la dirección esté mal escrita o que la postulación no sea tuya.</EmptyState> : <><Feedback error={query.error} /><button type="button" className="action" onClick={() => void query.refetch()}>Volver a intentar</button></>
-  if (app!.volunteerId !== user?.id) return <EmptyState headingLevel={1} title="Esta postulación es de otra persona." action={<Link className="action primary" to="/mis-organizaciones">Ir a mis organizaciones</Link>}>Las postulaciones recibidas se revisan desde la organización responsable.</EmptyState>
+  if (!own) return <OrganizationApplication app={app!} />
   const current = app!, view = stateOf(current, need), pic = need ? needPhoto(need) : fallbackPhoto, title = need?.title ?? (needQ.error ? 'Actividad que ya no está disponible' : 'Cargando actividad…'), at = stage(current)
   const participation = part.data ?? undefined
   return <article className="act-detail">

@@ -46,6 +46,12 @@ export default function Shell() {
   </Menu>
   const bell = user && features.notifications && <Link className="bell" to="/avisos" aria-label={pending ? `Avisos, ${pending} sin leer` : 'Avisos'}><Icon name="bell" size={24} />{pending > 0 && <span className="bell-dot" aria-hidden="true" />}</Link>
   const tabs = user ? tabBar(user) : []
+  const drawerItems: NavItem[] = [
+    { to: '/mi-cuenta', label: 'Mi cuenta', icon: 'home' },
+    ...topNav(),
+    ...(area === 'plain' ? sideNav('org') : side),
+  ]
+  const mobileLinks = drawerItems.filter((item, index) => drawerItems.findIndex(other => other.to === item.to) === index)
   return <div className={`app-shell area-${area}`}><a className="skip-link" href="#workspace-content">Saltar al contenido</a>
     {area === 'plain' && <LeavesBackdrop />}
     {side.length > 0 && <div className={`side side-${area}`}><nav aria-label={area === 'admin' ? 'Administración' : 'Mi organización'}><Brand dark={area === 'admin'} className="side-brand" /><ul>{side.map(item => <li key={item.to}><Item item={item} pathname={pathname} className="side-link" /></li>)}</ul></nav><Leaves variant="left" className="side-leaves" /></div>}
@@ -59,11 +65,11 @@ export default function Shell() {
             <button ref={burger} type="button" className="burger" aria-expanded={drawer} aria-controls="mobile-menu" onClick={() => setDrawer(!drawer)}><Icon name={drawer ? 'x' : 'menu'} size={26} /><span className="sr-only">{drawer ? 'Cerrar menú' : 'Abrir menú'}</span></button></div>
         </> : <>
           <Brand className="topbar-brand" />
-          <nav className="guestnav" aria-label="Navegación principal"><Link to="/ingresar" aria-current={pathname === '/ingresar' ? 'page' : undefined}>Ingresar</Link><Link className="guest-cta" to="/registro" aria-current={pathname === '/registro' ? 'page' : undefined}>Crear cuenta</Link></nav>
+          <nav className="guestnav" aria-label="Navegación principal">{features.opportunities && <Link to="/explorar" aria-current={pathname.startsWith('/explorar') ? 'page' : undefined}>Explorar</Link>}<Link to="/ingresar" aria-current={pathname === '/ingresar' ? 'page' : undefined}>Ingresar</Link><Link className="guest-cta" to="/registro" aria-current={pathname === '/registro' ? 'page' : undefined}>Crear cuenta</Link></nav>
         </>}
       </div>
       {user && drawer && <div id="mobile-menu" className="drawer"><nav aria-label="Menú móvil"><p className="drawer-user"><Avatar name={user.displayName} size="md" /><span><strong>{user.displayName}</strong></span></p>
-        <ul>{[...topNav(), ...(area !== 'plain' ? side : [])].filter((item, index, all) => all.findIndex(other => other.to === item.to) === index).map(item => <li key={item.to}><Item item={item} pathname={pathname} className="drawer-link" /></li>)}
+        <ul>{mobileLinks.map(item => <li key={item.to}><Item item={item} pathname={pathname} className="drawer-link" /></li>)}
           <li><Link className="drawer-link" to="/mi-cuenta/privacidad"><Icon name="lock" size={22} /><span>Privacidad y avisos</span></Link></li>
           {myOrgs.length > 0 && <li className="drawer-label">Mis organizaciones</li>}{myOrgs.map(org => <li key={org.id}><Link className="drawer-link" to={`/organizaciones/${org.id}/editar`}><Avatar name={org.name} size="sm" /><span>{org.name}</span></Link></li>)}
           {user.roles.includes('ADMIN') && <li><Link className="drawer-link" to="/admin/organizaciones"><Icon name="checkCircle" size={22} /><span>Revisión de organizaciones</span></Link></li>}

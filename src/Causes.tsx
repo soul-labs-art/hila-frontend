@@ -1,4 +1,4 @@
-// Causas de la organización: lista, creación y edición (planned: solo con features.needs).
+// Causas de la organización: lista, creación y edición.
 import { useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'

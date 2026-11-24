@@ -1,4 +1,4 @@
-// Participación y cierre de una actividad: horas, verificación, resultado, evidencias y feedback (planned: solo con features.participation).
+// Participación y cierre de una actividad: horas, verificación, resultado, evidencias y feedback.
 import { useRef, useState, type ChangeEvent, type FormEvent, type ReactNode } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { useQueries, useQuery, useQueryClient } from '@tanstack/react-query'
