@@ -46,7 +46,22 @@ docker run --rm --name hila-frontend --network hila-backend_default -e API_UPSTR
 
 Abre <http://127.0.0.1:5173>. Nginx reenvía `/api` a `API_UPSTREAM` (por defecto `http://api:8080`), sin cambiar el origen de las cookies. Usa la red del Compose del backend; adapta su nombre si cambiaste el nombre de proyecto. La API y sus credenciales R2 permanecen en el servidor. El proxy admite solicitudes de hasta 21 MiB. La API limita cada evidencia a 20 MiB y las fotos de perfil a 10 MiB.
 
-## Documentación
+## Piloto en Railway
+
+Web: <https://hila-frontend-hila.up.railway.app>, proyecto `bioma-app`, ambiente
+`Hila`, servicio `hila-frontend`. Usar perfiles ficticios. El servicio sigue
+`main` de este repositorio: al integrar cambios, Railway despliega automáticamente.
+
+`API_UPSTREAM=http://hila-backend.railway.internal:8080` conecta con la API privada
+y `PORT=80` configura el destino público. Nginx conserva el protocolo HTTPS del
+proxy y resuelve el servicio dinámicamente para tolerar reinicios. `railway.json`
+configura Docker, salud y reinicio. Para despliegue manual:
+
+```sh
+railway up --project 25124fb1-18bd-4748-8579-a732a9386573 --environment Hila --service hila-frontend --detach
+```
+
+## Referencias
 
 - [Índice de documentación](docs/README.md)
 - [Sistema visual](design-system/MASTER.md)
