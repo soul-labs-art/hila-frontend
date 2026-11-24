@@ -1,43 +1,7 @@
-import { test, expect, type APIRequestContext, type Page } from '@playwright/test'
+import { test, expect, type Page } from '@playwright/test'
 import { mkdir } from 'node:fs/promises'
+import { login, mailLink, password, register } from './accounts-fixtures'
 
-const password = 'Una frase de pruebas 2026!'
-const mailpit = process.env.E2E_MAILPIT_URL ?? 'http://127.0.0.1:8025'
-async function mailLink(request: APIRequestContext, email: string, purpose = 'verificar-correo') {
-  let link = ''
-  await expect.poll(async () => {
-    const data = await (await request.get(`${mailpit}/api/v1/search?query=${encodeURIComponent(`to:${email}`)}`)).json()
-    for (const message of data.messages ?? []) {
-      const body = await (await request.get(`${mailpit}/api/v1/message/${message.ID}`)).json()
-      const found = `${body.Text ?? ''} ${body.HTML ?? ''}`.match(new RegExp(`https?://[^\\s<>"']+/${purpose}#token=[^\\s<>"']+`))
-      if (found) { link = found[0]; return true }
-    }
-    return false
-  }, { timeout: 30_000, message: `Correo ${purpose} entregado por outbox a Mailpit` }).toBe(true)
-  return link
-}
-async function register(page: Page, email: string, name: string) {
-  await page.goto('/registro')
-  await page.getByLabel('Tu nombre', { exact: true }).fill(name)
-  await page.getByLabel('Correo electrónico', { exact: true }).fill(email)
-  await page.getByLabel('Contraseña', { exact: true }).fill(password)
-  await page.getByRole('checkbox', { name: 'Soy mayor de 18 años.' }).check()
-  await page.getByRole('checkbox', { name: /He leído y acepto/ }).check()
-  await page.getByRole('button', { name: 'Crear mi cuenta', exact: true }).click()
-  await expect(page).toHaveURL(/registro\/enviado$/)
-  const url = await mailLink(page.request, email)
-  await page.goto(url)
-  await expect(page).not.toHaveURL(/#token=/)
-  await page.getByRole('button', { name: 'Verificar mi correo', exact: true }).click()
-  await expect(page.getByRole('status')).toContainText('Tu correo está verificado')
-}
-async function login(page: Page, email: string, secret = password) {
-  await page.goto('/ingresar')
-  await page.getByLabel('Correo electrónico', { exact: true }).fill(email)
-  await page.getByLabel('Contraseña', { exact: true }).fill(secret)
-  await page.getByRole('button', { name: 'Ingresar', exact: true }).click()
-  await expect(page).toHaveURL(/mi-cuenta$/)
-}
 async function capture(page: Page, name: string) {
   await mkdir('.impeccable/review', { recursive: true })
   await page.setViewportSize({ width: 1440, height: 1000 })
@@ -74,7 +38,7 @@ test('cuenta, correo, perfil privado/público, imágenes y recuperación contra 
   const publicPath = await page.getByRole('link', { name: 'Ver perfil público' }).getAttribute('href')
   const visitor = await browser.newContext()
   const publicPage = await visitor.newPage()
-  await publicPage.goto(`http://127.0.0.1:5173${publicPath}`)
+  await publicPage.goto(new URL(publicPath!, page.url()).href)
   await expect(publicPage.getByRole('heading', { name: 'Persona de prueba', exact: true })).toBeVisible()
   await expect(publicPage.getByText(email, { exact: true })).toHaveCount(0)
   await expect(publicPage.getByText('Información privada de prueba')).toHaveCount(0)
@@ -84,8 +48,9 @@ test('cuenta, correo, perfil privado/público, imágenes y recuperación contra 
   await expect(page.getByText('Perfil privado', { exact: true })).toBeVisible()
   await publicPage.reload()
   await expect(publicPage.getByRole('heading', { name: 'Este perfil no está disponible.' })).toBeVisible()
-  expect((await visitor.request.get(`http://127.0.0.1:5173${publicAvatar}`)).status()).toBe(404)
+  expect((await visitor.request.get(new URL(publicAvatar!, page.url()).href)).status()).toBe(404)
   await visitor.close()
+  await page.getByRole('button', { name: 'Abrir menú', exact: true }).click()
   await page.getByRole('button', { name: 'Salir', exact: true }).click()
   await page.getByRole('link', { name: 'Olvidé mi contraseña' }).click()
   await page.getByLabel('Correo electrónico', { exact: true }).fill(email)
