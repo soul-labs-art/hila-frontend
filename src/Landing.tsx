@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { usePageTitle } from './page-title'
 import { useSession } from './session-context'
+import { features } from './features'
 import './App.css'
 
 function Landing() {
@@ -43,9 +44,8 @@ function Landing() {
               <Link className="button button-primary" to={user ? '/mi-cuenta' : '/registro'}>
                 {user ? 'Ir a mi cuenta' : 'Crear mi cuenta'}
               </Link>
-              <a className="hero-text-link" href="#personas">
-                Quiénes participan
-              </a>
+              {features.opportunities ? <Link className="hero-text-link" to="/explorar">Explorar oportunidades</Link>
+                : <a className="hero-text-link" href="#personas">Quiénes participan</a>}
             </div>
           </div>
 
@@ -125,7 +125,7 @@ function Landing() {
             </div>
             <div className="pilot-aside">
               <p className="pilot-note">
-                Ya puedes crear tu cuenta y preparar tu perfil. Las convocatorias se habilitarán con las primeras organizaciones del territorio.
+                Ya puedes crear tu cuenta y preparar tu perfil. Las organizaciones del territorio publican sus convocatorias en Explorar.
               </p>
               <Link className="button button-light" to={user ? '/mi-perfil' : '/registro'}>
                 {user ? 'Preparar mi perfil' : 'Crear mi cuenta'}

@@ -1,4 +1,4 @@
-// Trazabilidad: registro de eventos importantes con responsable y fecha (planned: solo con features.adminTools).
+// Trazabilidad: registro de eventos importantes con responsable y fecha.
 import { useState } from 'react'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { dateTime } from './activity-format'

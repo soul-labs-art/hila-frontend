@@ -1,5 +1,5 @@
 import { formValue } from './form-values'
-import { lazy, Suspense, useEffect, useState, type FormEvent, type ReactNode } from 'react'
+import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { api, ApiFailure, type Schemas } from './api/client'
@@ -8,7 +8,6 @@ import { Leaves } from './Leaves'
 import { usePageTitle } from './page-title'
 import { safeReturnTo, useSession } from './session-context'
 
-const MockAccounts = import.meta.env.DEV && import.meta.env.VITE_API_MOCK === 'true' ? lazy(() => import('./MockAccounts')) : null
 const linkSent ='Si la dirección puede recibir este mensaje, te enviaremos un enlace. Revisa también la carpeta de correo no deseado.'
 
 function useEmailToken() {
@@ -33,7 +32,6 @@ function AccessLayout({ title, tab, intro, children }: { title: string; tab: str
 export function Login() {
   const form = useSubmit(), [email, setEmail] = useState(''), navigate = useNavigate(), [search] = useSearchParams(), session = useSession()
   const unverified = form.error instanceof ApiFailure && form.error.detail.code === 'EMAIL_NOT_VERIFIED'
-  function fill(value: string, password: string) { setEmail(value); const input = document.getElementById('password') as HTMLInputElement | null; if (input) { input.value = password; input.focus() } }
   return <AccessLayout tab="Ingresar" title="Vuelve a tu espacio en Hila." intro="Ingresa para cuidar tu perfil y acompañar tus organizaciones.">
     <Feedback error={form.error} />
     {unverified && <p>Aún no verificaste tu correo. <Link to="/registro/enviado" state={{ email }}>Enviar otro enlace de verificación</Link></p>}
@@ -43,7 +41,6 @@ export function Login() {
       <Submit busy={form.busy} busyLabel="Ingresando…">Ingresar</Submit>
     </form>
     <div className="access-links"><p>¿Primera vez en Hila? <Link to="/registro">Crear una cuenta</Link></p><p>¿No llegó el correo de verificación? <Link to="/registro/enviado" state={{ email }}>Pedir otro enlace</Link></p></div>
-    {MockAccounts && <Suspense fallback={null}><MockAccounts onPick={fill} /></Suspense>}
   </AccessLayout>
 }
 

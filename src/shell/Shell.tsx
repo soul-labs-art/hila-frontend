@@ -59,7 +59,7 @@ export default function Shell() {
             <button ref={burger} type="button" className="burger" aria-expanded={drawer} aria-controls="mobile-menu" onClick={() => setDrawer(!drawer)}><Icon name={drawer ? 'x' : 'menu'} size={26} /><span className="sr-only">{drawer ? 'Cerrar menú' : 'Abrir menú'}</span></button></div>
         </> : <>
           <Brand className="topbar-brand" />
-          <nav className="guestnav" aria-label="Navegación principal"><Link to="/ingresar" aria-current={pathname === '/ingresar' ? 'page' : undefined}>Ingresar</Link><Link className="guest-cta" to="/registro" aria-current={pathname === '/registro' ? 'page' : undefined}>Crear cuenta</Link></nav>
+          <nav className="guestnav" aria-label="Navegación principal">{features.opportunities && <Link to="/explorar" aria-current={pathname.startsWith('/explorar') ? 'page' : undefined}>Explorar</Link>}<Link to="/ingresar" aria-current={pathname === '/ingresar' ? 'page' : undefined}>Ingresar</Link><Link className="guest-cta" to="/registro" aria-current={pathname === '/registro' ? 'page' : undefined}>Crear cuenta</Link></nav>
         </>}
       </div>
       {user && drawer && <div id="mobile-menu" className="drawer"><nav aria-label="Menú móvil"><p className="drawer-user"><Avatar name={user.displayName} size="md" /><span><strong>{user.displayName}</strong></span></p>

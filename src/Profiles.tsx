@@ -14,7 +14,7 @@ import { useSession } from './session-context'
 import { loadVolunteer, profileSteps } from './volunteer'
 
 // Los pasos de capacidades solo existen en desarrollo con datos de ejemplo; el build de producción descarta el módulo.
-const CapabilityStep = import.meta.env.DEV && import.meta.env.VITE_API_MOCK === 'true' ? lazy(() => import('./Capabilities').then(module => ({ default: module.CapabilityStep }))) : null
+const CapabilityStep = features.capabilities ? lazy(() => import('./Capabilities').then(module => ({ default: module.CapabilityStep }))) : null
 export function Account() {
   usePageTitle('Mi cuenta')
   const { user } = useSession()

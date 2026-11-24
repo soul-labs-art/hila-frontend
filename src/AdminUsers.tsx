@@ -1,4 +1,4 @@
-// Cuentas de usuarios para administración: estado y suspensión (planned: solo con features.adminTools).
+// Cuentas de usuarios para administración: estado y suspensión.
 import { useEffect, useRef, useState } from 'react'
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query'
 import { dayYear } from './activity-format'

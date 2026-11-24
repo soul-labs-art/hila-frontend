@@ -1,4 +1,4 @@
-// Necesidades de la organización: lista por estado y resumen (planned: solo con features.needs).
+// Necesidades de la organización: lista por estado y resumen.
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { Feedback, PageHeading, Select, StatusBadge } from './components'

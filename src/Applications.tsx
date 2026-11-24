@@ -1,4 +1,4 @@
-// Postulaciones que recibe la organización: elegir necesidad, revisar y decidir (planned: solo con features.applications).
+// Postulaciones que recibe la organización: elegir necesidad, revisar y decidir.
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { useQueries, useQuery, useQueryClient } from '@tanstack/react-query'

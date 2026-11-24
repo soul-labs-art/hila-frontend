@@ -1,4 +1,4 @@
-// Explorar oportunidades y detalle de una necesidad (planned: solo con features.opportunities; la postulación, con features.applications).
+// Explorar oportunidades y detalle de una necesidad.
 import { useState, type FormEvent } from 'react'
 import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom'
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -10,6 +10,7 @@ import { dayEnd, dayStart, needPhoto, placeLabel, proficiencyName, slotsLabel, t
 import { usePageTitle } from './page-title'
 import { photo, photoSrc } from './photos'
 import { Pagination } from './Profiles'
+import { myApplications } from './application-data'
 import { useSession } from './session-context'
 import { loadVolunteer } from './volunteer'
 import { Breadcrumbs, Card, DefinitionList, EmptyState, Icon, Notice, Toggle, type IconName } from './ui'
@@ -56,6 +57,7 @@ function AlertsBox() {
 
 export function Explore() {
   usePageTitle('Explorar oportunidades')
+  const { user } = useSession()
   const [params, setParams] = useSearchParams(), [open, setOpen] = useState(false)
   const value = (key: (typeof keys)[number]) => params.get(key) ?? '', page = Math.max(0, Number(params.get('pagina')) || 0)
   const active = keys.filter(key => value(key)).length, badRange = !!value('desde') && !!value('hasta') && value('hasta') < value('desde')
@@ -91,12 +93,12 @@ export function Explore() {
       <div className="explore-results" aria-busy={needs.isFetching}>
         {needs.error ? <><Feedback error={needs.error} /><button type="button" className="action" onClick={() => void needs.refetch()}>Volver a intentar</button></>
           : needs.isPending ? <><p className="sr-only" role="status">Cargando oportunidades…</p><Skeleton /></>
-          : bare ? <EmptyState className="explore-empty" title="Aún no hay oportunidades publicadas">Cuando las organizaciones publiquen necesidades, las verás aquí.{features.notifications && ' Activa los avisos si quieres enterarte primero.'}</EmptyState>
+          : bare ? <EmptyState className="explore-empty" title="Aún no hay oportunidades publicadas">Cuando las organizaciones publiquen necesidades, las verás aquí.{user && features.notifications && ' Activa los avisos si quieres enterarte primero.'}</EmptyState>
           : <><div className="result-bar"><p className="result-count" role="status">{badRange ? 'Revisa el rango de fechas.' : `${total} ${total === 1 ? 'oportunidad encontrada' : 'oportunidades encontradas'}`}</p><p className="result-order">Primero las más próximas</p></div>
             {empty ? <EmptyState title="Ninguna oportunidad coincide con tus filtros" action={<button type="button" className="action primary" onClick={clear}>Limpiar filtros</button>}>Prueba con otro territorio, otra fecha o quita alguna habilidad.</EmptyState>
               : <ul className="need-grid">{items.map(need => <NeedCard key={need.id} need={need} territories={territories.data?.items ?? []} from={from} />)}</ul>}
             <Pagination page={page} totalPages={needs.data?.totalPages ?? 0} setPage={next => { const copy = new URLSearchParams(params); if (next) copy.set('pagina', String(next)); else copy.delete('pagina'); setParams(copy); window.scrollTo(0, 0) }} /></>}
-        {bare && features.notifications && <AlertsBox />}
+        {bare && user && features.notifications && <AlertsBox />}
       </div>
     </div>
   </div>
@@ -118,8 +120,8 @@ function Compatibility({ needId, hasProfile }: { needId: string; hasProfile: boo
 const statusCopy = { ACCEPTED: 'Te aceptaron en esta actividad', REJECTED: 'Esta vez no continuaron con tu postulación', WITHDRAWN: 'Retiraste tu postulación' } as const
 function Apply({ need, hasProfile }: { need: Need; hasProfile: boolean }) {
   const client = useQueryClient(), [form, setForm] = useState(false), [confirm, setConfirm] = useState(false), [busy, setBusy] = useState(false), [error, setError] = useState<unknown>(), [notice, setNotice] = useState('')
-  const mine = useQuery({ queryKey: ['my-applications'], queryFn: () => api<Schemas['ApplicationPage']>('/me/applications?size=100'), retry: false })
-  const current = mine.data?.items.find(item => item.needId === need.id)
+  const mine = useQuery(myApplications)
+  const current = mine.data?.find(item => item.needId === need.id)
   const code = error instanceof ApiFailure ? error.detail.code : undefined
   const refresh = () => Promise.all([client.invalidateQueries({ queryKey: ['my-applications'] }), client.invalidateQueries({ queryKey: ['need', need.id] }), client.invalidateQueries({ queryKey: ['needs'] })])
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -138,8 +140,9 @@ function Apply({ need, hasProfile }: { need: Need; hasProfile: boolean }) {
       {features.applications && <Link className="text-button" to={`/actividad/${current.id}`}>Ver el estado en Mi actividad</Link>}
       {confirm ? <div className="confirm-box" role="group" aria-label="Confirmar retiro"><Notice tone="warning">Si retiras tu postulación no podrás volver a postularte a esta actividad.</Notice><div className="actions"><button type="button" className="action primary" disabled={busy} onClick={() => void withdraw(current.id)}>{busy ? 'Retirando…' : 'Sí, retirar'}</button><button type="button" className="action" disabled={busy} onClick={() => setConfirm(false)}>Mejor no</button></div></div>
         : <button type="button" className="action block" onClick={() => { setConfirm(true); setNotice('') }}>Retirar postulación</button>}</>
-      : <><div role="status"><Notice tone={current.status === 'ACCEPTED' ? 'success' : 'info'} icon={current.status === 'ACCEPTED' ? 'checkCircle' : 'info'}><strong>{statusCopy[current.status]}.</strong>{current.status === 'ACCEPTED' && ' Confirma tu compromiso si puedes asistir: aceptar no reserva tu cupo.'}{current.status === 'WITHDRAWN' && ' Solo se permite una postulación por persona en cada actividad.'}{current.decisionReason && <> Motivo: {current.decisionReason}</>}</Notice></div>
+      : <><div role="status"><Notice tone={current.status === 'ACCEPTED' ? 'success' : 'info'} icon={current.status === 'ACCEPTED' ? 'checkCircle' : 'info'}><strong>{statusCopy[current.status]}.</strong>{current.status === 'ACCEPTED' && current.commitmentStatus === 'NOT_CONFIRMED' && need.status === 'PUBLISHED' && !isPast(need.startsAt) && ' Confirma tu compromiso si puedes asistir: aceptar no reserva tu cupo.'}{current.status === 'WITHDRAWN' && ' Solo se permite una postulación por persona en cada actividad.'}{current.decisionReason && <> Motivo: {current.decisionReason}</>}</Notice></div>
         {current.status === 'ACCEPTED' && <Link className="action primary block" to={`/actividad/${current.id}`}>Ver mi actividad<Icon name="arrowRight" size={20} /></Link>}</>}</div>
+  if (need.status !== 'PUBLISHED') return <div className="apply-box">{feedback}<Notice icon="clock">Esta actividad ya no recibe postulaciones.</Notice></div>
   if (isPast(need.startsAt)) return <div className="apply-box">{feedback}<Notice icon="clock">Esta actividad ya empezó, así que no recibe más postulaciones.</Notice></div>
   if (!hasProfile) return <div className="apply-box">{feedback}<Notice icon="person">Para postularte necesitas tu perfil voluntario.</Notice><Link className="action primary block" to="/mi-perfil">Crear mi perfil<Icon name="arrowRight" size={20} /></Link></div>
   return <div className="apply-box">{feedback}
@@ -150,22 +153,34 @@ function Apply({ need, hasProfile }: { need: Need; hasProfile: boolean }) {
 }
 
 export function NeedDetail() {
-  const { needId = '' } = useParams(), location = useLocation(), { user } = useSession(), hasProfile = !!user?.volunteerProfileExists
+  const { needId = '' } = useParams(), location = useLocation(), { user, loading } = useSession(), hasProfile = !!user?.volunteerProfileExists
   const back = `/explorar${(location.state as { from?: string } | null)?.from ?? ''}`
   const query = useQuery({ queryKey: ['need', needId], queryFn: () => api<Need>(`/needs/${needId}`), retry: false }), territories = useQuery(territoriesQuery)
+  const orgId = query.data?.organization.id
+  const publicOrg = useQuery({ queryKey: ['public-profile', true, orgId], queryFn: () => api<Schemas['PublicOrganization']>(`/organizations/${orgId}/public-profile`), enabled: !!orgId, retry: false })
   usePageTitle(query.data?.title ?? 'Oportunidad')
   if (query.isPending) return <p className="loading-state" role="status">Cargando la oportunidad…</p>
   if (query.error) return query.error instanceof ApiFailure && query.error.status === 404 ? <EmptyState headingLevel={1} title="Esta oportunidad ya no está disponible." action={<Link className="action primary" to="/explorar">Ver otras oportunidades</Link>}>Pudo cerrarse, cancelarse o dejar de estar publicada.</EmptyState> : <><Feedback error={query.error} /><button type="button" className="action" onClick={() => void query.refetch()}>Volver a intentar</button></>
   const need = query.data, pic = needPhoto(need), skills = [...need.skills].sort((a, b) => Number(b.required) - Number(a.required) || a.skill.name.localeCompare(b.skill.name, 'es'))
+  const takingApplications = need.status === 'PUBLISHED' && !isPast(need.startsAt)
+  const canSignInToApply = takingApplications && need.slotsAvailable > 0
+  const returnTo = encodeURIComponent(location.pathname + location.search)
+  const organization = publicOrg.data ? <Link to={`/organizaciones/${need.organization.id}`}>{need.organization.name}</Link> : need.organization.name
   return <article className="need-detail">
     <div className="need-head"><Breadcrumbs items={[{ label: 'Explorar', to: back }, { label: need.title }]} />
       <div className="need-hero"><img src={photoSrc(pic, 1600)} alt={photo(pic).alt} style={{ objectPosition: photo(pic).focus }} /></div>
       <h1>{need.title}</h1>
-      <ul className="need-meta"><Meta icon="people"><Link to={`/organizaciones/${need.organization.id}`}>{need.organization.name}</Link></Meta><Meta icon="pin">{placeLabel(need, territories.data?.items ?? [])}</Meta><Meta icon="calendar">{whenLabel(need)}</Meta><Meta icon="person">{slotsLabel(need)}</Meta></ul></div>
-    <aside className="need-aside" aria-label="Tu participación"><Card><Compatibility needId={need.id} hasProfile={hasProfile} />{features.applications && <Apply need={need} hasProfile={hasProfile} />}</Card></aside>
+      <ul className="need-meta"><Meta icon="people">{organization}</Meta><Meta icon="pin">{placeLabel(need, territories.data?.items ?? [])}</Meta><Meta icon="calendar">{whenLabel(need)}</Meta><Meta icon="person">{slotsLabel(need)}</Meta></ul></div>
+    <aside className="need-aside" aria-label="Tu participación"><Card>{loading ? <p className="loading-state" role="status">Consultando tu sesión…</p> : user ? <>
+      {need.status === 'PUBLISHED' && <Compatibility needId={need.id} hasProfile={hasProfile} />}
+      {features.applications && <Apply need={need} hasProfile={hasProfile} />}
+    </> : canSignInToApply && features.applications ? <>
+      <Notice icon="person">Ingresa para postularte a esta actividad.</Notice>
+      <Link className="action primary block" to={`/ingresar?returnTo=${returnTo}`}>Ingresar para postularme<Icon name="arrowRight" size={20} /></Link>
+    </> : <Notice icon="clock">{takingApplications ? 'Los cupos de esta actividad están completos.' : 'Esta actividad ya no recibe postulaciones.'}</Notice>}</Card></aside>
     <div className="need-main">
       <Card as="section" aria-labelledby="about-title"><h2 id="about-title">Sobre esta actividad</h2><p className="need-summary">{need.summary}</p><p className="preserve-lines">{need.description}</p>
-        <DefinitionList items={[{ icon: 'pin', term: 'Modalidad', children: modalityName(need.modality) }, { icon: 'alert', term: 'Nivel de riesgo', children: need.riskLevel === 'LOW' ? 'Bajo' : 'Moderado' }, { icon: 'people', term: 'Organización', children: <>{need.organization.organizationType === 'FORMAL' ? 'Organización formal' : 'Colectivo comunitario'}: <Link to={`/organizaciones/${need.organization.id}`}>{need.organization.name}</Link></> }]} /></Card>
+        <DefinitionList items={[{ icon: 'pin', term: 'Modalidad', children: modalityName(need.modality) }, { icon: 'alert', term: 'Nivel de riesgo', children: need.riskLevel === 'LOW' ? 'Bajo' : 'Moderado' }, { icon: 'people', term: 'Organización', children: <>{need.organization.organizationType === 'FORMAL' ? 'Organización formal' : 'Colectivo comunitario'}: {organization}</> }]} /></Card>
       <Card as="section" aria-labelledby="outcome-title"><h2 id="outcome-title">Resultado esperado</h2><p className="preserve-lines">{need.expectedOutcome}</p></Card>
       {(skills.length > 0 || need.resources.length > 0) && <Card as="section" aria-labelledby="needs-title"><h2 id="needs-title">Lo que se busca</h2>
         {skills.length > 0 && <><h3>Habilidades</h3><ul className="need-tags">{skills.map(item => <li key={item.skill.id}><span className="tag-name">{item.skill.name}</span><span className={`tag-kind${item.required ? ' is-required' : ''}`}>{item.required ? 'Obligatoria' : 'Deseable'}{item.minimumProficiency && ` · nivel ${proficiencyName(item.minimumProficiency).toLowerCase()}`}</span></li>)}</ul></>}

@@ -1,4 +1,4 @@
-// Datos y reglas comunes de postulaciones y cierre vistos desde el equipo de la organización (planned: features.applications y features.participation).
+// Datos y reglas comunes de postulaciones y cierre vistos desde el equipo de la organización.
 import { useSyncExternalStore } from 'react'
 import { type QueryClient } from '@tanstack/react-query'
 import { api, ApiFailure, type Schemas } from './api/client'

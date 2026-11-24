@@ -117,6 +117,12 @@ function NeedForm({ org, need: initial }: { org: Org; need?: Managed }) {
   async function run(publish: boolean) {
     setError(undefined); setNotice(''); const { body, failure } = build(d)
     if (!body) { setError(failure); return }
+    if (fixed && need) {
+      // El formulario muestra minutos. Conserva el instante exacto de una convocatoria con reservas.
+      body.startsAt = need.startsAt
+      body.endsAt = need.endsAt
+      body.timezone = need.timezone
+    }
     setBusy(publish ? 'publish' : 'save')
     try {
       let saved = await api<Managed>(need ? `/needs/${need.id}/management` : `/causes/${d.causeId}/needs`, { method: need ? 'PUT' : 'POST', body })
